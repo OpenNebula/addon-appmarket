@@ -1,0 +1,259 @@
+#!/usr/bin/env ruby
+
+# -------------------------------------------------------------------------- #
+# Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs        #
+#                                                                            #
+# Licensed under the Apache License, Version 2.0 (the "License"); you may    #
+# not use this file except in compliance with the License. You may obtain    #
+# a copy of the License at                                                   #
+#                                                                            #
+# http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                            #
+# Unless required by applicable law or agreed to in writing, software        #
+# distributed under the License is distributed on an "AS IS" BASIS,          #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   #
+# See the License for the specific language governing permissions and        #
+# limitations under the License.                                             #
+#--------------------------------------------------------------------------- #
+
+ONE_LOCATION=ENV["ONE_LOCATION"]
+
+if !ONE_LOCATION
+    RUBY_LIB_LOCATION="/usr/lib/one/ruby"
+else
+    RUBY_LIB_LOCATION=ONE_LOCATION+"/lib/ruby"
+end
+
+$: << RUBY_LIB_LOCATION
+$: << RUBY_LIB_LOCATION+"/oneapps/market"
+$: << RUBY_LIB_LOCATION+"/cloud"
+$: << RUBY_LIB_LOCATION+"/cli"
+
+require 'appmarket_client'
+require 'oneapps/version'
+
+require 'command_parser'
+require 'cli_helper'
+
+require 'json'
+
+USER_AGENT = "CLI"
+
+#
+# Options
+#
+
+DEFAULT_OPTIONS = [
+    ENDPOINT = {
+        :name => "server",
+        :short => "-s url",
+        :large => "--server url",
+        :format => String,
+        :description => "Marketplace endpoint"
+    },
+    USERNAME={
+        :name => "username",
+        :short => "-u name",
+        :large => "--username name",
+        :format => String,
+        :description => "User name"
+    },
+    PASSWORD={
+        :name => "password",
+        :short => "-p pass",
+        :large => "--password pass",
+        :format => String,
+        :description => "User password"
+    }
+]
+
+JSON_FORMAT={
+    :name => "json",
+    :short => "-j",
+    :large => "--json",
+    :description => "Show in JSON format"
+}
+
+#
+# Table
+#
+
+TABLE = CLIHelper::ShowTable.new(nil, self) do
+    column :ID, "Appliance", :size=>25 do |d|
+        d["_id"]["$oid"]
+    end
+
+    column :NAME, "Name", :size=>50 do |d|
+        d["name"]
+    end
+
+    column :PUBLISHER, "Publisher", :size=>15 do |d|
+        d["publisher"]
+    end
+
+    default :ID, :NAME, :PUBLISHER
+end
+
+#
+# Commands
+#
+
+cmd=CommandParser::CmdParser.new(ARGV) do
+    usage "`appmarket` <command> [<args>] [<options>]"
+    version OneApps::VERSION_TEXT
+
+    set :option, DEFAULT_OPTIONS
+    set :option, CommandParser::VERSION
+
+    #
+    # List
+    #
+
+    list_desc = <<-EOT.unindent
+        List the available appliances in the Marketplace
+    EOT
+
+    command :list, list_desc, :options => JSON_FORMAT do
+        client = Market::ApplianceClient.new(
+                    options[:username],
+                    options[:password],
+                    options[:server],
+                    USER_AGENT)
+
+        response = client.list
+
+        if CloudClient::is_error?(response)
+            [response.code.to_i, response.to_s]
+        else
+            if options[:json]
+                [0,response.body]
+            else
+                array_list = JSON.parse(response.body)
+                TABLE.show(array_list['appliances'])
+                0
+            end
+        end
+    end
+
+    #
+    # Create
+    #
+
+    create_desc = <<-EOT.unindent
+        Create a new appliance in the Marketplace
+
+        Example:
+
+            {
+              "name": "t_app",
+              "short_description": "t_short_des",
+              "description": "This image is 8 Gb.\\r\\n  * **Disk device**:  `xvda`\\r\\n",
+              "version": "1.0",
+              "tags": [
+                "t_tag",
+                " t_tag2"
+              ],
+              "files": [
+                {
+                  "url": "http://testtesttest.com/test.img",
+                  "md5": "ttttttttttttt",
+                  "sha1": "tttttttttttttt",
+                  "compression": "bz2",
+                  "hypervisor": "VMWARE",
+                  "format": "raw",
+                  "os-id": "tt",
+                  "os-release": "t1",
+                  "os-arch": "t64"
+                }
+              ]
+            }
+    EOT
+
+    command :create, create_desc, :file do
+        client = Market::ApplianceClient.new(
+                    options[:username],
+                    options[:password],
+                    options[:server],
+                    USER_AGENT)
+
+        response = client.create(File.read(args[0]))
+
+        if CloudClient::is_error?(response)
+            [response.code.to_i, response.to_s]
+        else
+            [0, response.body]
+        end
+    end
+
+    #
+    # Show
+    #
+
+    show_desc = <<-EOT.unindent
+        Show detailed information of a given appliance
+    EOT
+
+    command :show, show_desc, :id, :options => JSON_FORMAT do
+        client = Market::ApplianceClient.new(
+                    options[:username],
+                    options[:password],
+                    options[:server],
+                    USER_AGENT)
+
+        response = client.show(args[0])
+
+        if CloudClient::is_error?(response)
+            [response.code.to_i, response.to_s]
+        else
+            [0,response.body]
+        end
+    end
+
+    #
+    # Delete
+    #
+
+    delete_desc = <<-EOT.unindent
+        Delete  a given appliance
+    EOT
+
+    command :delete, delete_desc, :id do
+        client = Market::ApplianceClient.new(
+                    options[:username],
+                    options[:password],
+                    options[:server],
+                    USER_AGENT)
+
+        response = client.delete(args[0])
+
+        if CloudClient::is_error?(response)
+            [response.code.to_i, response.to_s]
+        else
+            [0,response.body]
+        end
+    end
+
+    #
+    # Update
+    #
+
+    update_desc = <<-EOT.unindent
+        Update an appliance of the Marketplace
+    EOT
+
+    command :update, update_desc, :file do
+        client = Market::ApplianceClient.new(
+                    options[:username],
+                    options[:password],
+                    options[:server],
+                    USER_AGENT)
+
+        response = client.update(File.read(args[0]))
+
+        if CloudClient::is_error?(response)
+            [response.code.to_i, response.to_s]
+        else
+            [0, response.body]
+        end
+    end
+end

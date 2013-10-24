@@ -1,0 +1,63 @@
+// ------------------------------------------------------------------------ //
+// Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs      //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License"); you may  //
+// not use this file except in compliance with the License. You may obtain  //
+// a copy of the License at                                                 //
+//                                                                          //
+// http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+//------------------------------------------------------------------------- //
+
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+    %script{:type => "text/javascript", :src  => "#{settings.root_path}js/jquery-1.7.2.min.js"}
+    %script{:type => "text/javascript", :src  => "#{settings.root_path}js/jquery.dataTables.min.js"}
+    %script{:type => "text/javascript", :src  => "#{settings.root_path}js/bootstrap.min.js"}
+    %script{:type => "text/javascript", :src  => "#{settings.root_path}js/market.js"}
+    %link{:rel=>'stylesheet', :href=>"#{settings.root_path}css/bootstrap.min.css", :type => "text/css"}
+    %link{:rel=>'stylesheet', :href=>"#{settings.root_path}css/market.css", :type => "text/css"}
+    %link{:rel=>'stylesheet', :href=>"#{settings.root_path}css/font-awesome.css", :type => "text/css"}
+    %link{:rel => "icon", :type => "#{settings.root_path}image/png", :href => "/favicon.ico"}
+
+  %body
+    .container
+
+      .one-h1
+        %h1
+          = haml :'custom/tittle'
+
+        %span.arrow
+        %span.arrow-right
+
+      .one-banner
+        = haml :'custom/banner'
+
+      = yield
+
+  %footer
+    .container
+      .row-fluid
+        .span12
+          = haml :'custom/logos'
+
+      %hr
+
+
+      %p.pull-right
+        OpenNebula AppMarket 4.2.0 by
+        %a{'href' => "http://www.c12g.com/"} C12G Labs.
+
+
+    .one-footer-black
+      .container
+        .row-fluid
+          .span12
+            = haml :'custom/footer'

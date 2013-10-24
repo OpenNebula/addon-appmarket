@@ -1,0 +1,65 @@
+// ------------------------------------------------------------------------ //
+// Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs      //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License"); you may  //
+// not use this file except in compliance with the License. You may obtain  //
+// a copy of the License at                                                 //
+//                                                                          //
+// http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+//------------------------------------------------------------------------- //
+
+.navbar.navbar-static
+  .navbar-inner
+    .container
+      %a.brand{'href' => "#{settings.root_path}appliance"} Appliances
+      = haml :nav_login
+
+%table{'class' => "table table-striped", 'id' => "users"}
+  %thead
+    %tr
+      %th username
+      %th organization
+      %th first_name
+      %th last_name
+      %th email
+      %th status
+      %th
+
+%hr
+
+:javascript
+  $(document).ready(function() {
+    var oTable = $('#users').dataTable( {
+      "sDom": "t<'row'<'span6'i><'span6'p>>",
+      "bProcessing": false,
+      "sPaginationType": "bootstrap",
+      "sAjaxSource": "user",
+      "sAjaxDataProp": "users",
+      "bAutoWidth": false,
+      "iDisplayLength": 50,
+      "aoColumns": [
+        { "mDataProp": "username" },
+        { "mDataProp": "organization" },
+        { "mDataProp": "first_name" },
+        { "mDataProp": "last_name" },
+        { "mDataProp": "email" },
+        { "mDataProp": "status" },
+        { "mDataProp": "_id.$oid",
+          "fnRender": function ( o ) {
+          more_info = '<a id="more_info" class="btn btn-inverse btn-mini pull-right" href="user/' + o.aData["_id"]["$oid"]+ '">'+
+                        '<i class="icon-info-sign icon-white"></i>'+
+                        ' More Info</a>'
+          return more_info
+        } }
+      ]
+    } );
+  } );
+
+
+
