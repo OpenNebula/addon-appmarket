@@ -1,6 +1,8 @@
 AppMarket Installation and Configuration
 ========================================
 
+[TOC]
+
 Requirements
 ------------
 
@@ -9,14 +11,14 @@ AppMarket requires:
 * [MongoDB](http://www.mongodb.org/display/DOCS/Quickstart)
 * ruby and rubygems installed.
 * bundler. To install it you can issue as root:
-
+```
     gem install bundler
-
+```
 * Required gems. To install the gems needed by AppMarket do this as root:
-
+```
     cd /usr/lib/one/ruby/oneapps/market
     bundle install
-
+```
 
 Install AppMarket
 -----------------
@@ -107,7 +109,7 @@ You can customize the layout of your AppMarket deployment by editing the followi
 * *tittle.haml*
 
 
-`These files support HAML syntax and Twitter Bootstrap css`
+> These files support HAML syntax and Twitter Bootstrap css
 
 ![market_custom_1](images/market_custom_1.jpg)
 
@@ -129,7 +131,7 @@ To start and stop the server, use the ''appmarket-server start/stop'' command:
     appmarket-server start
     # appmarket-server started
 
-`By default, the server will only listen to requests coming from localhost. Change the *host* attribute in */etc/one/appmarket-server.conf* to your server public IP, or 0.0.0.0 so appmarket will listen on any interface.`
+> By default, the server will only listen to requests coming from localhost. Change the *host* attribute in */etc/one/appmarket-server.conf* to your server public IP, or 0.0.0.0 so appmarket will listen on any interface.
 
 Inside */var/log/one/* you will find new log files for the server.
 

@@ -2,15 +2,17 @@
 
 ## Description
 
-AppMarket allows you to build your own internal marketplace service. Your OpenNebula users will be able to import the appliances from your internal AppMarket service to their OpenNebula instance through a new Sunstone tab called AppMarket; or specifying the Appliance URL in the Image template using the oneimage create command. 
+AppMarket allows you to build your own internal marketplace service. Your OpenNebula users will be able to import the appliances from your internal AppMarket service to their OpenNebula instance through a new Sunstone tab called AppMarket; or specifying the Appliance URL in the Image template using the oneimage create command.
 
-After deploying the AppMarket server, users will be able to access the AppMarket functionality through its GUI, pointing the web browser to the url where the server is running; or through the CLI, using the appmarket* commands. 
+After deploying the AppMarket server, users will be able to access the AppMarket functionality through its GUI, pointing the web browser to the url where the server is running; or through the CLI, using the appmarket* commands.
 
 The [OpenNebula Marketplace](http://marketplace.c12g.com/appliance) is an example of an AppMarket deployment currently running and publicly accessible for the OpenNebula community.
 
+![market1306](doc/images/market1306.png)
+
 ## Development
 
-To contribute bug patches or new features, you can use the github Pull Request model. It is assumed that code and documentation are contributed under the Apache License 2.0. 
+To contribute bug patches or new features, you can use the github Pull Request model. It is assumed that code and documentation are contributed under the Apache License 2.0.
 
 More info:
 * [How to Contribute](http://opennebula.org/software:add-ons#how_to_contribute_to_an_existing_add-on)
@@ -34,6 +36,8 @@ This add-on is compatible with OpenNebula 4.x
 * Provide appliances from a catalog and portal
 * Tight integration with OpenNebula
 
+![appmarket_list](doc/images/appmarket_list.png)
+
 ## Requirements
 
 [More info](http://opennebula.org/documentation:rel4.2:appmarket_configure#requirements)
@@ -44,5 +48,5 @@ This add-on is compatible with OpenNebula 4.x
 ## Configuration
 [More info](http://opennebula.org/documentation:rel4.2:appmarket_configure#configure_appmarket)
 
-## Usage 
+## Usage
 [More info](http://opennebula.org/documentation:rel4.2:appmarket_use)
