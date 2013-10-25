@@ -21,9 +21,8 @@ AppMarket requires:
 Install AppMarket
 -----------------
 
-AppMarket can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/) page in three formats:
+AppMarket packages can be download from the [OpenNebula Downloads](packages) page in two formats:
 
-* tarball
 * rpm package
 * deb package
 
