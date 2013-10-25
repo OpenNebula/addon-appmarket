@@ -1,8 +1,6 @@
 AppMarket Installation and Configuration
 ========================================
 
-[TOC]
-
 Requirements
 ------------
 

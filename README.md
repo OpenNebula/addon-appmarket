@@ -38,15 +38,8 @@ This add-on is compatible with OpenNebula 4.x
 
 ![appmarket_list](doc/images/appmarket_list.png)
 
-## Requirements
-
-[More info](http://opennebula.org/documentation:rel4.2:appmarket_configure#requirements)
-
-## Installation
-[More info](http://opennebula.org/documentation:rel4.2:appmarket_configure#install_appmarket)
-
-## Configuration
-[More info](http://opennebula.org/documentation:rel4.2:appmarket_configure#configure_appmarket)
+## Installation & Configuration
+[More info](doc/installation_and_configuration.md)
 
 ## Usage
-[More info](http://opennebula.org/documentation:rel4.2:appmarket_use)
+[More info](doc/usage.md)
