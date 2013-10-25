@@ -93,11 +93,11 @@ You can import appliances from the AppMarket to OpenNebula through Sunstone or u
 
 Sunstone includes a new tab that allows OpenNebula users to interact with the AppMarket:
 
-![appmarket_list](images/appmarket_list.jpg)
+![appmarket_list](images/appmarket_list.png)
 
 If you want to import a new appliance into your local infrastructure, you just have to select an image and click the''import'' button. A new dialog box will prompt you to create a new image.
 
-![appmarket_import](images/appmarket_import.jpg)
+![appmarket_import](images/appmarket_import.png)
 
 After that you will be able to use that image in a template in order to create a new instance.
 
