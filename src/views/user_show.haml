@@ -89,10 +89,10 @@
             %small= @user['last_name']
         %hr
         %dt
-		  %h6 Allowed catalogs
-          %dd
-            %h6
-              %small= @user['catalogs'].join(', ')
+          %h6 Allowed catalogs
+        %dd
+          %h6
+            %small= @user['catalogs'] ? @user['catalogs'].join(', ') : ""
         %dt
           %hr
         %dt
