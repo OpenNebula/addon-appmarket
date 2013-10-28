@@ -267,7 +267,7 @@ $.fn.serializeObject = function()
             } else if (key == 'tags') {
               o[key] = this.value.split(',');
 			} else if (key == 'catalogs') {
-<             o[key] = this.value.split(',');
+              o[key] = this.value.split(',');
             } else {
               o[key] = this.value;
             }
