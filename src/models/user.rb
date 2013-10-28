@@ -61,7 +61,14 @@ class User
             'status' => {
                 :type => :null,
                 :default => 'disabled'
-            }
+            },
+			'catalogs' => {
+				:type => :array,
+				:items => {
+					:type => :string
+				},
+				:default => []
+			}
         }
     }
 

@@ -266,6 +266,8 @@ $.fn.serializeObject = function()
                 o[key][index][file_key] = this.value;
             } else if (key == 'tags') {
               o[key] = this.value.split(',');
+			} else if (key == 'catalogs') {
+<             o[key] = this.value.split(',');
             } else {
               o[key] = this.value;
             }
