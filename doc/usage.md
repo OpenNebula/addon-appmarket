@@ -182,3 +182,25 @@ TYPE          = OS
 $ oneimage create marketplace_image.one
 ID: 1231
 ```
+
+Filtering AppMarket by user permissions
+----------------------------------------------
+You are able to filter visibility of Appliances to different Sunstone instances. While adding a new appliance specify catalog to which it will belong:
+
+![manage_app](images/appmarket_appliance_catalog.png)
+
+If you already have a developer account in AppMarket you should set these credentials in sunstone-server.conf:
+
+```
+# Marketplace username and password
+# If no credentials are provided, an anonymous client will be used
+#
+:marketplace_username: test
+:marketplace_password: password
+```
+
+Then in AppMarket 'Manage Users' tab add names of catalogs that user should have access to. 
+
+![manage_app](images/appmarket_user_catalog.png)
+
+This way users will be able to see public appliances and appliances that belong to catalogs which user has been granted access.
