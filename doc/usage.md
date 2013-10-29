@@ -195,7 +195,7 @@ If you already have a developer account in AppMarket you should set these creden
 # Marketplace username and password
 # If no credentials are provided, an anonymous client will be used
 #
-:marketplace_username: username
+:marketplace_username: test
 :marketplace_password: password
 ```
 
