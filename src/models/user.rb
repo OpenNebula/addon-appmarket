@@ -229,7 +229,7 @@ class User
     # @param [String] password
     # @return [String]
     def self.generate_password(password)
-        BCrypt::Password.create(password)
+        BCrypt::Password.create(password).to_s
     end
 
     # Check if the password provided match the user password
