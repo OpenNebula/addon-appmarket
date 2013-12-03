@@ -30,6 +30,20 @@ module AppConverter
         def self.collection
             DB[self::COLLECTION_NAME]
         end
+
+        # Check if the result is an error
+        #
+        # @param [Array] result, contains the status and body
+        # @return [Boolean]
+        def self.is_error?(result)
+            if result.is_a?(Array)
+                if [200, 201, 204].include?(result[0])
+                    return false
+                end
+            end
+
+            return true
+        end
     end
 
     class PoolCollection < Collection

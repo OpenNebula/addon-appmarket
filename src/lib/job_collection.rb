@@ -41,7 +41,13 @@ module AppConverter
             begin
                 validator.validate!(hash, AppConverter::Job::SCHEMA)
 
-                # TODO check if the app exists
+                # Check if the app exists
+                result = AppConverter::Appliance.new(hash['appliance_id']).info
+                if Collection.is_error?(result)
+                    return result
+                end
+
+                hash['creation_time'] = Time.now.to_i
 
                 object_id = collection.insert(hash, {:w => 1})
             rescue Validator::ParseException
