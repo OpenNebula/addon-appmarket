@@ -66,13 +66,20 @@ module AppConverter
     end
 
     class Appliance < Collection
+        STATUS = %w{init ready converting downloading publishing}
+
         SCHEMA = {
             :type => :object,
             :properties => {
                 'name' => {
                     :type => :string,
                     :required => true
-                }
+                },
+                'status' => {
+                    :type => :string,
+                    :default => 'init',
+                    :enum => AppConverter::Appliance::STATUS,
+                },
             }
         }
 

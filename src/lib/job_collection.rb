@@ -61,7 +61,10 @@ module AppConverter
     end
 
     class Job < Collection
-        COLLECTION_NAME = "jobs"
+        STATUS  = %w{pending in-progress cancelling done error deleted}
+        NAMES   = %w{upload delete convert publish unpublish}
+        # TODO define formats
+        FORMATS = %w{qcow vmdk}
 
         SCHEMA = {
             :type => :object,
@@ -69,16 +72,50 @@ module AppConverter
                 'name' => {
                     :type => :string,
                     :required => true,
-                    :enum => %w{upload delete convert publish unpublish},
+                    :enum => AppConverter::Job::NAMES,
                 },
                 'status' => {
                     :type => :string,
                     :default => 'pending',
-                    :enum => %w{pending in-progress cancel done error deleted},
+                    :enum => AppConverter::Job::STATUS,
                 },
                 'appliance_id' => {
                     :type => :string,
                     :required => true
+                },
+                'creation_time' => {
+                    :type => :null
+                },
+                'start_time' => {
+                    :type => :null
+                },
+                'completition_time' => {
+                    :type => :null
+                },
+                'information' => {
+                    :type => :null
+                },
+                'worker_host' => {
+                    :type => :null
+                },
+                'worker_pid' => {
+                    :type => :null
+                },
+                'params' => {
+                    :type => :object,
+                    :properties => {
+                        # TODO define parameters
+                        'url' => {
+                            :type => :uri
+                        },
+                        'formats' => {
+                            :type => :array,
+                            :items => {
+                                :type => :string,
+                                :enum => AppConverter::Job::FORMATS
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -90,7 +127,7 @@ module AppConverter
 
         def cancel
             begin
-                job = Job.collection.update({
+                job = JobCollection.collection.update({
                     :_id => Collection.str_to_object_id(@object_id)},
                     {'$set' => {"status" => "cancel"}
                 })
@@ -101,7 +138,7 @@ module AppConverter
 
         def delete
             begin
-                Job.collection.remove(:_id => Collection.str_to_object_id(@object_id))
+                JobCollection.collection.remove(:_id => Collection.str_to_object_id(@object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -112,7 +149,7 @@ module AppConverter
 
         def info
             begin
-                @data = Job.collection.find_one(:_id => Collection.str_to_object_id(@object_id))
+                @data = JobCollection.collection.find_one(:_id => Collection.str_to_object_id(@object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
