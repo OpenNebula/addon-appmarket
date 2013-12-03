@@ -133,9 +133,20 @@ module AppConverter
 
         def cancel
             begin
-                job = JobCollection.collection.update({
+                job = self.info
+                if Collection.is_error?(job)
+                    return job
+                end
+
+                if job[1]['worker_host'].nil?
+                    status = 'cancelling'
+                else
+                    status = 'deleted'
+                end
+
+                JobCollection.collection.update({
                     :_id => Collection.str_to_object_id(@object_id)},
-                    {'$set' => {"status" => "cancel"}
+                    {'$set' => {"status" => status}
                 })
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
@@ -144,7 +155,8 @@ module AppConverter
 
         def delete
             begin
-                JobCollection.collection.remove(:_id => Collection.str_to_object_id(@object_id))
+                JobCollection.collection.remove(
+                    :_id => Collection.str_to_object_id(@object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -155,7 +167,8 @@ module AppConverter
 
         def info
             begin
-                @data = JobCollection.collection.find_one(:_id => Collection.str_to_object_id(@object_id))
+                @data = JobCollection.collection.find_one(
+                    :_id => Collection.str_to_object_id(@object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
