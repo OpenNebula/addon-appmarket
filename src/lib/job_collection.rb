@@ -22,7 +22,7 @@ module AppConverter
         COLLECTION_NAME = "jobs"
 
         def initialize(selector={}, opts={})
-            super()
+            super(selector, opts)
             @selector = selector
             @opts = opts
         end

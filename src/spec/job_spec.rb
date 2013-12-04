@@ -228,4 +228,17 @@ describe 'deleting an appliance' do
     end
 end
 
+describe 'getting the associated jobs of a worker' do
+    it "should ge the jobs in cancelling status" do
+        get '/worker/firstworker/job?status=cancelling'
+
+        body = JSON.parse last_response.body
+        body.size.should eql(1)
+        body[0]['name'].should == 'upload'
+        body[0]['status'].should == 'cancelling'
+        body[0]['appliance_id'].should == $new_oid
+        body[0]['worker_host'].should == 'firstworker'
+        body[0]['creation_time'].should <= Time.now.to_i
+    end
+end
 end

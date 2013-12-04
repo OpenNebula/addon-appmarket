@@ -80,7 +80,7 @@ end
 ###############################################################################
 
 get '/job' do
-    job_collection = AppConverter::JobCollection.new({},{:sort => ['_id', Mongo::ASCENDING]})
+    job_collection = AppConverter::JobCollection.new()
     @tmp_response = job_collection.info
 end
 
@@ -103,7 +103,12 @@ end
 ###############################################################################
 
 get '/worker/:id/job' do
+    job_selector = {}
+    job_selector['worker_host'] = params[:id]
+    job_selector['status'] = params[:status] if params[:status]
 
+    job_collection = AppConverter::JobCollection.new(job_selector, {})
+    @tmp_response = job_collection.info
 end
 
 get '/worker/:id/nextjob' do

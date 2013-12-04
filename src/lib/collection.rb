@@ -62,7 +62,8 @@ module AppConverter
     end
 
     class PoolCollection < Collection
-        def initialize
+        def initialize(selector, opts)
+            opts[:sort] ||= ['_id', Mongo::ASCENDING]
             @data = []
         end
 
