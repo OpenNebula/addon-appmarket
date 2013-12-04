@@ -80,7 +80,7 @@ end
 ###############################################################################
 
 get '/job' do
-    job_collection = AppConverter::JobCollection.new()
+    job_collection = AppConverter::JobCollection.new({},{:sort => ['_id', Mongo::ASCENDING]})
     @tmp_response = job_collection.info
 end
 
@@ -96,6 +96,63 @@ end
 delete '/job/:id' do
     job = AppConverter::Job.new(params[:id])
     @tmp_response = job.delete
+end
+
+###############################################################################
+# Worker
+###############################################################################
+
+get '/worker/:id/job' do
+
+end
+
+get '/worker/:id/nextjob' do
+    # Retrieve the apps with no running jobs
+    app_selector = {
+        'status' => { '$in' => ['init', 'ready'] }
+    }
+
+    app_opts = {
+        :fields => {}
+    }
+
+    app_collection = AppConverter::AppCollection.new(app_selector, app_opts)
+    app_response = app_collection.info
+
+    if AppConverter::Collection.is_error?(app_response)
+        @tmp_response = app_response
+    else
+        # Retrieve the pending jobs that are not associated with any appliance
+        #   with a running job
+        ready_app_ids = app_response[1].collect {|app| app['_id'].to_s }
+
+        job_selector = {
+            'status' => 'pending',
+            'appliance_id' => { '$in' => ready_app_ids }
+        }
+
+        job_opts = {
+            :sort => ['creation_time', Mongo::ASCENDING]
+        }
+
+        job_collection = AppConverter::JobCollection.new(job_selector, job_opts)
+        job_response = job_collection.info
+
+        if AppConverter::Collection.is_error?(job_response)
+            @tmp_response = job_response
+        else
+            if job_collection.empty?
+                @tmp_response = [404, {'message' => "There is no job available"}]
+            else
+                next_job = job_collection[0]
+                next_job.update({
+                    'status' => 'in-progress',
+                    'worker_host' => params[:id],
+                    'start_time' => Time.now.to_i})
+                @tmp_response = [200, next_job.to_hash]
+            end
+        end
+    end
 end
 
 ###############################################################################

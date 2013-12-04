@@ -21,15 +21,16 @@ module AppConverter
     class AppCollection < PoolCollection
         COLLECTION_NAME = "appliance"
 
-        def initialize(filter = {})
+        def initialize(selector={}, opts={})
             super()
-            @filter = filter
+            @selector = selector
+            @opts = opts
         end
 
         def info
-            @data = AppCollection.collection.find(@filter, :fields => nil).to_a
+            @data = AppCollection.collection.find(@selector, @opts).to_a
 
-            return [200, @data]
+            return [200, self.to_a]
         end
 
         def self.create(hash)
@@ -40,9 +41,14 @@ module AppConverter
 
             begin
                 validator.validate!(hash, AppConverter::Appliance::SCHEMA)
-                object_id = collection.insert(hash, {:w => 1})
             rescue Validator::ParseException
                 return [400, {"message" => $!.message}]
+            end
+
+            hash['creation_time'] = Time.now.to_i
+
+            begin
+                object_id = collection.insert(hash, {:w => 1})
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
@@ -85,15 +91,17 @@ module AppConverter
 
         def initialize(app_id)
             @object_id = app_id
-            @data = {"_id" => {"$oid" => app_id}}
+            @data = {}
         end
 
         def delete
             begin
                 # Remove associated jobs
-                job_collection = AppConverter::JobCollection.new(
-                    )
+                job_selector = {
+                    'appliance_id' => @object_id
+                }
 
+                job_collection = AppConverter::JobCollection.new(job_selector)
                 job_collection.info
                 job_collection.each { |job|
                     job.cancel
@@ -121,11 +129,26 @@ module AppConverter
                 return [404, {"message" => "Appliance not found"}]
             end
 
-            return [200, @data]
+            return [200, self.to_hash]
         end
 
-        def to_hash
-            return @data
+        def update(opts)
+            # TODO check opts keys
+            if @data.empty?
+                info_result = self.info
+                if Collection.is_error?(info_result)
+                    return info_result
+                end
+            end
+
+            @data = @data.deep_merge(opts)
+            AppCollection.collection.update(
+                    {:_id => Collection.str_to_object_id(@object_id)},
+                    @data)
+
+            # TODO check if update == success
+
+            return [200, {}]
         end
     end
 end

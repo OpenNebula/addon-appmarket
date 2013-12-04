@@ -21,15 +21,16 @@ module AppConverter
     class JobCollection < PoolCollection
         COLLECTION_NAME = "jobs"
 
-        def initialize(filter = {})
+        def initialize(selector={}, opts={})
             super()
-            @filter = filter
+            @selector = selector
+            @opts = opts
         end
 
         def info
-            @data = JobCollection.collection.find(@filter, :fields => nil).to_a
+            @data = JobCollection.collection.find(@selector, @opts).to_a
 
-            return [200, @data]
+            return [200, self.to_a]
         end
 
         def self.create(hash)
@@ -40,18 +41,20 @@ module AppConverter
 
             begin
                 validator.validate!(hash, AppConverter::Job::SCHEMA)
-
-                # Check if the app exists
-                result = AppConverter::Appliance.new(hash['appliance_id']).info
-                if Collection.is_error?(result)
-                    return result
-                end
-
-                hash['creation_time'] = Time.now.to_i
-
-                object_id = collection.insert(hash, {:w => 1})
             rescue Validator::ParseException
                 return [400, {"message" => $!.message}]
+            end
+
+            # Check if the app exists
+            result = AppConverter::Appliance.new(hash['appliance_id']).info
+            if Collection.is_error?(result)
+                return result
+            end
+
+            hash['creation_time'] = Time.now.to_i
+
+            begin
+                object_id = collection.insert(hash, {:w => 1})
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
@@ -128,9 +131,14 @@ module AppConverter
 
         def initialize(job_id)
             @object_id = job_id
-            @data = {"_id" => {"$oid" => job_id}}
+            @data = {}
         end
 
+        # Cancel the job. If the job is in a worker node (worker_host!=nil)
+        #   the job is tagged to be canceled by the worker, otherwise the
+        #   state of the job is set to deleted
+        #
+        # @return [Integer, Hash] status code and hash with the info
         def cancel
             begin
                 job = self.info
@@ -138,10 +146,10 @@ module AppConverter
                     return job
                 end
 
-                if job[1]['worker_host'].nil?
-                    status = 'cancelling'
-                else
+                if @data['worker_host'].nil?
                     status = 'deleted'
+                else
+                    status = 'cancelling'
                 end
 
                 JobCollection.collection.update({
@@ -151,6 +159,9 @@ module AppConverter
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
+
+            # TODO return code
+            return [202, {}]
         end
 
         def delete
@@ -165,6 +176,9 @@ module AppConverter
             return [200, {}]
         end
 
+        # Query the database to retrieve the information of the Job
+        #
+        # @return [Integer, Hash] status code and hash with the info
         def info
             begin
                 @data = JobCollection.collection.find_one(
@@ -177,11 +191,41 @@ module AppConverter
                 return [404, {"message" => "Job not found"}]
             end
 
-            return [200, @data]
+            return [200, self.to_hash]
         end
 
-        def to_hash
-            return @data
+        def update(opts)
+            # TODO check opts keys
+            if @data.empty?
+                info_result = self.info
+                if Collection.is_error?(info_result)
+                    return info_result
+                end
+            end
+
+            app = AppConverter::Appliance.new(@data['appliance_id'])
+            app_hash_update = {}
+            case opts['status']
+            when 'in-progress'
+                case @data['name']
+                when 'upload'
+                    app_hash_update['status'] = 'downloading'
+                end
+            end
+
+            app_update_result = app.update(app_hash_update)
+            if Collection.is_error?(app_update_result)
+                return app_update_result
+            end
+
+            @data = @data.deep_merge(opts)
+            JobCollection.collection.update(
+                    {:_id => Collection.str_to_object_id(@object_id)},
+                    @data)
+
+            # TODO check if update == success
+
+            return [200, {}]
         end
     end
 end
