@@ -32,6 +32,10 @@ module AppConverter
             end
         end
 
+        def object_id
+            @data['_id'].to_s
+        end
+
         protected
 
         # Turn a string ID representation into a BSON::ObjectId
@@ -54,10 +58,12 @@ module AppConverter
             if result.is_a?(Array)
                 if [200, 201, 204].include?(result[0])
                     return false
+                else
+                    return true
                 end
             end
 
-            return true
+            return false
         end
     end
 
@@ -92,6 +98,10 @@ module AppConverter
         # @return [true, false]
         def empty?
             return @data.empty?
+        end
+
+        def size
+            return @data.size
         end
 
         # Returns de @data array

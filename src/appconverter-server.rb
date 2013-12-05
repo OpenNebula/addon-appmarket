@@ -85,8 +85,12 @@ get '/job' do
 end
 
 get '/job/:id' do
-    job = AppConverter::Job.new(params[:id])
-    @tmp_response = job.info
+    job = AppConverter::JobCollection.get(params[:id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        @tmp_response = [200, job.to_hash]
+    end
 end
 
 post '/job' do
@@ -94,24 +98,41 @@ post '/job' do
 end
 
 delete '/job/:id' do
-    job = AppConverter::Job.new(params[:id])
-    @tmp_response = job.delete
+    job = AppConverter::JobCollection.get(params[:id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        @tmp_response = job.delete
+    end
 end
 
 ###############################################################################
 # Worker
 ###############################################################################
 
-get '/worker/:id/job' do
+get '/worker/:worker_id/job' do
     job_selector = {}
-    job_selector['worker_host'] = params[:id]
+    job_selector['worker_host'] = params[:worker_id]
     job_selector['status'] = params[:status] if params[:status]
 
     job_collection = AppConverter::JobCollection.new(job_selector, {})
     @tmp_response = job_collection.info
 end
 
-get '/worker/:id/nextjob' do
+post '/worker/:worker_id/job/:job_id/:callback' do
+    job = AppConverter::JobCollection.get(params[:job_id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        if AppConverter::Job::CALLBACKS.include?(params[:callback])
+            @tmp_response = job.send("cb_#{params[:callback]}".to_sym, params[:worker_id])
+        else
+            @tmp_response = [403, "Callback #{params[:callback]} not supported"]
+        end
+    end
+end
+
+get '/worker/:worker_id/nextjob' do
     # Retrieve the apps with no running jobs
     app_selector = {
         'status' => { '$in' => ['init', 'ready'] }
@@ -150,10 +171,7 @@ get '/worker/:id/nextjob' do
                 @tmp_response = [404, {'message' => "There is no job available"}]
             else
                 next_job = job_collection[0]
-                next_job.update({
-                    'status' => 'in-progress',
-                    'worker_host' => params[:id],
-                    'start_time' => Time.now.to_i})
+                next_job.start(params[:worker_id])
                 @tmp_response = [200, next_job.to_hash]
             end
         end
@@ -170,8 +188,12 @@ get '/appliance' do
 end
 
 get '/appliance/:id' do
-    app = AppConverter::Appliance.new(params[:id])
-    @tmp_response = app.info
+    app = AppConverter::AppCollection.get(params[:id])
+    if AppConverter::Collection.is_error?(app)
+        @tmp_response = app
+    else
+        @tmp_response = [200, app.to_hash]
+    end
 end
 
 post '/appliance' do
@@ -179,6 +201,10 @@ post '/appliance' do
 end
 
 delete '/appliance/:id' do
-    app = AppConverter::Appliance.new(params[:id])
-    @tmp_response = app.delete
+    app = AppConverter::AppCollection.get(params[:id])
+    if AppConverter::Collection.is_error?(app)
+        @tmp_response = app
+    else
+        @tmp_response = app.delete
+    end
 end

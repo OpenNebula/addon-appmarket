@@ -53,21 +53,41 @@ module AppConverter
                 return [400, {"message" => "already exists"}]
             end
 
+            app = AppCollection.get(object_id.to_s)
+
             # Create a new Job to upload the new appliance
             job_hash = {
                 'name' => 'upload',
-                'appliance_id' => object_id.to_s
+                'appliance_id' => app.object_id
             }
 
             AppConverter::JobCollection.create(job_hash)
 
-            app = Appliance.new(object_id.to_s)
             return [201, app.to_hash]
         end
 
+        def self.get(object_id)
+            begin
+                data = collection.find_one(
+                    :_id => Collection.str_to_object_id(object_id))
+            rescue BSON::InvalidObjectId
+                return [404, {"message" => $!.message}]
+            end
+
+            if data.nil?
+                return [404, {"message" => "Appliance not found"}]
+            end
+
+            return self.factory(data)
+        end
+
         # Default Factory Method for the Pools
+        def self.factory(pelem)
+            Appliance.new(pelem)
+        end
+
         def factory(pelem)
-            AppConverter::Appliance.new(pelem["_id"].to_s)
+            AppCollection.factory(pelem)
         end
     end
 
@@ -89,16 +109,15 @@ module AppConverter
             }
         }
 
-        def initialize(app_id)
-            @object_id = app_id
-            @data = {}
+        def initialize(data)
+            @data = data
         end
 
         def delete
             begin
                 # Remove associated jobs
                 job_selector = {
-                    'appliance_id' => @object_id
+                    'appliance_id' => self.object_id
                 }
 
                 job_collection = AppConverter::JobCollection.new(job_selector)
@@ -107,8 +126,9 @@ module AppConverter
                     job.cancel
                 }
 
+                # TODO Keep app until all the jobs are cancelled?
                 AppCollection.collection.remove(
-                    :_id => Collection.str_to_object_id(@object_id))
+                    :_id => Collection.str_to_object_id(self.object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -120,7 +140,7 @@ module AppConverter
         def info
             begin
                 @data = AppCollection.collection.find_one(
-                            :_id => Collection.str_to_object_id(@object_id))
+                            :_id => Collection.str_to_object_id(self.object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -134,16 +154,9 @@ module AppConverter
 
         def update(opts)
             # TODO check opts keys
-            if @data.empty?
-                info_result = self.info
-                if Collection.is_error?(info_result)
-                    return info_result
-                end
-            end
-
             @data = @data.deep_merge(opts)
             AppCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(@object_id)},
+                    {:_id => Collection.str_to_object_id(self.object_id)},
                     @data)
 
             # TODO check if update == success
