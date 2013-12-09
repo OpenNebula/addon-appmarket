@@ -24,6 +24,7 @@ module AppConverter
             return @data[key]
         end
 
+        # @return [Hash] containing the resource information
         def to_hash
             if @data.empty?
                 return {"_id" => {"$oid" => @object_id}}
@@ -32,6 +33,7 @@ module AppConverter
             end
         end
 
+        # @return [String] object_id string
         def object_id
             @data['_id'].to_s
         end
@@ -68,6 +70,9 @@ module AppConverter
     end
 
     class PoolCollection < Collection
+
+        include Enumerable
+
         def initialize(selector, opts)
             opts[:sort] ||= ['_id', Mongo::ASCENDING]
             @data = []
@@ -82,8 +87,9 @@ module AppConverter
             }
         end
 
-        # Return the an instance obtained calling the factory method of the
-        #   element in the given index
+        # Return the instance obtained calling the factory method of the
+        #   element in the given index. The factory method should be
+        #   implemented by subclasses of PoolCollection
         #
         # @param [Integer] index
         # @return [AppConverter::Collection] It depends on the implemented
@@ -100,6 +106,7 @@ module AppConverter
             return @data.empty?
         end
 
+        # @return [Integer] size of the pool
         def size
             return @data.size
         end

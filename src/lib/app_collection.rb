@@ -21,18 +21,34 @@ module AppConverter
     class AppCollection < PoolCollection
         COLLECTION_NAME = "appliance"
 
+        # Create a new collection, the information is not retrieved untill the
+        #   the info method is called
+        #
+        # @param [Hash] selector a document specifying elements which must
+        #   be present for a document to be included in the result set.
+        # @param [Hash] opts a customizable set of options.
+        #   http://api.mongodb.org/ruby/current/Mongo/Collection.html#find-instance_method
         def initialize(selector={}, opts={})
             super(selector, opts)
             @selector = selector
             @opts = opts
         end
 
+        # Retrieve the pool information form the database. The @selector
+        #   and @opts will be used to filter the information
+        #
+        # @return [Integer, Array] status code and array with the resources
         def info
             @data = AppCollection.collection.find(@selector, @opts).to_a
 
             return [200, self.to_a]
         end
 
+        # Create a new appliance
+        #
+        # @param [Hash] hash containing the values of the resource
+        # @return [Integer, Hash] status code and hash containing the error
+        #   message or the info of the resource
         def self.create(hash)
             validator = Validator::Validator.new(
                 :default_values => true,
@@ -66,6 +82,11 @@ module AppConverter
             return [201, app.to_hash]
         end
 
+        # Retrieve the resource from the database. This method must be use
+        #   to retrieve the resource instead of Appliance.new
+        #
+        # @param [String] object_id id of the resource
+        # @return [AppConverter::Appliance] depends on the factory method
         def self.get(object_id)
             begin
                 data = collection.find_one(
@@ -80,6 +101,8 @@ module AppConverter
 
             return self.factory(data)
         end
+
+        protected
 
         # Default Factory Method for the Pools
         def self.factory(pelem)
@@ -109,10 +132,17 @@ module AppConverter
             }
         }
 
+        # This method should be used only by the factory method, to retrieve
+        #   an existing resource from the database use the AppCollecion.get
+        #   method
         def initialize(data)
             @data = data
         end
 
+        # Delete the appliance from the database and cancel the associated
+        #   jobs of the appliance.
+        #
+        # @return [Integer, Hash] status code and hash with the error message
         def delete
             begin
                 # Remove associated jobs
@@ -137,6 +167,9 @@ module AppConverter
             return [200, {}]
         end
 
+        # Query the database to retrieve the information of the appliance
+        #
+        # @return [Integer, Hash] status code and hash with the info
         def info
             begin
                 @data = AppCollection.collection.find_one(
@@ -152,6 +185,12 @@ module AppConverter
             return [200, self.to_hash]
         end
 
+        # Update the appliance
+        #
+        # @param [Hash] opts Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information
+        # @return [Integer, Hash] status code and hash with the error message
         def update(opts)
             # TODO check opts keys
             @data = @data.deep_merge(opts)

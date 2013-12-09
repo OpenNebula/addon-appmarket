@@ -21,18 +21,34 @@ module AppConverter
     class JobCollection < PoolCollection
         COLLECTION_NAME = "jobs"
 
+        # Create a new collection, the information is not retrieved untill the
+        #   the info method is called
+        #
+        # @param [Hash] selector a document specifying elements which must
+        #   be present for a document to be included in the result set.
+        # @param [Hash] opts a customizable set of options.
+        #   http://api.mongodb.org/ruby/current/Mongo/Collection.html#find-instance_method
         def initialize(selector={}, opts={})
             super(selector, opts)
             @selector = selector
             @opts = opts
         end
 
+        # Retrieve the pool information form the database. The @selector
+        #   and @opts will be used to filter the information
+        #
+        # @return [Integer, Array] status code and array with the resources
         def info
             @data = JobCollection.collection.find(@selector, @opts).to_a
 
             return [200, self.to_a]
         end
 
+        # Create a new Job
+        #
+        # @param [Hash] hash containing the values of the resource
+        # @return [Integer, Hash] status code and hash containing the error
+        #   message or the info of the resource
         def self.create(hash)
             validator = Validator::Validator.new(
                 :default_values => true,
@@ -63,6 +79,11 @@ module AppConverter
             return [201, job.to_hash]
         end
 
+        # Retrieve the resource from the database. This method must be use
+        #   to retrieve the resource instead of Job.new
+        #
+        # @param [String] object_id id of the resource
+        # @return [AppConverter::Job] depends on the factory method
         def self.get(object_id)
             begin
                 data = collection.find_one(
@@ -77,6 +98,8 @@ module AppConverter
 
             return self.factory(data)
         end
+
+        protected
 
         # Default Factory Method for the Pools
         def self.factory(pelem)
@@ -157,15 +180,18 @@ module AppConverter
             }
         }
 
+        # This method should be used only by the factory method, to retrieve
+        #   an existing resource from the database use the JobCollection.get
+        #   method
         def initialize(data)
             @data = data
         end
 
         # Cancel the job. If the job is in a worker node (worker_host!=nil)
         #   the job is tagged to be canceled by the worker, otherwise the
-        #   state of the job is set to deleted
+        #   state of the job is set to cancelled
         #
-        # @return [Integer, Hash] status code and hash with the info
+        # @return [Integer, Hash] status code and hash with the error message
         def cancel
             begin
                 if @data['worker_host'].nil?
@@ -186,6 +212,9 @@ module AppConverter
             return [202, {}]
         end
 
+        # Delete the job from the database
+        #
+        # @return [Integer, Hash] status code and hash with the error message
         def delete
             begin
                 JobCollection.collection.remove(
@@ -216,6 +245,12 @@ module AppConverter
             return [200, self.to_hash]
         end
 
+        # Update the job
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information
+        # @return [Integer, Hash] status code and hash with the error message
         def update(job_hash)
             @data = @data.deep_merge(job_hash)
             JobCollection.collection.update(
@@ -227,6 +262,116 @@ module AppConverter
             return [200, {}]
         end
 
+        protected
+
+        # Start the job.
+        #   This method must be implemented by the subclass. This method
+        #   defines the values that all the jobs will set when started
+        #   and will be merged with the values provided by the subclass
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def start(job_hash, app_hash={})
+            job_hash_update = {
+                'status' => 'in-progress',
+                'start_time' => Time.now.to_i
+            }.deep_merge(job_hash)
+
+            app_hash_update = {}.deep_merge(app_hash)
+
+            self.update_from_callback(job_hash_update, app_hash_update)
+        end
+
+        # Done callback from the worker.
+        #   This method must be implemented by the subclass. This method
+        #   defines the values that all the jobs will set in this callback
+        #   and will be merged with the values provided by the subclass
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_done(job_hash, app_hash={})
+            job_hash_update = {
+                'status' => 'done',
+                'end_time' => Time.now.to_i
+            }.deep_merge(job_hash)
+
+            app_hash_update = {
+                'status' => 'ready'
+            }.deep_merge(app_hash)
+
+            self.update_from_callback(job_hash_update, app_hash_update)
+        end
+
+        # Error callback from the worker.
+        #   This method must be implemented by the subclass. This method
+        #   defines the values that all the jobs will set in this callback
+        #   and will be merged with the values provided by the subclass
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_error(job_hash, app_hash={})
+            job_hash_update = {
+                'status' => 'error',
+                'end_time' => Time.now.to_i
+            }.deep_merge(job_hash)
+
+            app_hash_update = {
+                'status' => 'ready'
+            }.deep_merge(app_hash)
+
+            self.update_from_callback(job_hash_update, app_hash_update)
+        end
+
+        # Cancel callback from the worker.
+        #   This method must be implemented by the subclass. This method
+        #   defines the values that all the jobs will set in this callback
+        #   and will be merged with the values provided by the subclass
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_cancel(job_hash, app_hash={})
+            job_hash_update = {
+                'status' => 'cancelled',
+                'end_time' => Time.now.to_i
+            }.deep_merge(job_hash)
+
+            app_hash_update = {
+                'status' => 'ready'
+            }.deep_merge(app_hash)
+
+            self.update_from_callback(job_hash_update, app_hash_update)
+        end
+
+        # Update the information of the job and the appliance with the values
+        #   provided by the callbacks
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
         def update_from_callback(job_hash_update, app_hash_update={})
             if !app_hash_update.empty?
                 app = AppConverter::AppCollection.get(@data['appliance_id'])
@@ -242,63 +387,22 @@ module AppConverter
 
             self.update(job_hash_update)
         end
-
-        def start(job_hash, app_hash={})
-            job_hash_update = {
-                'status' => 'in-progress',
-                'start_time' => Time.now.to_i
-            }.deep_merge(job_hash)
-
-            app_hash_update = {}.deep_merge(app_hash)
-
-            self.update_from_callback(job_hash_update, app_hash_update)
-        end
-
-        def cb_done(job_hash, app_hash={})
-            job_hash_update = {
-                'status' => 'done',
-                'end_time' => Time.now.to_i
-            }.deep_merge(job_hash)
-
-            app_hash_update = {
-                'status' => 'ready'
-            }.deep_merge(app_hash)
-
-            self.update_from_callback(job_hash_update, app_hash_update)
-        end
-
-        def cb_error(job_hash, app_hash={})
-            job_hash_update = {
-                'status' => 'error',
-                'end_time' => Time.now.to_i
-            }.deep_merge(job_hash)
-
-            app_hash_update = {
-                'status' => 'ready'
-            }.deep_merge(app_hash)
-
-            self.update_from_callback(job_hash_update, app_hash_update)
-        end
-
-        def cb_cancel(job_hash, app_hash={})
-            job_hash_update = {
-                'status' => 'cancelled',
-                'end_time' => Time.now.to_i
-            }.deep_merge(job_hash)
-
-            app_hash_update = {
-                'status' => 'ready'
-            }.deep_merge(app_hash)
-
-            self.update_from_callback(job_hash_update, app_hash_update)
-        end
     end
 
     class UploadJob < Job
+        # This method should be used only by the factory method, to retrieve
+        #   an existing resource from the database use the JobCollection.get
+        #   method
         def initialize(data)
             super(data)
         end
 
+        # Start the job
+        #   This method defines the specific values that a UploadJob defines
+        #   when started The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def start(worker_host)
             job_hash = {
                 'worker_host' => worker_host
@@ -311,6 +415,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Done callback
+        #   This method defines the specific values that a UploadJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_done(worker_host)
             job_hash = {}
             app_hash = {}
@@ -318,6 +428,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Error callback
+        #   This method defines the specific values that a UploadJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_error(worker_host)
             job_hash = {}
             app_hash = {}
@@ -325,6 +441,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Cancel callback
+        #   This method defines the specific values that a UploadJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_cancel(worker_host)
             job_hash = {}
             app_hash = {}
@@ -334,10 +456,19 @@ module AppConverter
     end
 
     class ConvertJob < Job
+        # This method should be used only by the factory method, to retrieve
+        #   an existing resource from the database use the JobCollection.get
+        #   method
         def initialize(data)
             super(data)
         end
 
+        # Start the job
+        #   This method defines the specific values that a ConvertJob defines
+        #   when started. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def start(worker_host)
             job_hash = {
                 'worker_host' => worker_host
@@ -350,6 +481,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Done callback
+        #   This method defines the specific values that a ConvertJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_done(worker_host)
             job_hash = {}
             app_hash = {}
@@ -357,6 +494,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Error callback
+        #   This method defines the specific values that a ConvertJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_error(worker_host)
             job_hash = {}
             app_hash = {}
@@ -364,6 +507,12 @@ module AppConverter
             super(job_hash, app_hash)
         end
 
+        # Cancel callback
+        #   This method defines the specific values that a ConvertJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @return [Integer, Hash] status code and hash with the error message
         def cb_cancel(worker_host)
             job_hash = {}
             app_hash = {}
