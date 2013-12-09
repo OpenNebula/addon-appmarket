@@ -18,14 +18,14 @@
 
 if [ -z "$ONE_LOCATION" ]; then
     APPCONVERTER_PID=/var/run/one/appconverter-server.pid
-    APPCONVERTER_SERVER=/usr/lib/one/ruby/appconverter/controllers/appconverter-server.rb
+    APPCONVERTER_SERVER=/usr/lib/one/ruby/appconverter/appconverter-server.rb
     APPCONVERTER_LOCK_FILE=/var/lock/one/.appconverter.lock
     APPCONVERTER_LOG=/var/log/one/appconverter-server.log
     APPCONVERTER_LOG_ERROR=/var/log/one/appconverter-server.error
     APPCONVERTER_ETC=/etc/one/appconverter-server.conf
 else
     APPCONVERTER_PID=$ONE_LOCATION/var/appconverter-server.pid
-    APPCONVERTER_SERVER=$ONE_LOCATION/lib/ruby/appconverter/controllers/appconverter-server.rb
+    APPCONVERTER_SERVER=$ONE_LOCATION/lib/ruby/appconverter/appconverter-server.rb
     APPCONVERTER_LOCK_FILE=$ONE_LOCATION/var/.appconverter.lock
     APPCONVERTER_LOG=$ONE_LOCATION/var/appconverter-server.log
     APPCONVERTER_LOG_ERROR=$ONE_LOCATION/var/appconverter-server.error

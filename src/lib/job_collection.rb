@@ -362,6 +362,8 @@ module AppConverter
             self.update_from_callback(job_hash_update, app_hash_update)
         end
 
+        # TODO Update callback
+
         # Update the information of the job and the appliance with the values
         #   provided by the callbacks
         #
@@ -453,6 +455,8 @@ module AppConverter
 
             super(job_hash, app_hash)
         end
+
+        # TODO Update callback
     end
 
     class ConvertJob < Job
@@ -519,5 +523,7 @@ module AppConverter
 
             super(job_hash, app_hash)
         end
+
+        # TODO Update callback
     end
 end

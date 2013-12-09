@@ -42,7 +42,7 @@ end
 APPCONVERTER_LOG     = LOG_LOCATION + "/appconverter-server.log"
 CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-server.conf"
 
-$: << RUBY_LIB_LOCATION
+$: << RUBY_LIB_LOCATION + '/appconverter'
 
 ###############################################################################
 # Gems
@@ -57,8 +57,8 @@ require 'mongo'
 ###############################################################################
 require 'lib/job_collection'
 require 'lib/app_collection'
-require 'helpers/parser'
-require 'helpers/validator'
+require 'lib/parser'
+require 'lib/validator'
 
 ###############################################################################
 # Server Configuration. This is called when the server is started
@@ -70,6 +70,9 @@ configure do
         STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
         exit 1
     end
+
+    set :bind, CONF[:host]
+    set :port, CONF[:port]
 
     DB = Mongo::Connection.new(CONF['db_host'], CONF['db_port']).db(APPCONVERTER_DB_NAME)
 end
@@ -126,6 +129,8 @@ delete '/job/:id' do
         @tmp_response = job.delete
     end
 end
+
+# TODO Update job
 
 ###############################################################################
 # Worker
@@ -237,3 +242,5 @@ delete '/appliance/:id' do
         @tmp_response = app.delete
     end
 end
+
+# TODO Update appliance

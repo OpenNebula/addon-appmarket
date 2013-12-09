@@ -64,17 +64,17 @@ done
 export ROOT
 
 if [ -z "$ROOT" ]; then
-    LIB_LOCATION="/usr/lib/one/ruby/oneapps"
+    LIB_LOCATION="/usr/lib/one/ruby"
     BIN_LOCATION="/usr/bin"
-    PACKAGES_LOCATION="/usr/share/one/oneapps"
-    SHARE_LOCATION="/usr/share/one/oneapps"
+    PACKAGES_LOCATION="/usr/share/one"
+    SHARE_LOCATION="/usr/share/one"
     ETC_LOCATION="/etc/one"
     SUNSTONE_LOCATION="/usr/lib/one/sunstone"
 else
-    LIB_LOCATION="$ROOT/lib/ruby/oneapps"
+    LIB_LOCATION="$ROOT/lib/ruby"
     BIN_LOCATION="$ROOT/bin"
-    PACKAGES_LOCATION="$ROOT/share/oneapps"
-    SHARE_LOCATION="$ROOT/share/oneapps"
+    PACKAGES_LOCATION="$ROOT/share"
+    SHARE_LOCATION="$ROOT/share"
     ETC_LOCATION="$ROOT/etc"
     SUNSTONE_LOCATION="$ROOT/lib/sunstone"
 fi
@@ -134,7 +134,7 @@ copy_files "bin/*" "$BIN_LOCATION"
 copy_files "lib" "$LIB_LOCATION/appconverter"
 
 # files
-copy_files "helpers/* config.ru Gemfile Gemfile.lock" "$LIB_LOCATION/appconverter"
+copy_files "appconverter-server.rb config.ru Gemfile Gemfile.lock" "$LIB_LOCATION/appconverter"
 
 # Sunstone
 #copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
