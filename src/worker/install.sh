@@ -98,7 +98,7 @@ copy_files() {
     mkdir -p $DST
 
     for f in $FILES; do
-        do_file src/$f $DST
+        do_file $f $DST
     done
 }
 
@@ -119,7 +119,6 @@ change_ownership() {
 }
 
 (
-cd src
 
 ## Client files
 #copy_files "client/lib/*" "$LIB_LOCATION/market"
@@ -131,10 +130,10 @@ cd src
 copy_files "bin/*" "$BIN_LOCATION"
 
 # dirs containing files
-copy_files "lib" "$LIB_LOCATION/appconverter"
+copy_files "drivers" "$LIB_LOCATION/appconverter"
 
 # files
-copy_files "appconverter-server.rb config.ru Gemfile Gemfile.lock" "$LIB_LOCATION/appconverter"
+copy_files "appconverter-worker.rb" "$LIB_LOCATION/appconverter"
 
 # Sunstone
 #copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
@@ -146,7 +145,7 @@ copy_files "appconverter-server.rb config.ru Gemfile Gemfile.lock" "$LIB_LOCATIO
 
 # Do not link the ETC files
 LINK="no"
-copy_files "etc/appconverter-server.conf" "$ETC_LOCATION"
+copy_files "etc/appconverter-worker.conf" "$ETC_LOCATION"
 )
 
 #if [ -z "$NOPOSTINSTALL" ]; then

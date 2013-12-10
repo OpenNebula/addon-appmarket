@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # -------------------------------------------------------------------------- #
 # Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs        #
 #                                                                            #
@@ -39,7 +38,7 @@ end
 
 CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
 
-$: << RUBY_LIB_LOCATION
+$: << RUBY_LIB_LOCATION + '/appconverter'
 
 ###############################################################################
 # Gems
@@ -62,11 +61,17 @@ rescue Exception => e
     exit 1
 end
 
-while true do
+["INT", "TERM"].each { |s|
+    trap(s) do
+        $exit = true
+    end
+}
+
+while !$exit do
     client = AppConverter::Client.new
 
     # Get next job
-    response = client.get('/worker/' + CONF[:worker_name] + '/nextjob')
+    response = client.get_next_job(CONF[:worker_name])
     if AppConverter::CloudClient.is_error?(response)
         puts response.message
     else
@@ -75,7 +80,7 @@ while true do
         # TODO check if name script exists
         command = [
             DRIVERS_LOCATION + '/' + json_hash['name'],
-            client.url + '/worker/' + CONF[:worker_name] + '/job/' + job_hash['_id']['$oid'],
+            client.callback_url(CONF[:worker_name], job_hash['_id']['$oid']),
             response.message].join(' ')
 
         stdin, stdout, stderr = Open3.popen3(command)
@@ -86,5 +91,6 @@ while true do
 
     # TODO Check if jobs are still in-progress
 
+    STDOUT.flush
     sleep CONF[:interval]
 end

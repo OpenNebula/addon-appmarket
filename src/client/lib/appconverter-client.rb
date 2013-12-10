@@ -127,6 +127,40 @@ module AppConverter
             end
         end
 
+        def create_job(body)
+            post('/job', body)
+        end
+
+        def get_jobs
+            get('/job')
+        end
+
+        def get_job(job_id)
+            get('/job/' + job_id)
+        end
+
+        def get_next_job(worker_id)
+            get('/worker' + worker_id + '/nextjob')
+        end
+
+        def callback_url(worker_id, job_id)
+            return @uri.to_s + '/worker/' + worker_id + '/job/' + job_id
+        end
+
+        def create_appliance(body)
+            post('/appliance', body)
+        end
+
+        def get_appliances
+            get('/appliance')
+        end
+
+        def get_appliance(appliance_id)
+            get('/appliance/' + appliance_id)
+        end
+
+        private
+
         def get(path)
             req = Net::HTTP::Proxy(@host, @port)::Get.new(path)
 
@@ -152,8 +186,6 @@ module AppConverter
 
             do_request(req)
         end
-
-        private
 
         def do_request(req)
             #if @username && @password

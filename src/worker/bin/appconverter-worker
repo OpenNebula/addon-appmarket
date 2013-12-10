@@ -1,0 +1,122 @@
+#! /bin/sh
+
+# -------------------------------------------------------------------------- #
+# Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs        #
+#                                                                            #
+# Licensed under the Apache License, Version 2.0 (the "License"); you may    #
+# not use this file except in compliance with the License. You may obtain    #
+# a copy of the License at                                                   #
+#                                                                            #
+# http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                            #
+# Unless required by applicable law or agreed to in writing, software        #
+# distributed under the License is distributed on an "AS IS" BASIS,          #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   #
+# See the License for the specific language governing permissions and        #
+# limitations under the License.                                             #
+#--------------------------------------------------------------------------- #
+
+if [ -z "$ONE_LOCATION" ]; then
+    WORKER_PID=/var/run/one/appconverter-worker.pid
+    WORKER_SERVER=/usr/lib/one/ruby/appconverter/appconverter-worker.rb
+    WORKER_LOCK_FILE=/var/lock/one/.appconverter_worker.lock
+    WORKER_LOG=/var/log/one/appconverter-worker.log
+    WORKER_LOG_ERROR=/var/log/one/appconverter-worker.error
+    WORKER_ETC=/etc/one/appconverter-worker.conf
+else
+    WORKER_PID=$ONE_LOCATION/var/appconverter-worker.pid
+    WORKER_SERVER=$ONE_LOCATION/lib/ruby/appconverter/appconverter-worker.rb
+    WORKER_LOCK_FILE=$ONE_LOCATION/var/.appconverter_worker.lock
+    WORKER_LOG=$ONE_LOCATION/var/appconverter-worker.log
+    WORKER_LOG_ERROR=$ONE_LOCATION/var/appconverter-worker.error
+    WORKER_ETC=$ONE_LOCATION/etc/appconverter-worker.conf
+fi
+
+setup()
+{
+  if [ -f $WORKER_LOCK_FILE ]; then
+    if [ -f  $WORKER_PID ]; then
+      WORKERPID=`cat $WORKER_PID`
+      ps $WORKERPID > /dev/null 2>&1
+      if [ $? -eq 0 ]; then
+        echo "WORKER Server is still running (PID:$WORKERPID). Please try 'appconverter-worker stop' first."
+        exit 1
+      fi
+    fi
+    echo "Stale .lock detected. Erasing it."
+    rm $WORKER_LOCK_FILE
+  fi
+}
+
+start()
+{
+  if [ ! -f "$WORKER_SERVER" ]; then
+    echo "Cannot find $WORKER_SERVER."
+    exit 1
+  fi
+
+  touch $WORKER_LOCK_FILE
+
+  # Start the appconverter-worker daemon
+  ruby $WORKER_SERVER >$WORKER_LOG 2>$WORKER_LOG_ERROR &
+
+  LASTRC=$?
+  LASTPID=$!
+
+  if [ $LASTRC -ne 0 ]; then
+        echo "Error executing appconverter-worker."
+        echo "Check $WORKER_LOG for more information"
+    exit 1
+  else
+    echo $LASTPID > $WORKER_PID
+  fi
+
+  sleep 2
+  ps $LASTPID > /dev/null 2>&1
+
+  if [ $? -ne 0 ]; then
+        echo "Error executing appconverter-worker."
+        echo "Check $WORKER_LOG_ERROR or $WORKER_LOG for more information"
+    exit 1
+  fi
+
+  echo "appconverter-worker started"
+}
+
+#
+# Function that stops the daemon/service
+#
+stop()
+{
+  if [ ! -f $WORKER_PID ]; then
+    echo "Couldn't find appconverter-worker process pid."
+    exit 1
+  fi
+
+  # Kill the appconverter-worker daemon
+
+  kill -INT `cat $WORKER_PID` > /dev/null 2>&1
+
+  # Remove pid files
+  rm -f $WORKER_PID > /dev/null 2>&1
+  rm -f $WORKER_LOCK_FILE &> /dev/null
+
+  echo "appconverter-worker stopped"
+}
+
+
+case "$1" in
+  start)
+  setup
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  *)
+  echo "Usage: appconverter-worker {start|stop}" >&2
+  exit 3
+  ;;
+esac
+
+

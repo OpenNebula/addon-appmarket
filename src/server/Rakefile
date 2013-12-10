@@ -42,4 +42,7 @@ task :clean do
     Mongo::Connection.new(CONF['db_host'], CONF['db_port']).drop_database(APPCONVERTER_DB_NAME)
 end
 
-task :test => [:clean, :spec]
+task :test => [
+    :clean,
+    :spec
+]
