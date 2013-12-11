@@ -15,18 +15,18 @@
 //------------------------------------------------------------------------- //
 
 /* Marketpplace tab plugin */
-var dataTable_appconverter_appliances;
-var $create_converter_appliance_dialog;
+var dataTable_appconverter_jobs;
+var $create_converter_job_dialog;
 
-var Appliance = {
-    "resource" : "APPLIANCE",
-    "path" : "appconverter/appliance",
+var Job = {
+    "resource" : "JOB",
+    "path" : "appconverter/job",
 
     "create": function(params){
-        OpenNebula.Action.create(params, Appliance.resource, Appliance.path);
+        OpenNebula.Action.create(params, Job.resource, Job.path);
     },
     "show" : function(params){
-        OpenNebula.Action.show(params,Appliance.resource, false, Appliance.path);
+        OpenNebula.Action.show(params,Job.resource, false, Job.path);
     },
     "list" : function(params){
         //Custom list request function, since the contents do not come
@@ -34,10 +34,10 @@ var Appliance = {
         var callback = params.success;
         var callback_error = params.error;
         var timeout = params.timeout || false;
-        var request = OpenNebula.Helper.request('APPLIANCE','list');
+        var request = OpenNebula.Helper.request('JOB','list');
 
         $.ajax({
-            url: Appliance.path,
+            url: Job.path,
             type: 'GET',
             data: {timeout: timeout},
             dataType: "json",
@@ -51,64 +51,64 @@ var Appliance = {
         });
     }
 }
-var appconverter_appliance_actions = {
-    "Appliance.create" : {
+var appconverter_job_actions = {
+    "Job.create" : {
         type: "create",
-        call: Appliance.create,
-        callback: addConverterApplianceElement,
+        call: Job.create,
+        callback: addConverterJobElement,
         error: onError,
         notify:true
     },
-    "Appliance.create_dialog" : {
+    "Job.create_dialog" : {
         type : "custom",
-        call: popUpCreateConverterApplianceialog
+        call: popUpCreateConverterJobialog
     },
-    "Appliance.list" : {
+    "Job.list" : {
         type: "list",
-        call: Appliance.list,
+        call: Job.list,
         callback: function(req,res){
-            $("#appconverter-appliances #error_message").hide();
-            updateView(res,dataTable_appconverter_appliances);
+            $("#appconverter-jobs #error_message").hide();
+            updateView(res,dataTable_appconverter_jobs);
         },
         error: function(request, error_json) {
-            onError(request, error_json, $("#appconverter-appliances #error_message"));
+            onError(request, error_json, $("#appconverter-jobs #error_message"));
         }
     },
-    "Appliance.refresh" : {
+    "Job.refresh" : {
         type: "custom",
         call: function () {
-            waitingNodes(dataTable_appconverter_appliances);
-            Sunstone.runAction('Appliance.list');
+            waitingNodes(dataTable_appconverter_jobs);
+            Sunstone.runAction('Job.list');
         }
     },
-    "Appliance.showinfo" : {
+    "Job.showinfo" : {
         type: "single",
-        call: Appliance.show,
-        callback: updateApplianceInfo,
+        call: Job.show,
+        callback: updateJobInfo,
         error: onError
     }
 }
 
-var appconverter_appliance_buttons = {
-    "Appliance.refresh" : {
+var appconverter_job_buttons = {
+    "Job.refresh" : {
         type: "action",
         layout: "refresh",
         alwaysActive: true
     },
-    "Appliance.create_dialog" : {
+    "Job.create_dialog" : {
         type: "create_dialog",
         layout: "create"
     }
 };
 
-var appconverter_appliance_tab_content = '\
+var appconverter_job_tab_content = '\
 <form class="custom" id="template_form" action="">\
 <div class="panel">\
 <div class="row">\
   <div class="twelve columns">\
     <h4 class="subheader header">\
       <span class="header-resource">\
-       <i class="icon-exchange"></i> '+tr("OpenNebula Appliances")+'\
+       <i class="icon-exchange"></i> '+tr("OpenNebula Jobs")+'\
       </span>\
       <span class="header-info">\
         <span/> <small></small>&emsp;\
@@ -124,7 +124,7 @@ var appconverter_appliance_tab_content = '\
     </div>\
   </div>\
   <div class="three columns">\
-    <input id="appliances_search" type="text" placeholder="'+tr("Search")+'" />\
+    <input id="jobs_search" type="text" placeholder="'+tr("Search")+'" />\
   </div>\
   <br>\
   <br>\
@@ -132,7 +132,7 @@ var appconverter_appliance_tab_content = '\
 </div>\
   <div class="row">\
     <div class="twelve columns">\
-      <table id="datatable_appconverter_appliance" class="datatable twelve">\
+      <table id="datatable_appconverter_job" class="datatable twelve">\
         <thead>\
           <tr>\
             <th class="check"></th>\
@@ -142,7 +142,7 @@ var appconverter_appliance_tab_content = '\
             <th>'+tr("Created")+'</th>\
           </tr>\
         </thead>\
-        <tbody id="tbodyappconverter_appliance">\
+        <tbody id="tbodyappconverter_job">\
         </tbody>\
       </table>\
   </div>\
@@ -152,25 +152,25 @@ var appconverter_appliance_tab_content = '\
 </div>\
 </form>';
 
-var create_appconverter_appliance =
+var create_appconverter_job =
 '<div class="panel">\
-    <h3><small>'+tr("Create Appliance")+'</small></h4>\
+    <h3><small>'+tr("Create Job")+'</small></h4>\
 </div>\
 <div class="reveal-body">\
-    <form id="create_appconverter_appliance" action="" class="custom creation">\
+    <form id="create_appconverter_job" action="" class="custom creation">\
         <dl class="tabs">\
-            <dd class="active"><a href="#acapp_manual">'+tr("Advanced mode")+'</a></dd>\
+            <dd class="active"><a href="#acjob_manual">'+tr("Advanced mode")+'</a></dd>\
         </dl>\
         <ul class="tabs-content">\
-            <li id="acapp_manualTab">\
+            <li id="acjob_manualTab">\
                 <div class="reveal-body">\
                     <textarea id="template" rows="15" style="width:100%;"></textarea>\
                 </div>\
                 <div class="reveal-footer">\
                     <hr>\
                     <div class="form_buttons">\
-                        <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
-                        <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
+                        <button class="button success radius right" id="create_appconverter_job_manual" value="image/create">'+tr("Create")+'</button>\
+                        <button class="button secondary radius" id="create_appconverter_job_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
                         <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
                     </div>\
                 </div>\
@@ -180,50 +180,50 @@ var create_appconverter_appliance =
     </form>\
 </div>';
 
-var appconverter_appliance = {
-    title: "Appliances",
-    content: appconverter_appliance_tab_content,
-    buttons: appconverter_appliance_buttons,
+var appconverter_job = {
+    title: "Jobs",
+    content: appconverter_job_tab_content,
+    buttons: appconverter_job_buttons,
     tabClass: 'subTab',
     parentTab: 'appconverter-dashboard'
 }
 
-Sunstone.addMainTab('appconverter-appliances', appconverter_appliance);
-Sunstone.addActions(appconverter_appliance_actions);
+Sunstone.addMainTab('appconverter-jobs', appconverter_job);
+Sunstone.addActions(appconverter_job_actions);
 
 
 /*
  * INFO PANEL
  */
 
-var appconverter_appliance_info_panel = {
-    "appconverter_appliance_info_tab" : {
-        title: tr("Appliance information"),
+var appconverter_job_info_panel = {
+    "appconverter_job_info_tab" : {
+        title: tr("Job information"),
         content:""
     }
 };
 
-Sunstone.addInfoPanel("appconverter_appliance_info_panel", appconverter_appliance_info_panel);
+Sunstone.addInfoPanel("appconverter_job_info_panel", appconverter_job_info_panel);
 
-function appconverter_applianceElements(){
-    return getSelectedNodes(dataTable_appconverter_appliances);
+function appconverter_jobElements(){
+    return getSelectedNodes(dataTable_appconverter_jobs);
 }
 
 // Callback to add an service_template element
-function addConverterApplianceElement(request, template_json){
-    addElement(template_json,dataTable_appconverter_appliances);
+function addConverterJobElement(request, template_json){
+    addElement(template_json,dataTable_appconverter_jobs);
 }
 
-function updateApplianceInfo(request,app){
+function updateJobInfo(request,app){
     console.log(app)
     var info_tab = {
-        title : tr("Appliance information"),
+        title : tr("Job information"),
         content :
         '<form class="custom"><div class="">\
         <div class="six columns">\
-        <table id="info_appconverter_appliancele" class="twelve datatable extended_table">\
+        <table id="info_appconverter_joble" class="twelve datatable extended_table">\
             <thead>\
-              <tr><th colspan="2">'+tr("Appliance information")+'</th></tr>\
+              <tr><th colspan="2">'+tr("Job information")+'</th></tr>\
             </thead>\
             <tbody>\
               <tr>\
@@ -246,7 +246,7 @@ function updateApplianceInfo(request,app){
         </table>\
         </div>\
         <div class="six columns">\
-        <table id="info_appconverter_appliancele2" class="twelve datatable extended_table">\
+        <table id="info_appconverter_joble2" class="twelve datatable extended_table">\
            <thead>\
              <tr><th colspan="2">'+tr("Description")+'</th></tr>\
            </thead>\
@@ -257,11 +257,11 @@ function updateApplianceInfo(request,app){
     </form>'
     };
 
-    Sunstone.updateInfoPanelTab("appconverter_appliance_info_panel", "appconverter_appliance_info_tab", info_tab);
-    Sunstone.popUpInfoPanel("appconverter_appliance_info_panel", "appconverter-appliances");
+    Sunstone.updateInfoPanelTab("appconverter_job_info_panel", "appconverter_job_info_tab", info_tab);
+    Sunstone.popUpInfoPanel("appconverter_job_info_panel", "appconverter-jobs");
 };
 
- function infoListenerAppliance(dataTable){
+ function infoListenerJob(dataTable){
     $('tbody tr',dataTable).live("click",function(e){
 
     if ($(e.target).is('input') ||
@@ -272,7 +272,7 @@ function updateApplianceInfo(request,app){
     var id =aData["_id"]["$oid"];
     if (!id) return true;
         popDialogLoading();
-        Sunstone.runAction("Appliance.showinfo",id);
+        Sunstone.runAction("Job.showinfo",id);
 
         // Take care of the coloring business
         // (and the checking, do not forget the checking)
@@ -303,51 +303,51 @@ function onlyOneCheckboxListener(dataTable) {
 }
 
 // Prepare the image creation dialog
-function setupCreateConverterApplianceDialog(){
-    dialogs_context.append('<div id="create_converter_appliance_dialog"></div>');
-    $create_converter_appliance_dialog =  $('#create_converter_appliance_dialog',dialogs_context);
+function setupCreateConverterJobDialog(){
+    dialogs_context.append('<div id="create_converter_job_dialog"></div>');
+    $create_converter_job_dialog =  $('#create_converter_job_dialog',dialogs_context);
 
-    var dialog = $create_converter_appliance_dialog;
-    dialog.html(create_appconverter_appliance);
+    var dialog = $create_converter_job_dialog;
+    dialog.html(create_appconverter_job);
 
-    setupTips($create_converter_appliance_dialog);
+    setupTips($create_converter_job_dialog);
 
     dialog.addClass("reveal-modal large max-height");
 
-    $('#create_appconverter_appliance_manual',dialog).click(function(){
+    $('#create_appconverter_job_manual',dialog).click(function(){
         var template=$('#template',dialog).val();
-        Sunstone.runAction("Appliance.create",JSON.parse(template));
-        $create_converter_appliance_dialog.trigger("reveal:close")
+        Sunstone.runAction("Job.create",JSON.parse(template));
+        $create_converter_job_dialog.trigger("reveal:close")
         return false;
     });
 
-    $('#create_appconverter_appliance_reset').click(function(){
-        $create_converter_appliance_dialog.trigger('reveal:close');
-        $create_converter_appliance_dialog.remove();
-        setupCreateConverterApplianceDialog();
+    $('#create_appconverter_job_reset').click(function(){
+        $create_converter_job_dialog.trigger('reveal:close');
+        $create_converter_job_dialog.remove();
+        setupCreateConverterJobDialog();
 
-        popUpCreateConverterApplianceialog();
+        popUpCreateConverterJobialog();
     });
 }
 
-function popUpCreateConverterApplianceialog(){
-    $create_converter_appliance_dialog.reveal();
+function popUpCreateConverterJobialog(){
+    $create_converter_job_dialog.reveal();
 }
 /*
  * Document
  */
 
 $(document).ready(function(){
-    var tab_name = 'appconverter-appliances';
+    var tab_name = 'appconverter-jobs';
 
     if (Config.isTabEnabled(tab_name)) {
-      dataTable_appconverter_appliances = $("#datatable_appconverter_appliance", main_tabs_context).dataTable({
+      dataTable_appconverter_jobs = $("#datatable_appconverter_job", main_tabs_context).dataTable({
           "bSortClasses": true,
           "aoColumns": [
               { "bSortable": false,
                 "mData": function ( o, val, data ) {
                     //we render 1st column as a checkbox directly
-                    return '<input class="check_item" type="checkbox" id="appconverter_appliance_'+
+                    return '<input class="check_item" type="checkbox" id="appconverter_job_'+
                         o['_id']['$oid']+
                         '" name="selected_items" value="'+
                         o['_id']['$oid']+'"/>'
@@ -365,21 +365,21 @@ $(document).ready(function(){
           ]
       });
 
-      $('appliances_search').keyup(function(){
-        dataTable_appconverter_appliances.fnFilter( $(this).val() );
+      $('jobs_search').keyup(function(){
+        dataTable_appconverter_jobs.fnFilter( $(this).val() );
       })
 
-      dataTable_appconverter_appliances.on('draw', function(){
-        recountCheckboxes(dataTable_appconverter_appliances);
+      dataTable_appconverter_jobs.on('draw', function(){
+        recountCheckboxes(dataTable_appconverter_jobs);
       })
 
-      tableCheckboxesListener(dataTable_appconverter_appliances);
-      onlyOneCheckboxListener(dataTable_appconverter_appliances);
+      tableCheckboxesListener(dataTable_appconverter_jobs);
+      onlyOneCheckboxListener(dataTable_appconverter_jobs);
 
-      infoListenerAppliance(dataTable_appconverter_appliances);
+      infoListenerJob(dataTable_appconverter_jobs);
 
-      Sunstone.runAction('Appliance.list');
+      Sunstone.runAction('Job.list');
 
-      setupCreateConverterApplianceDialog();
+      setupCreateConverterJobDialog();
   }
 });

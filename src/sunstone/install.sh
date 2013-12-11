@@ -172,14 +172,38 @@ function add_server() {
 make_backup "$SUNSTONE_VIEWS"
 make_backup "$SUNSTONE_SERVER"
 
+# TODO Add to available tabs in sunstone-views.yaml
+# TODO Add to enabled tabs in VIEW_FILES
+
+add_view "appconverter-dashboard:" \
+"    appconverter-dashboard:
+        panel_tabs:
+        table_columns:
+        actions:"
+
 add_view "appconverter-appliances:" \
 "    appconverter-appliances:
         panel_tabs:
             appconverter_appliance_info_tab: true
         table_columns:
             - 0         # Checkbox
-            #- 1         # ID
+            - 1         # ID
             - 2         # Name
+            - 3         # Status
+            - 4         # Created
+        actions:
+            Appliance.refresh: true"
+
+add_view "appconverter-jobs:" \
+"    appconverter-jobs:
+        panel_tabs:
+            appconverter_job_info_tab: true
+        table_columns:
+            - 0         # Checkbox
+            - 1         # ID
+            - 2         # Name
+            - 3         # Status
+            - 4         # Created
         actions:
             Appliance.refresh: true"
 

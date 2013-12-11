@@ -29,67 +29,45 @@ end
 
 set :appconverter_config, appconverter_conf
 
+
 helpers do
-    def am_build_client
-        AppConverter::Client.new(
+    def appconverter_call(&block)
+        appconverter_client = AppConverter::Client.new(
             settings.appconverter_config[:appconverter_url],
             "Sunstone")
-    end
 
-    def am_format_response(response)
-        if CloudClient::is_error?(response)
-            error = Error.new(response.to_s)
-            [response.code.to_i, error.to_json]
+        resp = block.call(appconverter_client)
+
+        if AppConverter::CloudClient::is_error?(resp)
+            body Error.new(JSON.parse(resp.to_s)['message']).to_json
         else
-            [200, response.body]
+            body resp.body
         end
+
+        status resp.code.to_i
     end
 end
 
 get '/appconverter/job' do
-    client = am_build_client
-
-    response = client.get_jobs
-
-    am_format_response(response)
+    appconverter_call { |client| client.get_jobs }
 end
 
 get '/appconverter/job/:id' do
-    client = am_build_client
-
-    response = client.get_job(params[:id])
-
-    am_format_response(response)
+    appconverter_call { |client| client.get_job(params[:id]) }
 end
 
 post '/appconverter/job' do
-    client = af_build_client
-
-    resp = client.create_job(request.body.read)
-
-    af_format_response(resp)
+    appconverter_call { |client| client.create_job(request.body.read) }
 end
 
 get '/appconverter/appliance' do
-    client = am_build_client
-
-    response = client.get_appliances
-
-    am_format_response(response)
+    appconverter_call { |client| client.get_appliances }
 end
 
 get '/appconverter/appliance/:id' do
-    client = am_build_client
-
-    response = client.get_appliance(params[:id])
-
-    am_format_response(response)
+    appconverter_call { |client| client.get_appliance(params[:id]) }
 end
 
 post '/appconverter/appliance' do
-    client = af_build_client
-
-    resp = client.create_appliance(request.body.read)
-
-    af_format_response(resp)
+    appconverter_call { |client| client.create_appliance(request.body.read) }
 end
