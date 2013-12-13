@@ -36,9 +36,9 @@ else
     end
 end
 
-
-DRIVERS_LOCATION = RUBY_LIB_LOCATION + '/appconverter/drivers'
-CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
+JOBS_DIR           = '/var/tmp'
+DRIVERS_LOCATION   = RUBY_LIB_LOCATION + '/appconverter/drivers'
+CONFIGURATION_FILE = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
 
@@ -50,6 +50,7 @@ require 'yaml'
 require 'json'
 require 'open4'
 require 'base64'
+require 'fileutils'
 
 ###############################################################################
 # Libraries
@@ -79,6 +80,9 @@ while !$exit do
     else
         json_hash = JSON.parse(response.body)
 
+        job_dir = JOBS_DIR + '/' + json_hash['_id']['$oid']
+        FileUtils.mkdir_p(job_dir)
+
         # TODO check if name script exists
         command = [
             DRIVERS_LOCATION + '/' + json_hash['name'],
@@ -86,6 +90,23 @@ while !$exit do
             '"'+Base64.encode64(response.body)+'"'].join(' ')
 
         pid, stdin, stdout, stderr = Open4.popen4(command)
+
+        File.open(job_dir + '/pid', 'w+') { |f|
+            f.write(pid)
+        }
+
+        Thread.new do
+            ignored, status = Process::waitpid2 pid
+
+            if CONF[:debug] == true
+                File.open(job_dir + '/stdout', 'w+') { |f|
+                    f.write(stdout.read.strip)
+                }
+
+                File.open(job_dir + '/stderr', 'w+') { |f|
+                    f.write(stderr.read.strip)
+                }
+        end
     end
 
     # TODO Cancel jobs

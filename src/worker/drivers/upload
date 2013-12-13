@@ -24,6 +24,8 @@ require 'appconverter-client'
 require 'rubygems'
 require 'json'
 
+puts "uploading..."
+
 url = ARGV[0]
 job_json = ARGV[1]
 
@@ -35,5 +37,6 @@ file = File.open(result_path, 'r') {|f|
     client.callback(url, str.strip)
 }
 
+puts "...done"
 
 
