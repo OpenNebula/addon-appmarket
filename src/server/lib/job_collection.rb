@@ -279,6 +279,7 @@ module AppConverter
         def start(job_hash, app_hash={})
             job_hash_update = {
                 'status' => 'in-progress',
+                'progress' => 0,
                 'start_time' => Time.now.to_i
             }.deep_merge(job_hash)
 
@@ -302,6 +303,7 @@ module AppConverter
         def cb_done(job_hash, app_hash={})
             job_hash_update = {
                 'status' => 'done',
+                'progress' => 100,
                 'end_time' => Time.now.to_i
             }.deep_merge(job_hash)
 
@@ -364,6 +366,25 @@ module AppConverter
             self.update_from_callback(job_hash_update, app_hash_update)
         end
 
+        # Update callback from the worker.
+        #   This method must be implemented by the subclass. This method
+        #   defines the values that all the jobs will set in this callback
+        #   and will be merged with the values provided by the subclass
+        #
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_update(job_hash, app_hash={})
+            job_hash_update = {}.deep_merge(job_hash)
+            app_hash_update = {}.deep_merge(app_hash)
+
+            self.update_from_callback(job_hash_update, app_hash_update)
+        end
+
         # TODO Update callback
 
         # Update the information of the job and the appliance with the values
@@ -406,17 +427,23 @@ module AppConverter
         #   when started The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def start(worker_host)
-            job_hash = {
+        def start(worker_host, job_hash, app_hash)
+            job_hash_merged = {
                 'worker_host' => worker_host
-            }
+            }.deep_merge(job_hash)
 
-            app_hash = {
+            app_hash_merged = {
                 'status' => 'downloading'
-            }
+            }.deep_merge(app_hash)
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Done callback
@@ -424,12 +451,18 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_done(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_done(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Error callback
@@ -437,12 +470,18 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_error(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_error(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Cancel callback
@@ -450,15 +489,38 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_cancel(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_cancel(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
-        # TODO Update callback
+        # Update callback
+        #   This method defines the specific values that a UploadJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_update(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
+
+            super(job_hash_merged, app_hash_merged)
+        end
     end
 
     class ConvertJob < Job
@@ -474,17 +536,23 @@ module AppConverter
         #   when started. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def start(worker_host)
-            job_hash = {
+        def start(worker_host, job_hash, app_hash)
+            job_hash_merged = {
                 'worker_host' => worker_host
-            }
+            }.deep_merge(job_hash)
 
-            app_hash = {
+            app_hash_merged = {
                 'status' => 'converting'
-            }
+            }.deep_merge(app_hash)
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Done callback
@@ -492,12 +560,18 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_done(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_done(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Error callback
@@ -505,12 +579,18 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_error(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_error(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
         # Cancel callback
@@ -518,14 +598,37 @@ module AppConverter
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in t, job_hash, app_hashhis hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
         # @return [Integer, Hash] status code and hash with the error message
-        def cb_cancel(worker_host)
-            job_hash = {}
-            app_hash = {}
+        def cb_cancel(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
 
-            super(job_hash, app_hash)
+            super(job_hash_merged, app_hash_merged)
         end
 
-        # TODO Update callback
+        # Update callback
+        #   This method defines the specific values that a UploadJob defines
+        #   for this callback. The common values are defined in the parent class
+        #
+        # @param [String] worker_host
+        # @param [Hash] job_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the job
+        # @param [Hash] app_hash Hash containing the values to be updated.
+        #   The information provided in this hash will be merged with the
+        #   original information of the appliance
+        # @return [Integer, Hash] status code and hash with the error message
+        def cb_update(worker_host, job_hash, app_hash)
+            job_hash_merged = {}.deep_merge(job_hash||{})
+            app_hash_merged = {}.deep_merge(app_hash||{})
+
+            super(job_hash_merged, app_hash_merged)
+        end
     end
 end

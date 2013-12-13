@@ -154,7 +154,13 @@ post '/worker/:worker_host/job/:job_id/:callback' do
         @tmp_response = job
     else
         if AppConverter::Job::CALLBACKS.include?(params[:callback])
-            @tmp_response = job.send("cb_#{params[:callback]}".to_sym, params[:worker_host])
+            # TODO check @body_hash keys
+
+            @tmp_response = job.send(
+                "cb_#{params[:callback]}".to_sym,
+                params[:worker_host],
+                @body_hash ? @body_hash['job'] : {},
+                @body_hash ? @body_hash['appliance'] : {})
         else
             @tmp_response = [403, "Callback #{params[:callback]} not supported"]
         end
@@ -201,7 +207,7 @@ get '/worker/:worker_host/nextjob' do
                 @tmp_response = [404, {'message' => "There is no job available"}]
             else
                 next_job = job_collection.first
-                next_job.start(params[:worker_host])
+                next_job.start(params[:worker_host], {}, {})
                 @tmp_response = [200, next_job.to_hash]
             end
         end

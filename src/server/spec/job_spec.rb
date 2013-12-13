@@ -240,6 +240,7 @@ describe 'getting the associated jobs to be cancelled of a worker and callback c
         body[0]['appliance_id'].should == $new_oid
         body[0]['worker_host'].should == 'firstworker'
         body[0]['creation_time'].should <= Time.now.to_i
+        body[0]['progress'].should == 0
     end
 
     it "send cancel callback" do
@@ -269,7 +270,7 @@ describe 'getting the associated jobs to be cancelled of a worker and callback c
     end
 end
 
-describe 'creating a second appliance and callback done' do
+describe 'creating a second appliance and callback update and done' do
     it "should create a new appliance" do
         post '/appliance', File.read(EXAMPLES_PATH + '/appliance1.json')
         last_response.status.should == 201
@@ -344,6 +345,28 @@ describe 'creating a second appliance and callback done' do
         body['creation_time'].should <= Time.now.to_i
     end
 
+    it "send update callback" do
+        job = {
+            'job' => {
+                'progress' => 50
+            }
+        }
+        post "/worker/firstworker/job/#{$upload_job_id2}/update", job.to_json
+    end
+
+    it "the job should be in done state" do
+        get "/job/#{$upload_job_id2}"
+
+        body = JSON.parse last_response.body
+
+        body['_id']['$oid'].should == $upload_job_id2
+        body['name'].should == 'upload'
+        body['status'].should == 'in-progress'
+        body['progress'].should == 50
+        body['worker_host'].should == 'firstworker'
+        body['creation_time'].should <= Time.now.to_i
+    end
+
     it "send done callback" do
         post "/worker/firstworker/job/#{$upload_job_id2}/done"
     end
@@ -367,6 +390,7 @@ describe 'creating a second appliance and callback done' do
         body['_id']['$oid'].should == $upload_job_id2
         body['name'].should == 'upload'
         body['status'].should == 'done'
+        body['progress'].should == 100
         body['worker_host'].should == 'firstworker'
         body['creation_time'].should <= Time.now.to_i
     end
