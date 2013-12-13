@@ -330,6 +330,7 @@ module AppConverter
                 'end_time' => Time.now.to_i
             }.deep_merge(job_hash)
 
+            # TODO ready? error?
             app_hash_update = {
                 'status' => 'ready'
             }.deep_merge(app_hash)
@@ -355,6 +356,7 @@ module AppConverter
                 'end_time' => Time.now.to_i
             }.deep_merge(job_hash)
 
+            # TODO ready? error?
             app_hash_update = {
                 'status' => 'ready'
             }.deep_merge(app_hash)

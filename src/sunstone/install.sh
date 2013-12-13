@@ -203,7 +203,9 @@ add_view "appconverter-jobs:" \
             - 1         # ID
             - 2         # Name
             - 3         # Status
-            - 4         # Created
+            - 4         # Worker
+            - 5         # Appliance
+            - 6         # Created
         actions:
             Appliance.refresh: true"
 

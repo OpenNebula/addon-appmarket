@@ -108,7 +108,7 @@ var appconverter_appliance_tab_content = '\
   <div class="twelve columns">\
     <h4 class="subheader header">\
       <span class="header-resource">\
-       <i class="icon-exchange"></i> '+tr("OpenNebula Appliances")+'\
+       <i class="icon-exchange"></i> '+tr("AppConverter Appliances")+'\
       </span>\
       <span class="header-info">\
         <span/> <small></small>&emsp;\
@@ -158,24 +158,17 @@ var create_appconverter_appliance =
 </div>\
 <div class="reveal-body">\
     <form id="create_appconverter_appliance" action="" class="custom creation">\
-        <dl class="tabs">\
-            <dd class="active"><a href="#acapp_manual">'+tr("Advanced mode")+'</a></dd>\
-        </dl>\
-        <ul class="tabs-content">\
-            <li id="acapp_manualTab">\
-                <div class="reveal-body">\
-                    <textarea id="template" rows="15" style="width:100%;"></textarea>\
-                </div>\
-                <div class="reveal-footer">\
-                    <hr>\
-                    <div class="form_buttons">\
-                        <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
-                        <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
-                        <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
-                    </div>\
-                </div>\
-            </li>\
-        </ul>\
+        <div class="reveal-body">\
+            <textarea id="template" rows="15" style="width:100%;"></textarea>\
+        </div>\
+        <div class="reveal-footer">\
+            <hr>\
+            <div class="form_buttons">\
+                <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
+                <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
+                <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
+            </div>\
+        </div>\
         <a class="close-reveal-modal">&#215;</a>\
     </form>\
 </div>';
@@ -236,7 +229,7 @@ function updateApplianceInfo(request,app){
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Created") + '</td>\
-                <td class="value_td">'+app['creation_time']+'</td>\
+                <td class="value_td">'+pretty_time(app['creation_time'])+'</td>\
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Status") + '</td>\
@@ -354,10 +347,12 @@ $(document).ready(function(){
                 },
                 "sWidth" : "60px"
               },
-              { "mDataProp": "_id.$oid", "sWidth" : "200px" },
-              { "mDataProp": "name" },
-              { "mDataProp": "status" },
-              { "mDataProp": "creation_time" }
+              { "mData": "_id.$oid", "sWidth" : "200px" },
+              { "mData": "name" },
+              { "mData": "status" },
+              { "mData": function (source) {
+                return pretty_time(source.creation_time)
+              } }
             ],
             "aoColumnDefs": [
               { "bVisible": true, "aTargets": Config.tabTableColumns(tab_name)},
