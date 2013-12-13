@@ -131,8 +131,14 @@ module AppConverter
             post('/job', body)
         end
 
-        def get_jobs
-            get('/job')
+        def get_jobs(filter={})
+            str = filter.collect {|key, value|
+                key + '=' + value
+            }.join('&')
+
+            path = '/job'
+            path += '?' + str if str
+            get(path)
         end
 
         def get_job(job_id)
@@ -141,6 +147,22 @@ module AppConverter
 
         def get_next_job(worker_id)
             get('/worker/' + worker_id + '/nextjob')
+        end
+
+        def get_worker_jobs(worker_id, filter={})
+            str = filter.collect {|key, value|
+                key + '=' + value
+            }.join('&')
+
+            path = '/worker/'
+            path << worker_id
+            path << '/job'
+
+            if str
+                path << '?' + str
+            end
+
+            get(path)
         end
 
         def callback_url(worker_id, job_id)

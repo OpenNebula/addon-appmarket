@@ -98,6 +98,8 @@ while !$exit do
         Thread.new do
             ignored, status = Process::waitpid2 pid
 
+            # TODO if status error update job
+
             if CONF[:debug] == true
                 File.open(job_dir + '/stdout', 'w+') { |f|
                     f.write(stdout.read.strip)
@@ -106,12 +108,28 @@ while !$exit do
                 File.open(job_dir + '/stderr', 'w+') { |f|
                     f.write(stderr.read.strip)
                 }
+            end
         end
+    end
+
+    response = client.get_worker_jobs(CONF[:worker_name], 'status' => 'cancelling')
+    if AppConverter::CloudClient.is_error?(response)
+        puts response.message
+    else
+        json_array = JSON.parse(response.body)
+        json_array.each { |json_hash|
+            # TODO Kill process
+
+            client.callback(
+                client.callback_url(
+                    CONF[:worker_name],
+                    json_hash['_id']['$oid']),
+                'cancel')
+        }
     end
 
     # TODO Cancel jobs
 
-    # TODO Check if jobs are still in-progress
 
     STDOUT.flush
     sleep CONF[:interval]
