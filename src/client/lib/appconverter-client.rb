@@ -140,11 +140,11 @@ module AppConverter
         end
 
         def get_next_job(worker_id)
-            get('/worker' + worker_id + '/nextjob')
+            get('/worker/' + worker_id + '/nextjob')
         end
 
         def callback_url(worker_id, job_id)
-            return @uri.to_s + '/worker/' + worker_id + '/job/' + job_id
+            return @uri.to_s + 'worker/' + worker_id + '/job/' + job_id
         end
 
         def create_appliance(body)
@@ -157,6 +157,13 @@ module AppConverter
 
         def get_appliance(appliance_id)
             get('/appliance/' + appliance_id)
+        end
+
+        def callback(url, result, json_body="")
+            uri = URI.parse(url)
+
+            # TODO Check result is a valid callback
+            post(uri.path + '/' + result, json_body)
         end
 
         private

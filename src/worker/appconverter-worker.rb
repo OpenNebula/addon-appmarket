@@ -36,6 +36,8 @@ else
     end
 end
 
+
+DRIVERS_LOCATION = RUBY_LIB_LOCATION + '/appconverter/drivers'
 CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
@@ -46,8 +48,8 @@ $: << RUBY_LIB_LOCATION + '/appconverter'
 require 'rubygems'
 require 'yaml'
 require 'json'
-require 'open3'
-require 'pp'
+require 'open4'
+require 'base64'
 
 ###############################################################################
 # Libraries
@@ -75,19 +77,18 @@ while !$exit do
     if AppConverter::CloudClient.is_error?(response)
         puts response.message
     else
-        json_hash = JSON.parse(response.message)
+        json_hash = JSON.parse(response.body)
 
         # TODO check if name script exists
         command = [
             DRIVERS_LOCATION + '/' + json_hash['name'],
-            client.callback_url(CONF[:worker_name], job_hash['_id']['$oid']),
-            response.message].join(' ')
+            client.callback_url(CONF[:worker_name], json_hash['_id']['$oid']),
+            '"'+Base64.encode64(response.body)+'"'].join(' ')
 
-        stdin, stdout, stderr = Open3.popen3(command)
+        pid, stdin, stdout, stderr = Open4.popen4(command)
     end
 
     # TODO Cancel jobs
-
 
     # TODO Check if jobs are still in-progress
 

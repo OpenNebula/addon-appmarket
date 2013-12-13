@@ -23,7 +23,7 @@ module AppConverter
       end
 
       def self.generate_body(hash)
-          JSON.pretty_generate hash
+          JSON.generate hash
       end
   end
 end
