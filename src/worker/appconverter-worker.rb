@@ -57,6 +57,58 @@ require 'fileutils'
 ###############################################################################
 require 'appconverter-client'
 
+def get_job_dir(json_hash)
+    return JOBS_DIR + '/' + json_hash['_id']['$oid']
+end
+
+def exec_job(json_hash)
+    job_dir = get_job_dir(json_hash)
+    FileUtils.mkdir_p(job_dir)
+
+    callback_url = $client.callback_url(
+        CONF[:worker_name], json_hash['_id']['$oid'])
+    # TODO check if name script exists
+    command = [
+        DRIVERS_LOCATION + '/' + json_hash['name'],
+        callback_url,
+        '"'+Base64.encode64(json_hash.to_json)+'"'].join(' ')
+
+    pid, stdin, stdout, stderr = Open4.popen4(command)
+
+    File.open(job_dir + '/pid', 'w+') { |f|
+        f.write(pid)
+    }
+
+    Thread.new do
+        ignored, status = Process::waitpid2 pid
+
+        if !status.success?
+            # TODO if a process is cancelled a signal is sent and this method
+            #   will be executed
+            # $client.callback(callback_url, 'error')
+        end
+
+        if CONF[:debug] == true
+            File.open(job_dir + '/stdout', 'w+') { |f|
+                f.write(stdout.read.strip)
+            }
+
+            File.open(job_dir + '/stderr', 'w+') { |f|
+                f.write(stderr.read.strip)
+            }
+        end
+    end
+end
+
+def kill_job(json_hash)
+    pid_to_be_killed = File.read(get_job_dir(json_hash) + '/pid')
+    begin
+        Process.kill("INT", pid_to_be_killed.to_i)
+    rescue Errno::ESRCH
+        puts "PID:#{pid_to_be_killed} No such process"
+    end
+end
+
 begin
     CONF = YAML.load_file(CONFIGURATION_FILE)
 rescue Exception => e
@@ -66,70 +118,40 @@ end
 
 ["INT", "TERM"].each { |s|
     trap(s) do
+        # TODO cancel running jobs?
         $exit = true
     end
 }
 
-while !$exit do
-    client = AppConverter::Client.new
 
-    # Get next job
-    response = client.get_next_job(CONF[:worker_name])
+$client = AppConverter::Client.new
+
+while !$exit do
+    response = $client.get_next_job(CONF[:worker_name])
     if AppConverter::CloudClient.is_error?(response)
         puts response.message
     else
         json_hash = JSON.parse(response.body)
-
-        job_dir = JOBS_DIR + '/' + json_hash['_id']['$oid']
-        FileUtils.mkdir_p(job_dir)
-
-        # TODO check if name script exists
-        command = [
-            DRIVERS_LOCATION + '/' + json_hash['name'],
-            client.callback_url(CONF[:worker_name], json_hash['_id']['$oid']),
-            '"'+Base64.encode64(response.body)+'"'].join(' ')
-
-        pid, stdin, stdout, stderr = Open4.popen4(command)
-
-        File.open(job_dir + '/pid', 'w+') { |f|
-            f.write(pid)
-        }
-
-        Thread.new do
-            ignored, status = Process::waitpid2 pid
-
-            # TODO if status error update job
-
-            if CONF[:debug] == true
-                File.open(job_dir + '/stdout', 'w+') { |f|
-                    f.write(stdout.read.strip)
-                }
-
-                File.open(job_dir + '/stderr', 'w+') { |f|
-                    f.write(stderr.read.strip)
-                }
-            end
-        end
+        exec_job(json_hash)
     end
 
-    response = client.get_worker_jobs(CONF[:worker_name], 'status' => 'cancelling')
+    response = $client.get_worker_jobs(
+        CONF[:worker_name],
+        'status' => 'cancelling')
+
     if AppConverter::CloudClient.is_error?(response)
         puts response.message
     else
         json_array = JSON.parse(response.body)
         json_array.each { |json_hash|
-            # TODO Kill process
+            kill_job(json_hash)
 
-            client.callback(
-                client.callback_url(
-                    CONF[:worker_name],
-                    json_hash['_id']['$oid']),
+            $client.callback(
+                $client.callback_url(
+                    CONF[:worker_name], json_hash['_id']['$oid']),
                 'cancel')
         }
     end
-
-    # TODO Cancel jobs
-
 
     STDOUT.flush
     sleep CONF[:interval]
