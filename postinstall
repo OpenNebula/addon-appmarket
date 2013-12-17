@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# -------------------------------------------------------------------------- #
+# Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs        #
+#                                                                            #
+# Licensed under the Apache License, Version 2.0 (the "License"); you may    #
+# not use this file except in compliance with the License. You may obtain    #
+# a copy of the License at                                                   #
+#                                                                            #
+# http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                            #
+# Unless required by applicable law or agreed to in writing, software        #
+# distributed under the License is distributed on an "AS IS" BASIS,          #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   #
+# See the License for the specific language governing permissions and        #
+# limitations under the License.                                             #
+#--------------------------------------------------------------------------- #
+
+if [ -z "$ROOT" ]; then
+    SUNSTONE_VIEWS_PATH="/etc/one/sunstone-views"
+    SUNSTONE_SERVER="/etc/one/sunstone-server.conf"
+else
+    SUNSTONE_VIEWS_PATH="$ROOT/etc/sunstone-views"
+    SUNSTONE_SERVER="$ROOT/etc/sunstone-server.conf"
+fi
+
+VIEW_FILES="admin.yaml user.yaml"
+
+function print_install_message() {
+cat <<EOT
+AppMarket needs the folowing dependencies to run correctly:
+
+  * MongoDB. To install it
+    you can follow the instructions at
+        http://docs.mongodb.org/manual/installation/
+
+  * ruby and rubygems installed.
+
+  * bundler. To install it
+    you can issue:
+        # gem install bundler
+
+  * Required gems. To install the gems do this:
+        # cd /usr/lib/one/ruby/oneapps/market && bundle install
+
+EOT
+}
+
+function make_backup() {
+    file=$1
+    backup="$1.$(date '+%s')"
+
+    if [ -f "$file" ]; then
+        cp "$file" "$backup"
+    fi
+}
+
+function add_config() {
+    name=$1
+    text=$2
+    config_file=$3
+
+    test -f $config_file && ! grep -q -- "$name" $config_file  && echo "$text" >> $config_file
+}
+
+function add_view() {
+    for f in $VIEW_FILES; do
+        add_config "$1" "$2" "$SUNSTONE_VIEWS_PATH/$f"
+    done
+}
+
+function add_server() {
+    add_config "$1" "$2" "$SUNSTONE_SERVER"
+}
+
+# Configure sunstone-views.yaml and sunstone-server.conf
+
+make_backup "$SUNSTONE_VIEWS"
+make_backup "$SUNSTONE_SERVER"
+
+add_view "apptools-appmarket-dashboard:" \
+"    apptools-appmarket-dashboard:
+        panel_tabs:
+        table_columns:
+        actions:"
+
+add_view "apptools-appmarket-appliances:" \
+"    apptools-appmarket-appliances:
+        panel_tabs:
+            appmarket_info_tab: true
+        table_columns:
+            - 0         # Checkbox
+            #- 1         # ID
+            - 2         # Name
+            - 3         # Publisher
+            - 4         # Hypervisor
+            - 5         # Arch
+            - 6         # Format
+            #- 7         # Tags
+        actions:
+            AppMarket.refresh: true
+            AppMarket.import: true"
+
+add_server "^:routes:" ":routes:"
+
+add_server "- appmarket" "    - appmarket"
+
+print_install_message
+
+

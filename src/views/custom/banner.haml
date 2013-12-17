@@ -1,0 +1,104 @@
+// ------------------------------------------------------------------------ //
+// Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs      //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License"); you may  //
+// not use this file except in compliance with the License. You may obtain  //
+// a copy of the License at                                                 //
+//                                                                          //
+// http://www.apache.org/licenses/LICENSE-2.0                               //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+//------------------------------------------------------------------------- //
+
+.row-fluid
+  .span4
+    :plain
+      <h1><i class="icon-info-sign icon-white"></i> About</h1>
+    %p
+      The OpenNebula Marketplace is an online catalog where individuals and organizations can quickly distribute and deploy appliances ready-to-run on OpenNebula clouds.
+    %p
+      %a{'data-toggle' => 'modal', 'href' => '#appliance_banner'} Learn more
+  .span4
+    :plain
+      <h1><i class="icon-cogs icon-white"></i> Post your Appliance</h1>
+    %p
+      You can create and distribute your software as an OpenNebula Virtual Appliance. The OpenNebula Marketplace is available at no charge to any community developer.
+    %p
+      %a{'data-toggle' => 'modal', 'href' => '#post_your_appliance_banner'} Learn more
+  .span4
+    %h1
+      %i.icon-retweet.icon-white
+      Integrated in OpenNebula
+      %ul.thumbnails
+        %li
+          %a.thumbnail.span10{'target'=>'blank', 'href'=>'http://www.opennebula.org/documentation:documentation:marketplace'}
+            %img{'src'=>"#{settings.root_path}img/marketsunstone.png", 'alt'=>''}
+
+.modal.hide.fade#appliance_banner
+  .modal-header
+    %button.close{'type' => 'button', 'data-dismiss' => 'modal'} x
+    %h3 About
+  .modal-body
+    %h4 What is the OpenNebula Marketplace?
+
+    %p The OpenNebula Marketplace is a catalog of Virtual Appliances posted by individuals and organizations that are ready-to- run on OpenNebula. The Marketplace has been created to simplify the deployment of Virtual Appliances and to support their  distribution among the OpenNebula community. Not all the Virtual Appliances have been certified and so may be not ready to   work on production environments.
+
+    %h4 What is an OpenNebula Appliance?
+
+    %p An OpenNebula Virtual Appliance is a pre-built software solution, consisting of a set of pre-configured virtual machine  image and configuration files, ready-to-run on an OpenNebula cloud.
+
+    %h4 What is provided by the Marketplace?
+
+    %p The Marketplace contains metadata that defines the Virtual Appliance but not the appliance files themselves. The   metadata includes the links to download the appliance files from third-party servers. The time required for Appliance   download is dependent upon network connection speed and the size of the Appliance files.
+
+    %h4 What can I do in the Marketplace?
+
+    %p You do not need to register to download public images. However you will need an App Developer account to post your   Virtual Appliances or to rate and review other existing public Virtual Appliances.
+
+    %h4 Can I provide support for my Virtual Appliances?
+
+    %p Yes, in the description of your Virtual Appliance, you can include support statements and link to resources to educate   end users about your Virtual Appliance.
+
+    %h4 How to ask questions about Virtual Appliance creation and posting or report problems?
+
+    %p
+      You can use
+      %a{'href' => 'http://lists.opennebula.org/listinfo.cgi/users-opennebula.org', 'target' => 'blank'}
+        the OpenNebula Users mailing list
+      for this kind of questions
+
+    %h4 Can I deploy my own Marketplace instance for internal use?
+
+    %p
+      Yes, AppMarket can be downloaded from the,
+      %a{'href' => 'https://github.com/OpenNebula/addon-appmarket', 'target' => 'blank'}
+        OpenNebula Github
+      With AppMarket you can build a private repository to share and distribute virtual appliances across OpenNebula instances.
+
+.modal.hide.fade#post_your_appliance_banner
+  .modal-header
+    %button.close{'type' => 'button', 'data-dismiss' => 'modal'} x
+    %h3 Build and Post your Virtual Appliance
+  .modal-body
+    %p The Marketplace is available to organizations and individuals who want to create and distribute Virtual Appliances   ready-to-run on OpenNebula clouds.
+
+    %h4 How to Register as an Appliance Developer?
+
+    %p Click the "Request Developer Access" link inside the "Sign in" dropdown in this page and fill the form.You will  receive an email when your account has been approved. Until your account is approved you will be unable to sign in.
+    %p
+      And do not forget to subscribe to
+      %a{'href' => 'http://lists.opennebula.org/listinfo.cgi/users-opennebula.org'} the OpenNebula Users mailing  list
+
+    %h4 How to Develop your Appliance?
+
+    %p
+      %a{'href'=> 'http://opennebula.org/documentation:documentation:vm4market', 'target' => 'blank'} This guide
+      will show you how to create OpenNebula compatible images for the Marketplace
+
+    %h4 How to Post your Appliance?
+
+    %p Log in with you Developer account. After that, you will be able to click your username in the navigation bar and   select "Create new Appliance".
