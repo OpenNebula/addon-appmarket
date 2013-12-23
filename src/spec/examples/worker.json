@@ -1,0 +1,11 @@
+{
+    "username":     "worker",
+    "password":     "worker",
+    "organization": "worker",
+    "first_name":   "new_user",
+    "last_name":    "new_user",
+    "website":      "new_user",
+    "email":        "new_user",
+    "status":       "enabled",
+    "role":         "worker"
+}

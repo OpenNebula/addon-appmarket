@@ -8,11 +8,12 @@ require 'rspec'
 require 'rack/test'
 
 # Load the Sinatra app
-require 'controllers/server'
+require 'controllers/appmarket-server'
 
 # Make Rack::Test available to all spec contexts
 RSpec.configure do |conf|
     conf.include Rack::Test::Methods
+    conf.fail_fast = true
 end
 
 # Set the Sinatra environment

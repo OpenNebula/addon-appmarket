@@ -34,7 +34,8 @@ client = AppConverter::Client.new
 result_path = '/tmp/appconverter_result'
 file = File.open(result_path, 'r') {|f|
     str = f.read
-    client.callback(url, str.strip)
+    sleep 60
+    #client.callback(url, str.strip)
 }
 
 puts "...done"

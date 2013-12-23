@@ -14,13 +14,10 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-require 'lib/collection'
-require 'lib/app_collection/app'
-
 module AppConverter
 
-    class AppCollection < PoolCollection
-        COLLECTION_NAME = "appliance"
+    class JobCollection < PoolCollection
+        COLLECTION_NAME = "jobs"
 
         # Create a new collection, the information is not retrieved untill the
         #   the info method is called
@@ -29,8 +26,8 @@ module AppConverter
         #   be present for a document to be included in the result set.
         # @param [Hash] opts a customizable set of options.
         #   http://api.mongodb.org/ruby/current/Mongo/Collection.html#find-instance_method
-        def initialize(selector={}, opts={})
-            super(selector, opts)
+        def initialize(session, selector={}, opts={})
+            super(session, selector, opts)
             @selector = selector
             @opts = opts
         end
@@ -40,55 +37,52 @@ module AppConverter
         #
         # @return [Integer, Array] status code and array with the resources
         def info
-            @data = AppCollection.collection.find(@selector, @opts).to_a
+            @data = JobCollection.collection.find(@selector, @opts).to_a
 
             return [200, self.to_a]
         end
 
-        # Create a new appliance
+        # Create a new Job
         #
         # @param [Hash] hash containing the values of the resource
         # @return [Integer, Hash] status code and hash containing the error
         #   message or the info of the resource
-        def self.create(hash)
+        def self.create(session, hash)
             validator = Validator::Validator.new(
                 :default_values => true,
                 :delete_extra_properties => false
             )
 
             begin
-                validator.validate!(hash, AppConverter::Appliance::SCHEMA)
+                validator.validate!(hash, AppConverter::Job::SCHEMA)
             rescue Validator::ParseException
                 return [400, {"message" => $!.message}]
+            end
+
+            # Check if the app exists
+            app = AppConverter::AppCollection.get(session, hash['appliance_id'])
+            if Collection.is_error?(app)
+                return app
             end
 
             hash['creation_time'] = Time.now.to_i
 
             begin
-                object_id = collection.insert(hash, {:w => 1})
+                object_id = collection.insert(hash)
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
 
-            app = AppCollection.get(object_id.to_s)
-
-            # Create a new Job to upload the new appliance
-            job_hash = {
-                'name' => 'upload',
-                'appliance_id' => app.object_id
-            }
-
-            AppConverter::JobCollection.create(job_hash)
-
-            return [201, app.to_hash]
+            job = JobCollection.get(session, object_id.to_s)
+            return [201, job.to_hash]
         end
 
         # Retrieve the resource from the database. This method must be use
-        #   to retrieve the resource instead of Appliance.new
+        #   to retrieve the resource instead of Job.new
         #
         # @param [String] object_id id of the resource
-        # @return [AppConverter::Appliance] depends on the factory method
-        def self.get(object_id)
+        # @return [AppConverter::Job] depends on the factory method
+        def self.get(session, object_id)
             begin
                 data = collection.find_one(
                     :_id => Collection.str_to_object_id(object_id))
@@ -97,22 +91,26 @@ module AppConverter
             end
 
             if data.nil?
-                return [404, {"message" => "Appliance not found"}]
+                return [404, {"message" => "Job not found"}]
             end
 
-            return self.factory(data)
+            return self.factory(session, data)
         end
 
         protected
 
         # Default Factory Method for the Pools
-        def self.factory(pelem)
-            Appliance.new(pelem)
+        def self.factory(session, pelem)
+            case pelem['name']
+            when 'upload'
+                return UploadJob.new(session, pelem)
+            when 'convert'
+                return ConvertJob.new(session, pelem)
+            end
         end
 
-        def factory(pelem)
-            AppCollection.factory(pelem)
+        def factory(session, pelem)
+            JobCollection.factory(session, pelem)
         end
     end
 end
-

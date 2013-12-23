@@ -2,7 +2,19 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'pp'
 
 describe 'AppConverter tests' do
+    before(:all) do
+        DB.drop_collection(AppConverter::AppCollection::COLLECTION_NAME)
+        DB.drop_collection(AppConverter::JobCollection::COLLECTION_NAME)
+
+        basic_authorize('default','default')
+        post '/user', File.read(EXAMPLES_PATH + '/worker.json'), {'HTTP_ACCEPT' => 'application/json'}
+    end
+
 describe 'empty sets and non existing resources' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "job list should be empty" do
         get "/job"
 
@@ -14,15 +26,16 @@ describe 'empty sets and non existing resources' do
     it "should not be able to create a new job if the the associated " <<
             "appliance does not exist" do
         post '/job', File.read(EXAMPLES_PATH + '/job1.json')
+
         last_response.status.should == 404
     end
 
     it "appliance list should be empty" do
-        get "/appliance"
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
 
         body = JSON.parse last_response.body
-
-        body.size.should eql(0)
+        puts body
+        body['appliances'].size.should eql(0)
     end
 
     it "should not be able to retrieve metadata of the non exixting job" do
@@ -37,18 +50,22 @@ describe 'empty sets and non existing resources' do
 
 
     it "should not be able to retrieve metadata of the non exixting app" do
-        get "/appliance/aaaa"
+        get "/appliance/aaaa", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 404
     end
 
     it "should not be able to delete a non existing appliance" do
-        delete "/appliance/aaa"
+        delete "/appliance/aaa", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 404
     end
 end
 
 
 describe 'creating an appliance' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should create a new appliance" do
         post '/appliance', File.read(EXAMPLES_PATH + '/appliance1.json')
         last_response.status.should == 201
@@ -58,7 +75,7 @@ describe 'creating an appliance' do
     end
 
     it "should be able to retrieve metadata of the new appliance" do
-        get "/appliance/#{$new_oid}"
+        get "/appliance/#{$new_oid}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
@@ -69,12 +86,12 @@ describe 'creating an appliance' do
     end
 
     it "appliance list should contain 1 element" do
-        get "/appliance"
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
         body = JSON.parse last_response.body
-        body.size.should eql(1)
-        body[0]['name'].should == 'CentOS'
-        body[0]['status'].should == 'init'
-        body[0]['creation_time'].should <= Time.now.to_i
+        body['appliances'].size.should eql(1)
+        body['appliances'][0]['name'].should == 'CentOS'
+        body['appliances'][0]['status'].should == 'init'
+        body['appliances'][0]['creation_time'].should <= Time.now.to_i
     end
 
     it "job list should contain 1 element" do
@@ -90,6 +107,10 @@ describe 'creating an appliance' do
 end
 
 describe 'creating a job' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should create a new job" do
         hash = JSON.parse(File.read(EXAMPLES_PATH + '/job1.json'))
         hash['appliance_id'] = $new_oid
@@ -131,6 +152,10 @@ describe 'creating a job' do
 end
 
 describe 'getting the next job from a worker' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should get a pending job" do
         get "/worker/firstworker/nextjob"
         last_response.status.should == 200
@@ -145,7 +170,7 @@ describe 'getting the next job from a worker' do
     end
 
     it "the appliance should be in uploading state" do
-        get "/appliance/#{$new_oid}"
+        get "/appliance/#{$new_oid}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
 
         body = JSON.parse last_response.body
@@ -198,8 +223,12 @@ end
 #end
 
 describe 'deleting an appliance' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should delete the given appliance" do
-        delete "/appliance/#{$new_oid}"
+        delete "/appliance/#{$new_oid}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
     end
 
@@ -221,15 +250,20 @@ describe 'deleting an appliance' do
     end
 
     it "appliance list should be empty" do
-        get "/appliance"
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
 
         body = JSON.parse last_response.body
-        body.size.should eql(0)
+        body['appliances'].size.should eql(0)
     end
 end
 
 describe 'getting the associated jobs to be cancelled of a worker and callback cancel' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should ge the jobs in cancelling status" do
+        basic_authorize('worker','worker')
         get '/worker/firstworker/job?status=cancelling'
 
         body = JSON.parse last_response.body
@@ -244,11 +278,15 @@ describe 'getting the associated jobs to be cancelled of a worker and callback c
     end
 
     it "send cancel callback" do
+        basic_authorize('worker','worker')
         post "/worker/firstworker/job/#{$upload_job_id}/cancel"
+        body =  last_response.status
+        puts body
 
         get '/worker/firstworker/job?status=cancelling'
 
         body = JSON.parse last_response.body
+        puts body
         body.size.should eql(0)
     end
 
@@ -271,6 +309,10 @@ describe 'getting the associated jobs to be cancelled of a worker and callback c
 end
 
 describe 'creating a second appliance and callback update and done' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should create a new appliance" do
         post '/appliance', File.read(EXAMPLES_PATH + '/appliance1.json')
         last_response.status.should == 201
@@ -280,7 +322,7 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "should be able to retrieve metadata of the new appliance" do
-        get "/appliance/#{$new_oid2}"
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
@@ -291,12 +333,12 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "appliance list should contain 1 element" do
-        get "/appliance"
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
         body = JSON.parse last_response.body
-        body.size.should eql(1)
-        body[0]['name'].should == 'CentOS'
-        body[0]['status'].should == 'init'
-        body[0]['creation_time'].should <= Time.now.to_i
+        body['appliances'].size.should eql(1)
+        body['appliances'][0]['name'].should == 'CentOS'
+        body['appliances'][0]['status'].should == 'init'
+        body['appliances'][0]['creation_time'].should <= Time.now.to_i
     end
 
     it "job list should contain 3 elements" do
@@ -321,6 +363,7 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "should get a pending job" do
+        basic_authorize('worker','worker')
         get "/worker/firstworker/nextjob"
         last_response.status.should == 200
 
@@ -335,7 +378,7 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "the appliance should be in downloading state" do
-        get "/appliance/#{$new_oid2}"
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
@@ -346,6 +389,7 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "send update callback" do
+        basic_authorize('worker','worker')
         job = {
             'job' => {
                 'progress' => 50
@@ -368,11 +412,12 @@ describe 'creating a second appliance and callback update and done' do
     end
 
     it "send done callback" do
+        basic_authorize('worker','worker')
         post "/worker/firstworker/job/#{$upload_job_id2}/done"
     end
 
     it "the appliance should be in ready state" do
-        get "/appliance/#{$new_oid2}"
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
@@ -398,6 +443,10 @@ end
 
 
 describe 'creating a second job for the second appliance and callback error' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
     it "should create a new job" do
         hash = JSON.parse(File.read(EXAMPLES_PATH + '/job1.json'))
         hash['appliance_id'] = $new_oid2
@@ -448,6 +497,7 @@ describe 'creating a second job for the second appliance and callback error' do
     end
 
     it "should get a pending job" do
+        basic_authorize('worker','worker')
         get "/worker/secondworker/nextjob"
         last_response.status.should == 200
 
@@ -461,7 +511,7 @@ describe 'creating a second job for the second appliance and callback error' do
     end
 
     it "the appliance should be in downloading state" do
-        get "/appliance/#{$new_oid2}"
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
@@ -472,11 +522,12 @@ describe 'creating a second job for the second appliance and callback error' do
     end
 
     it "send error callback" do
+        basic_authorize('worker','worker')
         post "/worker/secondworker/job/#{$new_job_oid2}/error"
     end
 
     it "the appliance should be in ready state" do
-        get "/appliance/#{$new_oid2}"
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 

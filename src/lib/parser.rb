@@ -18,7 +18,11 @@ require 'json'
 
 module Parser
     def self.parse_body(request)
+      if request.body && request.body.size > 0
         JSON.parse request.body.read
+      else
+        {}
+      end
     end
 
     def self.generate_body(hash)

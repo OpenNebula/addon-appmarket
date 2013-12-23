@@ -57,8 +57,8 @@ configure do
     end
 
     # Initialize DB with admin credentials
-    if User.list(nil).empty?
-        User.bootstrap(CONF['user'])
+    if AppConverter::UserCollection.new(nil).info[1].empty?
+        AppConverter::UserCollection.bootstrap(CONF['user'])
     end
 
     set :bind, CONF[:host]
@@ -107,6 +107,11 @@ before do
     end
 end
 
+after do
+    STDERR.flush
+    STDOUT.flush
+end
+
 #
 # Login
 #
@@ -121,53 +126,186 @@ post '/logout' do
     redirect to(settings.root_path + 'appliance')
 end
 
+
+###############################################################################
+# Job
+###############################################################################
+
+# Get the jobs collection
+get '/job' do
+    job_collection = AppConverter::JobCollection.new(@session)
+    @tmp_response = job_collection.info
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# Get a job
+get '/job/:id' do
+    job = AppConverter::JobCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        @tmp_response = [200, job.to_hash]
+    end
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# Create a new job
+post '/job' do
+    @tmp_response = AppConverter::JobCollection.create(@session, Parser.parse_body(request))
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# Delete a job
+delete '/job/:id' do
+    job = AppConverter::JobCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        @tmp_response = job.delete
+    end
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# TODO Update job
+
+###############################################################################
+# Worker
+###############################################################################
+
+# Get the jobs collection of the given worker
+get '/worker/:worker_host/job' do
+    job_selector = {}
+    job_selector['worker_host'] = params[:worker_host]
+    job_selector['status'] = params[:status] if params[:status]
+
+    job_collection = AppConverter::JobCollection.new(@session, job_selector, {})
+    @tmp_response = job_collection.info
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# Callbacks from the worker to update the given job
+#   Available callbacks are defined in AppConverter::Job::CALLBACKS
+post '/worker/:worker_host/job/:job_id/:callback' do
+    @body_hash = Parser.parse_body(request)
+
+    job = AppConverter::JobCollection.get(@session, params[:job_id])
+    if AppConverter::Collection.is_error?(job)
+        @tmp_response = job
+    else
+        if AppConverter::Job::CALLBACKS.include?(params[:callback])
+            # TODO check @body_hash keys
+
+            @tmp_response = job.send(
+                "cb_#{params[:callback]}".to_sym,
+                params[:worker_host],
+                @body_hash ? @body_hash['job'] : {},
+                @body_hash ? @body_hash['appliance'] : {})
+        else
+            @tmp_response = [403, "Callback #{params[:callback]} not supported"]
+        end
+    end
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
+# Retrieve the next job for the given worker.
+get '/worker/:worker_host/nextjob' do
+    # Retrieve the apps with no running jobs
+    app_selector = {
+        'status' => { '$in' => ['init', 'ready'] }
+    }
+
+    app_opts = {
+        :fields => {}
+    }
+
+    app_collection = AppConverter::AppCollection.new(@session, app_selector, app_opts)
+    app_response = app_collection.info
+
+    if AppConverter::Collection.is_error?(app_response)
+        @tmp_response = app_response
+    else
+        # Retrieve the pending jobs that are not associated with any appliance
+        #   with a running job
+        ready_app_ids = app_collection.collect {|app| app['_id'].to_s }
+
+        job_selector = {
+            'status' => 'pending',
+            'appliance_id' => { '$in' => ready_app_ids }
+        }
+
+        job_opts = {
+            :sort => ['creation_time', Mongo::ASCENDING]
+        }
+
+        job_collection = AppConverter::JobCollection.new(@session, job_selector, job_opts)
+        job_response = job_collection.info
+
+        if AppConverter::Collection.is_error?(job_response)
+            @tmp_response = job_response
+        else
+            if job_collection.empty?
+                @tmp_response = [404, {'message' => "There is no job available"}]
+            else
+                next_job = job_collection.first
+                next_job.start(params[:worker_host], {}, {})
+                @tmp_response = [200, next_job.to_hash]
+            end
+        end
+    end
+    content_type :json
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
 #
 # User
 #
 
 get '/user' do
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        Parser.generate_body({'sEcho' => "1", 'users' => User.list(@session)})
+        user_collection = AppConverter::UserCollection.new(@session)
+        @tmp_response = user_collection.info
+
+        status @tmp_response[0]
+        body Parser.generate_body({
+                'sEcho' => "1",
+                'users' => @tmp_response[1]})
     else
         haml :user_index
     end
 end
 
 get '/user/:id' do
-    begin
-        @user = User.show(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
-    end
-
-    if @user.nil?
-        error 404, "User not found"
+    @user = AppConverter::UserCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(@user)
+        error @user
     end
 
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        Parser.generate_body(@user)
+        Parser.generate_body(@user.to_hash)
     else
         haml :user_show
     end
 end
 
 post '/user/:id/enable' do
-    begin
-        user = User.show(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
-    end
-
-    if user.nil?
-        error 404, "User not found"
-    end
-
-    begin
-        update_result = User.enable(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
-    rescue Validator::ParseException
-        error 400, $!.message
+    user = AppConverter::UserCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(user)
+        error user
+    else
+        user.enable
     end
 
     #if update_result != true
@@ -180,36 +318,26 @@ post '/user/:id/enable' do
 end
 
 post '/user' do
-    begin
-        object_id = User.create(@session, Parser.parse_body(request))
-    rescue Validator::ParseException
-        error 400, $!.message
-    rescue Mongo::OperationFailure
-        error 400, "The username/organization already exists in the OpenNebula Marketplace"
-    end
-
-    Parser.generate_body({"_id" => object_id})
+    @tmp_response = AppConverter::UserCollection.create(@session, Parser.parse_body(request))
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
 end
 
 put '/user/:id' do
-    begin
-        @user = User.update(@session, params[:id], Parser.parse_body(request))
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
-    rescue Validator::ParseException
-        error 400, $!.message
-    rescue
-        error 400, $!.message
+    user = AppConverter::UserCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(user)
+        error user
+    else
+        user.update(Parser.parse_body(request))
     end
-
-    status 200
 end
 
 delete '/user/:id' do
-    begin
-        @user = User.delete(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
+    user = AppConverter::UserCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(user)
+        error user
+    else
+        user.delete
     end
 end
 
@@ -219,27 +347,30 @@ end
 
 get '/appliance' do
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        Parser.generate_body({'sEcho' => "1", 'appliances' => Appliance.list(@session)})
+        app_collection = AppConverter::AppCollection.new(@session)
+        @tmp_response = app_collection.info
+
+        status @tmp_response[0]
+        body Parser.generate_body({
+                'sEcho' => "1",
+                'appliances' => @tmp_response[1]})
     else
         haml :appliance_index
     end
 end
 
 get '/appliance/:id' do
-    begin
-        @app = Appliance.show(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
+    app = AppConverter::AppCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(app)
+        error app
     end
 
-    if @app.nil?
-        error 404, "Appliance not found"
-    end
+    @app = app.to_hash
 
-    appliance_url = request.env['rack.url_scheme'] +
+    appliance_url = (request.env['rack.url_scheme']||'') +
                     '://' +
-                    request.env['HTTP_HOST'] +
-                    request.env['REQUEST_URI']
+                    (request.env['HTTP_HOST']||'') +
+                    (request.env['REQUEST_URI']||'')
 
     @app['links'] = {
         'download' => {
@@ -248,7 +379,8 @@ get '/appliance/:id' do
     }
 
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        Parser.generate_body(@app)
+        status 200
+        body Parser.generate_body(@app)
     else
         render = Redcarpet::Render::HTML.new(
             :filter_html => true,
@@ -269,49 +401,34 @@ get '/appliance/:id' do
 end
 
 post '/appliance' do
-    begin
-        object_id = Appliance.create(@session, Parser.parse_body(request))
-    rescue Validator::ParseException
-        error 400, $!.message
-    rescue
-        error 400, $!.message
-    end
-
-    Parser.generate_body({"_id" => object_id})
+    @tmp_response = AppConverter::AppCollection.create(@session, Parser.parse_body(request))
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
 end
 
 delete '/appliance/:id' do
-    begin
-        @app = Appliance.delete(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
+    app = AppConverter::AppCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(app)
+        error app
+    else
+        app.delete
     end
 end
 
 put '/appliance/:id' do
-    begin
-        @app = Appliance.update(@session, params[:id], Parser.parse_body(request))
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
-    rescue Validator::ParseException
-        error 400, $!.message
-    rescue
-        error 400, $!.message
+    app = AppConverter::AppCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(app)
+        error app
+    else
+        app.update(Parser.parse_body(request))
     end
-
-    status 200
 end
 
 get '/appliance/:id/download' do
-    begin
-        url = Appliance.file_url(@session, params[:id])
-    rescue BSON::InvalidObjectId
-        error 404, $!.message
+    app = AppConverter::AppCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(app)
+        error app
+    else
+        redirect app.file_url
     end
-
-    if url.nil?
-        error 404, "Appliance not found"
-    end
-
-    redirect url
 end

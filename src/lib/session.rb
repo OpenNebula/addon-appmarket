@@ -20,76 +20,139 @@ class Session
     PERMISSIONS = {
         :user => {
             :create => {
-                :anonymous  => true,
-                :user       => true,
+                :anonymous  => false,
+                :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :show => {
                 :anonymous  => false,
                 :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :delete => {
                 :anonymous  => false,
                 :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :update => {
                 :anonymous  => false,
                 :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :list => {
                 :anonymous  => false,
                 :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :enable => {
                 :anonymous  => false,
                 :user       => false,
+                :worker     => false,
                 :admin      => true
             },
             :schema => {
-                :anonymous  => User::SCHEMA,
-                :user       => User::SCHEMA,
-                :admin      => User::ADMIN_SCHEMA
+                :anonymous  => AppConverter::User::SCHEMA,
+                :user       => AppConverter::User::SCHEMA,
+                :admin      => AppConverter::User::ADMIN_SCHEMA
             }
         },
         :appliance => {
             :create => {
                 :anonymous  => false,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :show => {
                 :anonymous  => true,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :delete => {
                 :anonymous  => false,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :update => {
                 :anonymous  => false,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :list => {
                 :anonymous  => true,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :download => {
                 :anonymous  => true,
                 :user       => true,
+                :worker     => false,
                 :admin      => true
             },
             :schema => {
-                :anonymous  => Appliance::SCHEMA,
-                :user       => Appliance::SCHEMA,
-                :admin      => Appliance::ADMIN_SCHEMA
+                :anonymous  => AppConverter::Appliance::SCHEMA,
+                :user       => AppConverter::Appliance::SCHEMA,
+                :admin      => AppConverter::Appliance::ADMIN_SCHEMA
+            }
+        },
+        :job => {
+            :create => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => false,
+                :admin      => true
+            },
+            :show => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => false,
+                :admin      => true
+            },
+            :delete => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => false,
+                :admin      => true
+            },
+            :list => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => false,
+                :admin      => true
+            },
+            :schema => {
+                :anonymous  => AppConverter::Job::SCHEMA,
+                :user       => AppConverter::Job::SCHEMA,
+                :admin      => AppConverter::Job::SCHEMA
+            }
+        },
+        :worker => {
+            :list_jobs => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => true,
+                :admin      => true
+            },
+            :next_job => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => true,
+                :admin      => true
+            },
+            :job_callback => {
+                :anonymous  => false,
+                :user       => false,
+                :worker     => true,
+                :admin      => true
             }
         }
     }
@@ -102,6 +165,10 @@ class Session
         perms = case env["REQUEST_METHOD"]
         when 'GET', 'HEAD'
             case env["PATH_INFO"]
+            when /^\/job$/
+                PERMISSIONS[:job][:list]
+            when /^\/job\/\w+$/
+                PERMISSIONS[:job][:show]
             when /^\/user$/
                 PERMISSIONS[:user][:list]
             when /^\/user\/\w+$/
@@ -112,11 +179,17 @@ class Session
                 PERMISSIONS[:appliance][:show]
             when /^\/appliance\/\w+\/download$/
                 PERMISSIONS[:appliance][:download]
+            when /^\/worker\/\w+\/nextjob$/
+                PERMISSIONS[:worker][:next_job]
+            when /^\/worker\/\w+\/job$/
+                PERMISSIONS[:worker][:list_jobs]
             when /^\/favicon.ico$/
                 true
             end
         when 'DELETE'
             case env["PATH_INFO"]
+            when /^\/job\/\w+$/
+                PERMISSIONS[:job][:delete]
             when /^\/user\/\w+$/
                 PERMISSIONS[:user][:delete]
             when /^\/appliance\/\w+$/
@@ -131,12 +204,17 @@ class Session
             end
         when 'POST'
             case env["PATH_INFO"]
+            when /^\/job$/
+                PERMISSIONS[:job][:create]
             when /^\/user$/
                 PERMISSIONS[:user][:create]
             when /^\/appliance$/
                 PERMISSIONS[:appliance][:create]
             when /^\/user\/\w+\/enable$/
                 PERMISSIONS[:user][:enable]
+            when /^\/worker\/\w+\/job\/\w+\/\w+$/
+                # TODO add callback strings to the reg exp
+                PERMISSIONS[:worker][:job_callback]
             end
         end
 
@@ -153,12 +231,12 @@ class Session
 
     def allowed_catalogs
         if anonymous?
-            [Appliance::PUBLIC_CATALOG]
+            [AppConverter::Appliance::PUBLIC_CATALOG]
         elsif user?
             if  @user['catalogs']
-                [Appliance::PUBLIC_CATALOG] + @user['catalogs']
+                [AppConverter::Appliance::PUBLIC_CATALOG] + @user['catalogs']
             else
-                [Appliance::PUBLIC_CATALOG]
+                [AppConverter::Appliance::PUBLIC_CATALOG]
             end
         elsif admin?
             nil
@@ -173,6 +251,10 @@ class Session
         role == :user
     end
 
+    def worker?
+        role == :worker
+    end
+
     def anonymous?
         role == :anonymous
     end
@@ -180,7 +262,7 @@ class Session
     def role
         if @user.nil?
             :anonymous
-        elsif @user['role'] == User::ADMIN_ROLE
+        elsif @user['role'] == AppConverter::User::ADMIN_ROLE
             :admin
         else
             :user
@@ -205,7 +287,7 @@ class Session
             username, password = auth.credentials
 
             #sha1_pass = Digest::SHA1.hexdigest(password)
-            User.retrieve(username, password)
+            AppConverter::UserCollection.retrieve(username, password)
         else
             nil
         end

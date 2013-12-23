@@ -82,7 +82,8 @@ module AppConverter
         # This method should be used only by the factory method, to retrieve
         #   an existing resource from the database use the JobCollection.get
         #   method
-        def initialize(data)
+        def initialize(session, data)
+            @session = session
             @data = data
         end
 
@@ -293,7 +294,7 @@ module AppConverter
         # @return [Integer, Hash] status code and hash with the error message
         def update_from_callback(job_hash_update, app_hash_update={})
             if !app_hash_update.empty?
-                app = AppConverter::AppCollection.get(@data['appliance_id'])
+                app = AppConverter::AppCollection.get(@session, @data['appliance_id'])
                 if !Collection.is_error?(app)
                     app_update_result = app.update(app_hash_update)
                     if Collection.is_error?(app_update_result)

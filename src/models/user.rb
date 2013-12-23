@@ -238,7 +238,6 @@ class User
     # @return [true, false]
     def self.check_password(user, password)
         bcrypt_pass = BCrypt::Password.new(user['password'])
-
         return (bcrypt_pass == password)
     end
 end

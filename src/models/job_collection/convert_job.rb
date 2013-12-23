@@ -15,18 +15,17 @@
 #--------------------------------------------------------------------------- #
 
 module AppConverter
-
-    class UploadJob < Job
+    class ConvertJob < Job
         # This method should be used only by the factory method, to retrieve
         #   an existing resource from the database use the JobCollection.get
         #   method
-        def initialize(data)
-            super(data)
+        def initialize(session, data)
+            super(session, data)
         end
 
         # Start the job
-        #   This method defines the specific values that a UploadJob defines
-        #   when started The common values are defined in the parent class
+        #   This method defines the specific values that a ConvertJob defines
+        #   when started. The common values are defined in the parent class
         #
         # @param [String] worker_host
         # @param [Hash] job_hash Hash containing the values to be updated.
@@ -42,14 +41,14 @@ module AppConverter
             }.deep_merge(job_hash)
 
             app_hash_merged = {
-                'status' => 'downloading'
+                'status' => 'converting'
             }.deep_merge(app_hash)
 
             super(job_hash_merged, app_hash_merged)
         end
 
         # Done callback
-        #   This method defines the specific values that a UploadJob defines
+        #   This method defines the specific values that a ConvertJob defines
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
@@ -68,7 +67,7 @@ module AppConverter
         end
 
         # Error callback
-        #   This method defines the specific values that a UploadJob defines
+        #   This method defines the specific values that a ConvertJob defines
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
@@ -82,19 +81,19 @@ module AppConverter
         def cb_error(worker_host, job_hash, app_hash)
             job_hash_merged = {}.deep_merge(job_hash||{})
             app_hash_merged = {
-                'status' => 'init'
+                'status' => 'ready'
             }.deep_merge(app_hash||{})
 
             super(job_hash_merged, app_hash_merged)
         end
 
         # Cancel callback
-        #   This method defines the specific values that a UploadJob defines
+        #   This method defines the specific values that a ConvertJob defines
         #   for this callback. The common values are defined in the parent class
         #
         # @param [String] worker_host
         # @param [Hash] job_hash Hash containing the values to be updated.
-        #   The information provided in this hash will be merged with the
+        #   The information provided in t, job_hash, app_hashhis hash will be merged with the
         #   original information of the job
         # @param [Hash] app_hash Hash containing the values to be updated.
         #   The information provided in this hash will be merged with the
@@ -103,7 +102,7 @@ module AppConverter
         def cb_cancel(worker_host, job_hash, app_hash)
             job_hash_merged = {}.deep_merge(job_hash||{})
             app_hash_merged = {
-                'status' => 'init'
+                'status' => 'ready'
             }.deep_merge(app_hash||{})
 
             super(job_hash_merged, app_hash_merged)

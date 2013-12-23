@@ -73,9 +73,10 @@ module AppConverter
 
         include Enumerable
 
-        def initialize(selector, opts)
+        def initialize(session, selector, opts)
             opts[:sort] ||= ['_id', Mongo::ASCENDING]
             @data = []
+            @session = session
         end
 
         # Iterates over every element in the collection and calls the block
@@ -83,7 +84,7 @@ module AppConverter
         #   method should be implemented by subclasses of PoolCollection
         def each(&block)
             @data.each { |pelem|
-                block.call self.factory(pelem)
+                block.call self.factory(@session, pelem)
             }
         end
 
@@ -96,7 +97,7 @@ module AppConverter
         #   factory method
         def [](index)
             # TODO Handle exception if the index is out of bound
-            self.factory(@data[index])
+            self.factory(@session, @data[index])
         end
 
         # Check if the @data array is empty

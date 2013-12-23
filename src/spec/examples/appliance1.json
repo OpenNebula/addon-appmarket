@@ -1,5 +1,5 @@
 {
-    "name": "Ubuntu Server 12.04 LTS (Precise Pangolin)",
+    "name": "CentOS",
     "catalog": "public",
     "logo": "/img/logos/ubuntu.png",
     "tags": ["linux", "ubuntu"],
@@ -17,7 +17,6 @@
             "os-id": "Ubuntu",
             "os-release": "12.04",
             "os-arch": "x86_64",
-            "url": "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2",
             "md5": "d0f3c0bebdab6451b58ca54f119d8082"
         }
     ]

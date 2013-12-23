@@ -65,7 +65,7 @@
     .controls
       %select{'name' => 'files.0.compression', 'id' => 'files.0.compression_form'}
         %option{'value' => ""}
-        - Appliance::FILE_SCHEMA[:properties]['compression'][:enum].each do |elem|
+        - AppConverter::Appliance::FILE_SCHEMA[:properties]['compression'][:enum].each do |elem|
           %option= elem
   %hr
   .control-group
@@ -73,14 +73,14 @@
     .controls
       %select{'name' => 'files.0.hypervisor', 'id' => 'files.0.hypervisor_form'}
         %option{'value' => ""}
-        - Appliance::FILE_SCHEMA[:properties]['hypervisor'][:enum].each do |elem|
+        - AppConverter::Appliance::FILE_SCHEMA[:properties]['hypervisor'][:enum].each do |elem|
           %option= elem
   .control-group
     %label.control-label{'for' => 'files.0.format'} Format
     .controls
       %select{'name' => 'files.0.format', 'id' => 'files.0.format_form'}
         %option{'value' => ""}
-        - Appliance::FILE_SCHEMA[:properties]['format'][:enum].each do |elem|
+        - AppConverter::Appliance::FILE_SCHEMA[:properties]['format'][:enum].each do |elem|
           %option= elem
   %hr
   .control-group

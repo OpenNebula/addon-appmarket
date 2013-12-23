@@ -15,23 +15,28 @@
 #--------------------------------------------------------------------------
 
 $: << './'
+$: << './config'
+$: << './lib'
+
+CONFIGURATION_FILE = './config/appmarket-server.conf'
 
 require 'models'
 require 'rubygems'
 require 'rspec/core/rake_task'
 
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern    = 'spec/validator_spec.rb'
+  t.pattern    = 'spec/*_spec.rb'
   t.rspec_opts = '-f s --colour'
 end
 
 task :bootstrap do
-    User.bootstrap(CONF['username'], CONF['password'])
+    AppConverter::UserCollection.bootstrap(CONF['user'])
 end
 
 task :clean do
-    DB.drop_collection(User::COLLECTION_NAME)
-    DB.drop_collection(Appliance::COLLECTION_NAME)
+    DB.drop_collection(AppConverter::UserCollection::COLLECTION_NAME)
+    DB.drop_collection(AppConverter::AppCollection::COLLECTION_NAME)
+    DB.drop_collection(AppConverter::JobCollection::COLLECTION_NAME)
 end
 
 task :test => [:clean, :bootstrap, :spec]
