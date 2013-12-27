@@ -16,6 +16,7 @@
 
 /* Marketpplace tab plugin */
 var dataTable_appmarket;
+var $appmarket_import_dialog;
 
 var AppMarket = {
     "resource" : "APPMARKET",
@@ -72,21 +73,44 @@ var appmarket_actions = {
         elements: appmarketplaceElements,
         call: AppMarket.show,
         callback: function(request,response){
-            $('#img_name', $create_image_dialog).val(response['name']);
-            $('#img_path', $create_image_dialog).val(response['links']['download']['href']);
-            $('#src_path_select input[value="path"]', $create_image_dialog).trigger('click');
-            $('select#img_type', $create_image_dialog).val('OS');
-            $('select#img_type', $create_image_dialog).trigger('change');
+            if ($appmarket_import_dialog != undefined) {
+              $appmarket_import_dialog.remove();
+            }
+
+            dialogs_context.append(appmarket_import_dialog);
+            $appmarket_import_dialog = $('#appmarket_import_dialog',dialogs_context);
+
+            var tab_id = 1;
+
+            // Append the new div containing the tab and add the tab to the list
+            var image_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+              create_image_tmpl +
+            '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+
+            var a_image_dialog = $("<dd>\
+              <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Image")+"</a>\
+            </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+
+            $(document).foundationTabs("set_tab", a_image_dialog);
+
+            initialize_create_image_dialog(image_dialog);
+            initialize_datastore_info_create_image_dialog(image_dialog);
+
+            $('#img_name', image_dialog).val(response['name']);
+            $('#img_path', image_dialog).val(response['links']['download']['href']);
+            $('#src_path_select input[value="path"]', image_dialog).trigger('click');
+            $('select#img_type', image_dialog).val('OS');
+            $('select#img_type', image_dialog).trigger('change');
 
             //remove any options from the custom vars dialog box
-            $("#custom_var_image_box",$create_image_dialog).empty();
+            $("#custom_var_image_box",image_dialog).empty();
 
             var md5 = response['files'][0]['md5']
             if ( md5 ) {
                 option = '<option value=\'' +
                     md5 + '\' name="MD5">MD5=' +
                     md5 + '</option>';
-                $("#custom_var_image_box",$create_image_dialog).append(option);
+                $("#custom_var_image_box",image_dialog).append(option);
             }
 
             var sha1 = response['files'][0]['sha1']
@@ -94,10 +118,45 @@ var appmarket_actions = {
                 option = '<option value=\'' +
                     sha1 + '\' name="SHA1">SHA1=' +
                     sha1 + '</option>';
-                $("#custom_var_image_box",$create_image_dialog).append(option);
+                $("#custom_var_image_box",image_dialog).append(option);
             }
 
-            popUpCreateImageDialog();
+            image_dialog.on("reveal:close", function(){
+              a_image_dialog.remove();
+              image_dialog.remove();
+              $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+              return false;
+            });
+
+            tab_id++;
+
+            $create_template_dialog.remove();
+            // Template
+            // Append the new div containing the tab and add the tab to the list
+            var template_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+              create_template_tmpl +
+            '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+
+            var a_template_dialog = $("<dd>\
+              <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Template")+"</a>\
+            </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+
+            initialize_create_template_dialog(template_dialog);
+            fillTemplatePopUp(
+              null,
+              JSON.parse(response['opennebula_template']),
+              template_dialog);
+
+            template_dialog.on("reveal:close", function(){
+              a_template_dialog.remove();
+              template_dialog.remove();
+              $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+              return false;
+            });
+
+            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
+            $appmarket_import_dialog.reveal();
+            //popUpCreateImageDialog();
         },
         error: onError
     },
@@ -121,6 +180,20 @@ var appmarket_buttons = {
         text: tr('Import')
     }
 };
+
+var appmarket_import_dialog =
+'<div id="appmarket_import_dialog">'+
+  '<div class="panel">'+
+    '<h3><small>'+tr("Import Appliance")+'</small></h4>'+
+  '</div>'+
+  '<div class="reveal-body">'+
+    '<dl class="tabs" id="appmarket_import_dialog_tabs">'+
+    '</dl>'+
+    '<ul class="tabs-content" id="appmarket_import_dialog_tabs_content">'+
+    '</ul>'+
+  '</div>'+
+  '<a class="close-reveal-modal">&#215;</a>'+
+'</div>';
 
 var appmarketplace_tab_content = '\
 <form class="custom" id="template_form" action="">\
