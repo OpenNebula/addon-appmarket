@@ -20,9 +20,13 @@ var $appmarket_import_dialog;
 
 var AppMarket = {
     "resource" : "APPMARKET",
+    "path" : "appmarket/appliance",
 
+    "create": function(params){
+        OpenNebula.Action.create(params, AppMarket.resource, AppMarket.path);
+    },
     "show" : function(params){
-        OpenNebula.Action.show(params,AppMarket.resource);
+        OpenNebula.Action.show(params,AppMarket.resource, false, AppMarket.path);
     },
     "list" : function(params){
         //Custom list request function, since the contents do not come
@@ -33,7 +37,7 @@ var AppMarket = {
         var request = OpenNebula.Helper.request('APPMARKET','list');
 
         $.ajax({
-            url: 'appmarket',
+            url: AppMarket.path,
             type: 'GET',
             data: {timeout: timeout},
             dataType: "json",
@@ -48,6 +52,17 @@ var AppMarket = {
     }
 }
 var appmarket_actions = {
+    "AppMarket.create" : {
+        type: "create",
+        call: AppMarket.create,
+        callback: addConverterApplianceElement,
+        error: onError,
+        notify:true
+    },
+    "AppMarket.create_dialog" : {
+        type : "custom",
+        call: popUpCreateConverterApplianceialog
+    },
     "AppMarket.list" : {
         type: "list",
         call: AppMarket.list,
@@ -176,8 +191,12 @@ var appmarket_buttons = {
     },
     "AppMarket.import" : {
         type: "action",
-        layout: "create",
+        layout: "main",
         text: tr('Import')
+    },
+    "Appliance.create_dialog" : {
+        type: "create_dialog",
+        layout: "create"
     }
 };
 
@@ -194,6 +213,27 @@ var appmarket_import_dialog =
   '</div>'+
   '<a class="close-reveal-modal">&#215;</a>'+
 '</div>';
+
+var create_appconverter_appliance =
+'<div class="panel">\
+    <h3><small>'+tr("Create Appliance")+'</small></h4>\
+</div>\
+<div class="reveal-body">\
+    <form id="create_appconverter_appliance" action="" class="custom creation">\
+        <div class="reveal-body">\
+            <textarea id="template" rows="15" style="width:100%;"></textarea>\
+        </div>\
+        <div class="reveal-footer">\
+            <hr>\
+            <div class="form_buttons">\
+                <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
+                <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
+                <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
+            </div>\
+        </div>\
+        <a class="close-reveal-modal">&#215;</a>\
+    </form>\
+</div>';
 
 var appmarketplace_tab_content = '\
 <form class="custom" id="template_form" action="">\
@@ -277,6 +317,11 @@ Sunstone.addInfoPanel("appmarketplace_info_panel", appmarketplace_info_panel);
 
 function appmarketplaceElements(){
     return getSelectedNodes(dataTable_appmarket);
+}
+
+// Callback to add an service_template element
+function addConverterApplianceElement(request, template_json){
+    addElement(template_json,dataTable_appmarket);
 }
 
 function updateMarketInfo(request,app){
@@ -387,6 +432,38 @@ function onlyOneCheckboxListener(dataTable) {
     });
 }
 
+// Prepare the image creation dialog
+function setupCreateConverterApplianceDialog(){
+    dialogs_context.append('<div id="create_converter_appliance_dialog"></div>');
+    $create_converter_appliance_dialog =  $('#create_converter_appliance_dialog',dialogs_context);
+
+    var dialog = $create_converter_appliance_dialog;
+    dialog.html(create_appconverter_appliance);
+
+    setupTips($create_converter_appliance_dialog);
+
+    dialog.addClass("reveal-modal large max-height");
+
+    $('#create_appconverter_appliance_manual',dialog).click(function(){
+        var template=$('#template',dialog).val();
+        Sunstone.runAction("AppMarket.create",JSON.parse(template));
+        $create_converter_appliance_dialog.trigger("reveal:close")
+        return false;
+    });
+
+    $('#create_appconverter_appliance_reset').click(function(){
+        $create_converter_appliance_dialog.trigger('reveal:close');
+        $create_converter_appliance_dialog.remove();
+        setupCreateConverterApplianceDialog();
+
+        popUpCreateConverterApplianceialog();
+    });
+}
+
+function popUpCreateConverterApplianceialog(){
+    $create_converter_appliance_dialog.reveal();
+}
+
 /*
  * Document
  */
@@ -437,5 +514,7 @@ $(document).ready(function(){
       infoListenerAppMarket(dataTable_appmarket);
 
       Sunstone.runAction('AppMarket.list');
+
+      setupCreateConverterApplianceDialog();
   }
 });

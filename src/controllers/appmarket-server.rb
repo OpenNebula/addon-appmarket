@@ -99,7 +99,7 @@ before do
 
         unless @session.authorize(request.env)
             if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-                error 401, "User not authorized"
+                error 401, Parser.generate_body("message" => "User not authorized")
             else
                 redirect to(settings.root_path + 'appliance')
             end
@@ -118,7 +118,7 @@ end
 
 post '/login' do
     build_session
-    halt 401, "User not authroized" if @session.anonymous?
+    halt 401, Parser.generate_body("message" => "User not authorized") if @session.anonymous?
 end
 
 post '/logout' do

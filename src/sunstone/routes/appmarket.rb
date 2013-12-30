@@ -30,36 +30,50 @@ end
 set :appmarket_config, appmarket_conf
 
 helpers do
-    def am_build_client
-        Market::ApplianceClient.new(
+    def appmarket_call(&block)
+        appmarket_client = AppMarket::Client.new(
             settings.appmarket_config[:appmarket_username],
             settings.appmarket_config[:appmarket_password],
             settings.appmarket_config[:appmarket_url],
             "Sunstone")
-    end
 
-    def am_format_response(response)
-        if CloudClient::is_error?(response)
-            error = Error.new(response.to_s)
-            [response.code.to_i, error.to_json]
+        resp = block.call(appmarket_client)
+
+        if CloudClient::is_error?(resp)
+            body Error.new(JSON.parse(resp.to_s)['message']).to_json
         else
-            [200, response.body]
+            body resp.body
+        end
+
+        http_code = resp.code.to_i
+        if http_code == 401
+            status 403
+        else
+            status http_code
         end
     end
 end
 
-get '/appmarket' do
-    client = am_build_client
-
-    response = client.list
-
-    am_format_response(response)
+get '/appmarket/job' do
+    appmarket_call { |client| client.get_jobs }
 end
 
-get '/appmarket/:id' do
-    client = am_build_client
+get '/appmarket/job/:id' do
+    appmarket_call { |client| client.get_job(params[:id]) }
+end
 
-    response = client.show(params[:id])
+post '/appmarket/job' do
+    appmarket_call { |client| client.create_job(request.body.read) }
+end
 
-    am_format_response(response)
+get '/appmarket/appliance' do
+    appmarket_call { |client| client.get_appliances }
+end
+
+get '/appmarket/appliance/:id' do
+    appmarket_call { |client| client.get_appliance(params[:id]) }
+end
+
+post '/appmarket/appliance' do
+    appmarket_call { |client| client.create_appliance(request.body.read) }
 end

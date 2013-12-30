@@ -99,7 +99,8 @@ add_view "apptools-appmarket-appliances:" \
             #- 7         # Tags
         actions:
             AppMarket.refresh: true
-            AppMarket.import: true"
+            AppMarket.import: true
+            AppMarket.create: true"
 
 add_server "^:routes:" ":routes:"
 
