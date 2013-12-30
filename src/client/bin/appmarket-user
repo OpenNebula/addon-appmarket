@@ -110,13 +110,13 @@ cmd=CommandParser::CmdParser.new(ARGV) do
     EOT
 
     command :list, list_desc, :options => JSON_FORMAT do
-        client = Market::UserClient.new(
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.list
+        response = client.get_users
 
         if CloudClient::is_error?(response)
             [response.code.to_i, response.to_s]
@@ -152,7 +152,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 EOT
 
     command :create, create_desc, :file do
-        client = Market::UserClient.new(
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
@@ -176,13 +176,13 @@ EOT
     EOT
 
     command :show, show_desc, :id, :options => JSON_FORMAT do
-        client = Market::UserClient.new(
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.show(args[0])
+        response = client.get_user(args[0])
 
         if CloudClient::is_error?(response)
             [response.code.to_i, response.to_s]
@@ -200,13 +200,13 @@ EOT
     EOT
 
     command :delete, delete_desc, :id do
-        client = Market::UserClient.new(
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.delete(args[0])
+        response = client.delete_user(args[0])
 
         if CloudClient::is_error?(response)
             [response.code.to_i, response.to_s]
@@ -224,13 +224,13 @@ EOT
     EOT
 
     command :enable, enable_desc, :id do
-        client = Market::UserClient.new(
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.enable(args[0])
+        response = client.enable_user(args[0])
 
         if CloudClient::is_error?(response)
             [response.code.to_i, response.to_s]
@@ -247,14 +247,14 @@ EOT
         Update a given User
     EOT
 
-    command :update, update_desc, :file do
-        client = Market::UserClient.new(
+    command :update, update_desc, :id, :file do
+        client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.update(File.read(args[0]))
+        response = client.update_user(args[0], File.read(args[1]))
 
         if CloudClient::is_error?(response)
             [response.code.to_i, response.to_s]

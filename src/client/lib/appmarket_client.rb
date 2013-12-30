@@ -17,7 +17,7 @@
 require 'uri'
 require 'CloudClient'
 
-module Market
+module AppMarket
     class Client
         def initialize(username, password, url, user_agent="Ruby")
             @username = username || ENV['APPMARKET_USER']
@@ -37,6 +37,101 @@ module Market
                 @port = uri_proxy.port
             end
         end
+
+        def create_job(body)
+            post('/job', body)
+        end
+
+        def get_jobs(filter={})
+            str = filter.collect {|key, value|
+                key + '=' + value
+            }.join('&')
+
+            path = '/job'
+            path += '?' + str if str
+            get(path)
+        end
+
+        def get_job(job_id)
+            get('/job/' + job_id)
+        end
+
+        def get_next_job(worker_id)
+            get('/worker/' + worker_id + '/nextjob')
+        end
+
+        def get_worker_jobs(worker_id, filter={})
+            str = filter.collect {|key, value|
+                key + '=' + value
+            }.join('&')
+
+            path = '/worker/'
+            path << worker_id
+            path << '/job'
+
+            if str
+                path << '?' + str
+            end
+
+            get(path)
+        end
+
+        def callback_url(worker_id, job_id)
+            return @uri.to_s + 'worker/' + worker_id + '/job/' + job_id
+        end
+
+        def create_appliance(body)
+            post('/appliance', body)
+        end
+
+        def get_appliances
+            get('/appliance')
+        end
+
+        def get_appliance(appliance_id)
+            get('/appliance/' + appliance_id)
+        end
+
+        def delete_appliance(appliance_id)
+            delete('/appliance/' + appliance_id)
+        end
+
+        def update_appliance(appliance_id, body)
+            put('/appliance/' + appliance_id, body)
+        end
+
+        def callback(url, result, json_body="")
+            uri = URI.parse(url)
+
+            # TODO Check result is a valid callback
+            post(uri.path + '/' + result, json_body)
+        end
+
+        def create_user(body)
+            post('/user', body)
+        end
+
+        def get_users
+            get('/user')
+        end
+
+        def get_user(user_id)
+            get('/user/' + user_id)
+        end
+
+        def enable_user(user_id)
+            post("/user/#{user_id}/enable", "")
+        end
+
+        def update_user(user_id, body)
+            put('/user/' + user_id, body)
+        end
+
+        def delete_user(user_id)
+            delete('/user/' + user_id)
+        end
+
+        private
 
         def get(path)
             req = Net::HTTP::Proxy(@host, @port)::Get.new(path)
@@ -64,8 +159,6 @@ module Market
             do_request(req)
         end
 
-        private
-
         def do_request(req)
             if @username && @password
                 req.basic_auth @username, @password
@@ -78,64 +171,6 @@ module Market
             end
 
             res
-        end
-    end
-
-
-    class ApplianceClient < Client
-        def initialize(user, password, url, agent)
-            super(user, password, url, agent)
-        end
-
-        def list
-            get("/appliance")
-        end
-
-        def create(body)
-            post("/appliance", body)
-        end
-
-        def show(id)
-            get("/appliance/#{id}")
-        end
-
-        def delete(id)
-            super("/appliance/#{id}")
-        end
-
-        def update(body, id)
-            put("/appliance/#{id}", body)
-        end
-    end
-
-
-    class UserClient < Client
-        def initialize(user, password, url, agent)
-            super(user, password, url, agent)
-        end
-
-        def list
-            get("/user")
-        end
-
-        def create(body)
-            post("/user", body)
-        end
-
-        def show(id)
-            get("/user/#{id}")
-        end
-
-        def delete(id)
-            super("/user/#{id}")
-        end
-
-        def enable(id)
-            post("/user/#{id}/enable", "")
-        end
-
-        def update(body, id)
-            put("/user/#{id}", body)
         end
     end
 end
