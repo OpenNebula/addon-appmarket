@@ -87,7 +87,8 @@ add_view "apptools-appmarket-dashboard:" \
 add_view "apptools-appmarket-appliances:" \
 "    apptools-appmarket-appliances:
         panel_tabs:
-            appmarket_info_tab: true
+            appmarketplace_info_tab: true
+            appmarketplace_jobs_tab: true
         table_columns:
             - 0         # Checkbox
             #- 1         # ID
@@ -97,6 +98,7 @@ add_view "apptools-appmarket-appliances:" \
             - 5         # Arch
             - 6         # Format
             #- 7         # Tags
+            - 8         # Created
         actions:
             AppMarket.refresh: true
             AppMarket.import: true

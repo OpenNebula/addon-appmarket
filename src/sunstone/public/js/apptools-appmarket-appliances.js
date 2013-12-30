@@ -51,6 +51,57 @@ var AppMarket = {
         });
     }
 }
+
+var Job = {
+    "resource" : "JOB",
+    "path" : "appmarket/job",
+
+    "create": function(params){
+        OpenNebula.Action.create(params, Job.resource, Job.path);
+    },
+    "show" : function(params){
+        OpenNebula.Action.show(params,Job.resource, false, Job.path);
+    },
+    "list" : function(params){
+        //Custom list request function, since the contents do not come
+        //in the same format as the rest of opennebula resources.
+        var callback = params.success;
+        var callback_error = params.error;
+        var timeout = params.timeout || false;
+        var request = OpenNebula.Helper.request('JOB','list');
+
+        $.ajax({
+            url: Job.path,
+            type: 'GET',
+            data: {timeout: timeout},
+            dataType: "json",
+            success: function(response){
+                return callback ?
+                    callback(request, response) : null;
+            },
+            error: function(res){
+                return callback_error ? callback_error(request, OpenNebula.Error(res)) : null;
+            }
+        });
+    }
+}
+
+var appconverter_job_actions = {
+    "Job.list" : {
+        type: "list",
+        call: Job.list,
+        callback: function(req,res){
+            $("#appconverter-jobs #error_message").hide();
+            updateView(res,dataTable_appconverter_jobs);
+        },
+        error: function(request, error_json) {
+            onError(request, error_json, $("#appconverter-jobs #error_message"));
+        }
+    }
+}
+
+Sunstone.addActions(appconverter_job_actions);
+
 var appmarket_actions = {
     "AppMarket.create" : {
         type: "create",
@@ -277,6 +328,7 @@ var appmarketplace_tab_content = '\
             <th>'+tr("Arch")+'</th>\
             <th>'+tr("Format")+'</th>\
             <th>'+tr("Tags")+'</th>\
+            <th>'+tr("Created")+'</th>\
           </tr>\
         </thead>\
         <tbody id="tbodyappmarketplace">\
@@ -308,12 +360,20 @@ Sunstone.addActions(appmarket_actions);
 
 var appmarketplace_info_panel = {
     "appmarketplace_info_tab" : {
-        title: tr("Appliance information"),
+        title: tr("Information"),
+        content:""
+    }
+};
+
+var appmarketplace_jobs_panel = {
+    "appmarketplace_jobs_tab" : {
+        title: tr("Jobs"),
         content:""
     }
 };
 
 Sunstone.addInfoPanel("appmarketplace_info_panel", appmarketplace_info_panel);
+Sunstone.addInfoPanel("appmarketplace_jobs_panel", appmarketplace_jobs_panel);
 
 function appmarketplaceElements(){
     return getSelectedNodes(dataTable_appmarket);
@@ -328,13 +388,13 @@ function updateMarketInfo(request,app){
     var url = app.links.download.href;
     url = url.replace(/\/download$/, '');
     var info_tab = {
-        title : tr("Appliance information"),
+        title : tr("Information"),
         content :
         '<form class="custom"><div class="">\
         <div class="six columns">\
         <table id="info_appmarketplace_table" class="twelve datatable extended_table">\
             <thead>\
-              <tr><th colspan="2">'+tr("Appliance information")+'</th></tr>\
+              <tr><th colspan="2">'+tr("Information")+'</th></tr>\
             </thead>\
             <tbody>\
               <tr>\
@@ -387,8 +447,69 @@ function updateMarketInfo(request,app){
     </form>'
     };
 
+    var jobs_tab = {
+        title: tr("Jobs"),
+        content : '<div class="columns twelve">\
+          <table id="datatable_appconverter_job" class="datatable twelve">\
+            <thead>\
+              <tr>\
+                <th class="check"></th>\
+                <th>'+tr("ID")+'</th>\
+                <th>'+tr("Name")+'</th>\
+                <th>'+tr("Status")+'</th>\
+                <th>'+tr("Worker")+'</th>\
+                <th>'+tr("Appliance")+'</th>\
+                <th>'+tr("Created")+'</th>\
+              </tr>\
+            </thead>\
+            <tbody id="tbodyappconverter_job">\
+            </tbody>\
+          </table>\
+        </div>'
+    }
+
     Sunstone.updateInfoPanelTab("appmarketplace_info_panel", "appmarketplace_info_tab", info_tab);
+    Sunstone.updateInfoPanelTab("appmarketplace_info_panel", "appmarketplace_jobs_tab", jobs_tab);
+
     Sunstone.popUpInfoPanel("appmarketplace_info_panel", "apptools-appmarket-appliances");
+
+    dataTable_appconverter_jobs = $("#datatable_appconverter_job").dataTable({
+        "bSortClasses": true,
+        "sDefaultContent" : "",
+        "aoColumns": [
+            { "bSortable": false,
+              "mData": function ( o, val, data ) {
+                  //we render 1st column as a checkbox directly
+                  return '<input class="check_item" type="checkbox" id="appconverter_job_'+
+                      o['_id']['$oid']+
+                      '" name="selected_items" value="'+
+                      o['_id']['$oid']+'"/>'
+              },
+              "sWidth" : "60px",
+              "bVisible": false
+            },
+            { "mData": "_id.$oid", "sWidth" : "200px" },
+            { "mData": "name" },
+            { "mData": "status" },
+            { "mData": "worker_host", "sDefaultContent" : "-" },
+            { "mData": "appliance_id", "sDefaultContent" : "-" },
+            { "mData": function (source) {
+              return pretty_time(source.creation_time)
+            } }
+          ],
+          "aoColumnDefs": [
+            //{ "bVisible": true, "aTargets": Config.tabTableColumns(tab_name)},
+            //{ "bVisible": false, "aTargets": ['_all']}
+        ]
+    });
+
+    Sunstone.runAction('Job.list');
+
+    $("#appmarketplace_info_panel_refresh", $("#appmarketplace_info_panel")).click(function(){
+      $(this).html(spinner);
+      Sunstone.runAction('AppMarket.showinfo', app['_id']["$oid"]);
+    })
+
 };
 
  function infoListenerAppMarket(dataTable){
@@ -485,13 +606,16 @@ $(document).ready(function(){
                 },
                 "sWidth" : "60px"
               },
-              { "mDataProp": "_id.$oid", "sWidth" : "200px" },
-              { "mDataProp": "name" },
-              { "mDataProp": "publisher" },
-              { "mDataProp": "files.0.hypervisor", "sWidth" : "100px"},
-              { "mDataProp": "files.0.os-arch", "sWidth" : "100px"},
-              { "mDataProp": "files.0.format", "sWidth" : "100px"},
-              { "mDataProp": "tags"}
+              { "mData": "_id.$oid", "sWidth" : "200px" },
+              { "mData": "name" },
+              { "mData": "publisher" },
+              { "mData": "files.0.hypervisor", "sWidth" : "100px"},
+              { "mData": "files.0.os-arch", "sWidth" : "100px"},
+              { "mData": "files.0.format", "sWidth" : "100px"},
+              { "mData": "tags"},
+              { "mData": function (source) {
+                return pretty_time(source.creation_time)
+              } }
             ],
             "aoColumnDefs": [
               { "bVisible": true, "aTargets": Config.tabTableColumns(tab_name)},
