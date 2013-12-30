@@ -141,7 +141,76 @@ module AppConverter
                 data = collection.find_one(filter)
             end
 
-            return self.factory(session, data)
+
+            self.factory(session, data)
+        end
+
+        # Clone the given app and create a new convert job
+        #
+        # @param [Session] session an instance of Session containing the
+        #   user permisions
+        # @param [String] object_id id of the resource
+        # @param [Hash] hash containing the values of the resource
+        # @return [AppConverter::Appliance] depends on the factory method
+        def self.clone(session, object_id, hash)
+            begin
+                filter = generate_filter(session, object_id)
+                fields = exclude_fields(session)
+                data = collection.find_one(filter, :fields => fields)
+            rescue BSON::InvalidObjectId
+                return [404, {"message" => $!.message}]
+            end
+
+            if data.nil?
+                return [404, {"message" => "Appliance not found"}]
+            end
+
+            if data['publisher'] == session.publisher
+                # if the session user is the owner, retrieve all the metadata
+                data = collection.find_one(filter)
+            end
+
+            validator = Validator::Validator.new(
+                :default_values => true,
+                :delete_extra_properties => false
+            )
+
+            data.delete('downloads')
+            data.delete('visits')
+            data.delete('publisher')
+            data.delete('state')
+            data.delete('_id')
+            data.delete('creation_time')
+            data['files'].each {|f| f.delete('checksum')}
+
+            begin
+                validator.validate!(data, session.schema(:appliance))
+            rescue Validator::ParseException
+                return [400, {"message" => $!.message}]
+            end
+
+            data['creation_time'] = Time.now.to_i
+            data['publisher'] = session.publisher
+            data['status'] = 'init'
+            # TODO add from_appliance attr
+
+            begin
+                object_id = collection.insert(data, {:w => 1})
+            rescue Mongo::OperationFailure
+                return [400, {"message" => "already exists"}]
+            end
+
+            app = AppCollection.get(session, object_id.to_s)
+
+            # TODO check hash keys
+            job_hash = {
+                'name' => 'convert',
+                'appliance_id' => app.object_id
+            }.deep_merge(hash)
+
+            AppConverter::JobCollection.create(session, job_hash)
+
+            return [201, app.to_hash]
         end
 
         protected

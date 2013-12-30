@@ -98,6 +98,12 @@ class Session
                 :worker     => false,
                 :admin      => true
             },
+            :clone => {
+                :anonymous  => false,
+                :user       => true,
+                :worker     => false,
+                :admin      => true
+            },
             :schema => {
                 :anonymous  => AppConverter::Appliance::SCHEMA,
                 :user       => AppConverter::Appliance::SCHEMA,
@@ -210,6 +216,8 @@ class Session
                 PERMISSIONS[:user][:create]
             when /^\/appliance$/
                 PERMISSIONS[:appliance][:create]
+            when /^\/appliance\/\w+\/clone$/
+                PERMISSIONS[:appliance][:clone]
             when /^\/user\/\w+\/enable$/
                 PERMISSIONS[:user][:enable]
             when /^\/worker\/\w+\/job\/\w+\/\w+$/

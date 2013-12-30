@@ -81,7 +81,7 @@ module AppConverter
         def cb_error(worker_host, job_hash, app_hash)
             job_hash_merged = {}.deep_merge(job_hash||{})
             app_hash_merged = {
-                'status' => 'ready'
+                'status' => 'init'
             }.deep_merge(app_hash||{})
 
             super(job_hash_merged, app_hash_merged)
@@ -102,7 +102,7 @@ module AppConverter
         def cb_cancel(worker_host, job_hash, app_hash)
             job_hash_merged = {}.deep_merge(job_hash||{})
             app_hash_merged = {
-                'status' => 'ready'
+                'status' => 'init'
             }.deep_merge(app_hash||{})
 
             super(job_hash_merged, app_hash_merged)

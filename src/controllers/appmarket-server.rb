@@ -406,6 +406,12 @@ post '/appliance' do
     body Parser.generate_body(@tmp_response[1])
 end
 
+post '/appliance/:id/clone' do
+    @tmp_response = AppConverter::AppCollection.clone(@session, params[:id], Parser.parse_body(request))
+    status @tmp_response[0]
+    body Parser.generate_body(@tmp_response[1])
+end
+
 delete '/appliance/:id' do
     app = AppConverter::AppCollection.get(@session, params[:id])
     if AppConverter::Collection.is_error?(app)

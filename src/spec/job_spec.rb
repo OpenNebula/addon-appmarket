@@ -533,7 +533,7 @@ describe 'creating a second job for the second appliance and callback error' do
 
         body['_id']['$oid'].should == $new_oid2
         body['name'].should == 'CentOS'
-        body['status'].should == 'ready'
+        body['status'].should == 'init'
         body['creation_time'].should <= Time.now.to_i
     end
 
@@ -548,5 +548,98 @@ describe 'creating a second job for the second appliance and callback error' do
         body['worker_host'].should == 'secondworker'
         body['creation_time'].should <= Time.now.to_i
     end
+end
+
+describe 'clone appliance' do
+    before(:each) do
+        basic_authorize('default','default')
+    end
+
+    it "should be able to retrieve metadata of the new appliance" do
+        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
+        last_response.status.should == 200
+        body = JSON.parse last_response.body
+
+        body['_id']['$oid'].should == $new_oid2
+        body['name'].should == 'CentOS'
+        body['status'].should == 'init'
+        body['creation_time'].should <= Time.now.to_i
+    end
+
+    it "appliance list should contain 1 element" do
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
+        body = JSON.parse last_response.body
+        body['appliances'].size.should eql(1)
+        body['appliances'][0]['name'].should == 'CentOS'
+        body['appliances'][0]['status'].should == 'init'
+        body['appliances'][0]['creation_time'].should <= Time.now.to_i
+    end
+
+    it "job list should contain 4 element" do
+        get "/job"
+
+        body = JSON.parse last_response.body
+        body.size.should eql(4)
+    end
+
+    it "appliance list should contain 1 element" do
+        post "/appliance/#{$new_oid2}/clone", {}, {'HTTP_ACCEPT' => 'application/json'}
+        last_response.status.should == 201
+        body = JSON.parse last_response.body
+
+        $new_oid3 = body['_id']['$oid']
+    end
+
+
+    it "appliance list should contain 1 element" do
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
+        body = JSON.parse last_response.body
+        body['appliances'].size.should eql(2)
+        body['appliances'][1]['name'].should == 'CentOS'
+        body['appliances'][1]['status'].should == 'init'
+        body['appliances'][1]['creation_time'].should <= Time.now.to_i
+    end
+
+    it "job list should contain 5 element" do
+        get "/job"
+
+        body = JSON.parse last_response.body
+        body.size.should eql(5)
+        body[4]['name'].should == 'convert'
+        body[4]['status'].should == 'pending'
+        body[4]['worker_host'].should == nil
+        body[4]['appliance_id'].should == $new_oid3
+        body[4]['creation_time'].should <= Time.now.to_i
+
+        $new_job_oid3 = body[4]['_id']['$oid']
+    end
+
+    it "send done callback" do
+        basic_authorize('worker','worker')
+        post "/worker/secondworker/job/#{$new_job_oid3}/done"
+    end
+
+    it "appliance list should contain 1 element" do
+        get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
+        body = JSON.parse last_response.body
+        body['appliances'].size.should eql(2)
+        body['appliances'][1]['name'].should == 'CentOS'
+        body['appliances'][1]['status'].should == 'ready'
+        body['appliances'][1]['creation_time'].should <= Time.now.to_i
+    end
+
+    it "job list should contain 5 element" do
+        get "/job"
+
+        body = JSON.parse last_response.body
+        body.size.should eql(5)
+        body[4]['name'].should == 'convert'
+        body[4]['status'].should == 'done'
+        body[4]['appliance_id'].should == $new_oid3
+        body[4]['creation_time'].should <= Time.now.to_i
+
+        $new_job_oid3 = body[4]['_id']['$oid']
+    end
+
 end
 end
