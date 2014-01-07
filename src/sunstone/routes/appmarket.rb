@@ -78,6 +78,10 @@ post '/appmarket/appliance' do
     appmarket_call { |client| client.create_appliance(request.body.read) }
 end
 
+put '/appmarket/appliance/:id' do
+    appmarket_call { |client| client.update_appliance(params[:id], request.body.read) }
+end
+
 delete '/appmarket/appliance/:id' do
     appmarket_call { |client| client.delete_appliance(params[:id]) }
 end

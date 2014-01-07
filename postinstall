@@ -103,7 +103,8 @@ add_view "apptools-appmarket-appliances:" \
             AppMarket.refresh: true
             AppMarket.import: true
             AppMarket.delete: true
-            AppMarket.create: true"
+            AppMarket.create_dialog: true
+            AppMarket.update_dialog: true"
 
 add_server "^:routes:" ":routes:"
 

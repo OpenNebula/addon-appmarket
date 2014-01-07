@@ -210,13 +210,24 @@ module AppConverter
         #   original information
         # @return [Integer, Hash] status code and hash with the error message
         def update(opts)
-            # TODO check opts keys
-            @data = @data.deep_merge(opts)
+            validator = Validator::Validator.new(
+                :default_values => false,
+                :delete_extra_properties => true
+            )
+
+            begin
+                validator.validate!(opts, @session.schema(:appliance))
+            rescue Validator::ParseException
+                return [400, {"message" => $!.message}]
+            end
+
+            data = @data.deep_merge(opts)
             AppCollection.collection.update(
                     {:_id => Collection.str_to_object_id(self.object_id)},
-                    @data)
+                    data)
 
             # TODO check if update == success
+            # TODO update @data
 
             return [200, {}]
         end

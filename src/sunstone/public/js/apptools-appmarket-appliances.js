@@ -26,10 +26,31 @@ var AppMarket = {
         OpenNebula.Action.create(params, AppMarket.resource, AppMarket.path);
     },
     "show" : function(params){
-        OpenNebula.Action.show(params,AppMarket.resource, false, AppMarket.path);
+        OpenNebula.Action.show(params, AppMarket.resource, false, AppMarket.path);
     },
     "del": function(params){
-        OpenNebula.Action.del(params,AppMarket.resource, AppMarket.path);
+        OpenNebula.Action.del(params, AppMarket.resource, AppMarket.path);
+    },
+    "update": function(params){
+        //Custom list request function, since the contents do not come
+        //in the same format as the rest of opennebula resources.
+        var callback = params.success;
+        var callback_error = params.error;
+        var timeout = params.timeout || false;
+        var request = OpenNebula.Helper.request('APPMARKET','update');
+
+        $.ajax({
+            url: AppMarket.path + '/' + params.data.id,
+            type: 'PUT',
+            data: params.data.extra_param,
+            dataType: "json",
+            success: function(response){
+                return callback ? callback(request, response) : null;
+            },
+            error: function(res){
+                return callback_error ? callback_error(request, OpenNebula.Error(res)) : null;
+            }
+        });
     },
     "list" : function(params){
         //Custom list request function, since the contents do not come
@@ -141,6 +162,29 @@ var appmarket_actions = {
         elements: appmarketplaceElements,
         error: onError,
         notify: true
+    },
+    "AppMarket.update_dialog" : {
+        type : "single",
+        call: popUpUpdateConverterApplianceialog,
+        error: onError
+    },
+    "AppMarket.show_to_update" : {
+        type : "single",
+        call: AppMarket.show,
+        callback: function(request, response){
+            fillUpUpdateConverterApplianceialog(request, response);
+            appliance_update_id = request.request.data[0]
+        },
+        error: onError
+    },
+    "AppMarket.update" : {
+        type: "single",
+        call: AppMarket.update,
+        callback: function(request,response){
+           notifyMessage(tr("Appliance updated correctly"));
+           //Sunstone.runAction('ServiceTemplate.show',response.DOCUMENT.ID);
+        },
+        error: onError
     },
     "AppMarket.import" : {
         //fetches images information and fills in the image creation
@@ -259,6 +303,11 @@ var appmarket_buttons = {
         type: "create_dialog",
         layout: "create"
     },
+    "AppMarket.update_dialog" : {
+        type: "action",
+        layout: "main",
+        text: tr("Update")
+    },
     "AppMarket.delete" : {
         type: "confirm",
         text: tr("Delete"),
@@ -283,7 +332,10 @@ var appmarket_import_dialog =
 
 var create_appconverter_appliance =
 '<div class="panel">\
-    <h3><small>'+tr("Create Appliance")+'</small></h4>\
+    <h3>\
+        <small id="create_appconverter_appliance_header">'+tr("Create Appliance")+'</small>\
+        <small id="update_appconverter_appliance_header">'+tr("Update Appliance")+'</small>\
+    </h3>\
 </div>\
 <div class="reveal-body">\
     <form id="create_appconverter_appliance" action="" class="custom creation">\
@@ -294,6 +346,7 @@ var create_appconverter_appliance =
             <hr>\
             <div class="form_buttons">\
                 <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
+                <button class="button radius right" id="update_appconverter_appliance_manual" value="image/create">'+tr("Update")+'</button>\
                 <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
                 <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
             </div>\
@@ -590,6 +643,13 @@ function setupCreateConverterApplianceDialog(){
         return false;
     });
 
+    $('#update_appconverter_appliance_manual',dialog).click(function(){
+        var template=$('#template',dialog).val();
+        Sunstone.runAction("AppMarket.update", appliance_update_id, template);
+        $create_converter_appliance_dialog.trigger("reveal:close")
+        return false;
+    });
+
     $('#create_appconverter_appliance_reset').click(function(){
         $create_converter_appliance_dialog.trigger('reveal:close');
         $create_converter_appliance_dialog.remove();
@@ -600,7 +660,44 @@ function setupCreateConverterApplianceDialog(){
 }
 
 function popUpCreateConverterApplianceialog(){
+    var dialog = $create_converter_appliance_dialog;
+
+    $("#create_appconverter_appliance_header", dialog).show();
+    $("#update_appconverter_appliance_header", dialog).hide();
+    $("#create_appconverter_appliance_manual", dialog).show();
+    $("#update_appconverter_appliance_manual", dialog).hide();
+
     $create_converter_appliance_dialog.reveal();
+}
+
+function popUpUpdateConverterApplianceialog(){
+    var dialog = $create_converter_appliance_dialog;
+
+    var selected_nodes = getSelectedNodes(dataTable_appmarket);
+    if ( selected_nodes.length != 1 ) {
+      notifyMessage("Please select one (and just one) appliance to update.");
+      return false;
+    }
+
+    var appliance_id = ""+selected_nodes[0];
+    Sunstone.runAction("AppMarket.show_to_update", appliance_id);
+
+    $("#create_appconverter_appliance_header", dialog).hide();
+    $("#update_appconverter_appliance_header", dialog).show();
+    $("#create_appconverter_appliance_manual", dialog).hide();
+    $("#update_appconverter_appliance_manual", dialog).show();
+
+    $create_converter_appliance_dialog.reveal();
+}
+
+function fillUpUpdateConverterApplianceialog(request, response){
+    var template_json = response;
+    delete template_json["_id"];
+    delete template_json["downloads"];
+    delete template_json["visits"];
+    delete template_json["status"];
+
+    $('#template',$create_converter_appliance_dialog).val(JSON.stringify(template_json, undefined, 2));
 }
 
 /*

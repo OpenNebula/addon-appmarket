@@ -426,7 +426,10 @@ put '/appliance/:id' do
     if AppConverter::Collection.is_error?(app)
         error app
     else
-        app.update(Parser.parse_body(request))
+        @tmp_response = app.update(Parser.parse_body(request))
+        content_type :json
+        status @tmp_response[0]
+        body Parser.generate_body(@tmp_response[1])
     end
 end
 
