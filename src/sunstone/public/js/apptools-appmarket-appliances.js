@@ -28,6 +28,9 @@ var AppMarket = {
     "show" : function(params){
         OpenNebula.Action.show(params,AppMarket.resource, false, AppMarket.path);
     },
+    "del": function(params){
+        OpenNebula.Action.del(params,AppMarket.resource, AppMarket.path);
+    },
     "list" : function(params){
         //Custom list request function, since the contents do not come
         //in the same format as the rest of opennebula resources.
@@ -131,6 +134,13 @@ var appmarket_actions = {
             waitingNodes(dataTable_appmarket);
             Sunstone.runAction('AppMarket.list');
         }
+    },
+    "AppMarket.delete" : {
+        type: "multiple",
+        call: AppMarket.del,
+        elements: appmarketplaceElements,
+        error: onError,
+        notify: true
     },
     "AppMarket.import" : {
         //fetches images information and fills in the image creation
@@ -245,9 +255,15 @@ var appmarket_buttons = {
         layout: "main",
         text: tr('Import')
     },
-    "Appliance.create_dialog" : {
+    "AppMarket.create_dialog" : {
         type: "create_dialog",
         layout: "create"
+    },
+    "AppMarket.delete" : {
+        type: "confirm",
+        text: tr("Delete"),
+        layout: "del",
+        tip: tr("This will delete the selected appliances")
     }
 };
 
