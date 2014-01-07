@@ -510,6 +510,8 @@ function updateMarketInfo(request,app){
       Sunstone.runAction('AppMarket.showinfo', app['_id']["$oid"]);
     })
 
+    dataTable_appconverter_jobs.fnFilter(app['_id']['$oid'], 5, true);
+
 };
 
  function infoListenerAppMarket(dataTable){
