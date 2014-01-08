@@ -212,6 +212,7 @@ module AppConverter
         def update(opts)
             validator = Validator::Validator.new(
                 :default_values => false,
+                :check_required => false,
                 :delete_extra_properties => true
             )
 

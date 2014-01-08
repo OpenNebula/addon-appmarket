@@ -64,12 +64,15 @@ class Validator
     # @param [Hash] opts the options to validate a body
     # @option opts [Boolean] :default_values Set default values if the schema
     #   specifies it (if true)
+    # @option opts [Boolean] :check_required Force required elements. if not
+    #   provided raise an exception
     # @option opts [Booblean] :delete_extra_properties If the body contains properties
     #   not specified in the schema delete them from the body (if true)
     #   or raise an exception (if false)
     def initialize(opts={})
         @opts = {
             :default_values => true,
+            :check_required => true,
             :delete_extra_properties => false
         }.merge(opts)
     end
@@ -173,7 +176,7 @@ class Validator
                 body[schema_key] = validate!(body_value, schema_value,
                                         schema_key)
             else
-                if schema_value[:required]
+                if schema_value[:required] && @opts[:check_required]
                     raise ParseException, "KEY: '#{schema_key}' is required;"\
                         " SCHEMA: #{schema_value}"
                 end
