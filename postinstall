@@ -93,16 +93,18 @@ add_view "apptools-appmarket-appliances:" \
             - 0         # Checkbox
             #- 1         # ID
             - 2         # Name
-            - 3         # Publisher
-            - 4         # Hypervisor
-            - 5         # Arch
-            - 6         # Format
-            #- 7         # Tags
-            - 8         # Created
+            - 3         # Status
+            - 4         # Publisher
+            - 5         # Hypervisor
+            - 6         # Arch
+            - 7         # Format
+            #- 8         # Tags
+            - 9         # Created
         actions:
             AppMarket.refresh: true
             AppMarket.import: true
             AppMarket.delete: true
+            AppMarket.convert: true
             AppMarket.create_dialog: true
             AppMarket.update_dialog: true"
 

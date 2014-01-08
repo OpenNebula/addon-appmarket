@@ -100,6 +100,10 @@ module AppMarket
             put('/appliance/' + appliance_id, body)
         end
 
+        def convert_appliance(appliance_id, body)
+            post('/appliance/' + appliance_id + '/clone', body)
+        end
+
         def callback(url, result, json_body="")
             uri = URI.parse(url)
 

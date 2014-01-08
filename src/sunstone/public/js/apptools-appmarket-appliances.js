@@ -32,8 +32,6 @@ var AppMarket = {
         OpenNebula.Action.del(params, AppMarket.resource, AppMarket.path);
     },
     "update": function(params){
-        //Custom list request function, since the contents do not come
-        //in the same format as the rest of opennebula resources.
         var callback = params.success;
         var callback_error = params.error;
         var timeout = params.timeout || false;
@@ -43,6 +41,32 @@ var AppMarket = {
             url: AppMarket.path + '/' + params.data.id,
             type: 'PUT',
             data: params.data.extra_param,
+            dataType: "json",
+            success: function(response){
+                return callback ? callback(request, response) : null;
+            },
+            error: function(res){
+                return callback_error ? callback_error(request, OpenNebula.Error(res)) : null;
+            }
+        });
+    },
+    "convert": function(params){
+        var callback = params.success;
+        var callback_error = params.error;
+        var timeout = params.timeout || false;
+        var request = OpenNebula.Helper.request('APPMARKET','convert');
+        var data = {
+            params: {
+                formats: [
+                    params.data.extra_param
+                ]
+            }
+        }
+
+        $.ajax({
+            url: AppMarket.path + '/' + params.data.id + '/convert',
+            type: 'POST',
+            data: JSON.stringify(data),
             dataType: "json",
             success: function(response){
                 return callback ? callback(request, response) : null;
@@ -186,6 +210,13 @@ var appmarket_actions = {
         },
         error: onError
     },
+    "AppMarket.convert" : {
+        type: "multiple",
+        call: AppMarket.convert,
+        elements: appmarketplaceElements,
+        error:onError,
+        notify: true
+    },
     "AppMarket.import" : {
         //fetches images information and fills in the image creation
         //dialog with it.
@@ -308,6 +339,17 @@ var appmarket_buttons = {
         layout: "main",
         text: tr("Update")
     },
+    "AppMarket.convert" : {
+        type: "confirm_with_select",
+        text: tr("Convert"),
+        layout: "main",
+        select: function(){
+            return '<option class="empty_value" value="">'+tr("Please select")+'</option>\
+            <option elem_id="qcow" value="qcow">qcow</option>\
+            <option elem_id="vmdk" value="vmdk">vmdk</option>'
+        },
+        tip: tr("Select the new format, a new appliance will be created")+":"
+    },
     "AppMarket.delete" : {
         type: "confirm",
         text: tr("Delete"),
@@ -392,6 +434,7 @@ var appmarketplace_tab_content = '\
             <th class="check"></th>\
             <th>'+tr("ID")+'</th>\
             <th>'+tr("Name")+'</th>\
+            <th>'+tr("Status")+'</th>\
             <th>'+tr("Publisher")+'</th>\
             <th>'+tr("Hypervisor")+'</th>\
             <th>'+tr("Arch")+'</th>\
@@ -723,6 +766,7 @@ $(document).ready(function(){
               },
               { "mData": "_id.$oid", "sWidth" : "200px" },
               { "mData": "name" },
+              { "mData": "status" },
               { "mData": "publisher" },
               { "mData": "files.0.hypervisor", "sWidth" : "100px"},
               { "mData": "files.0.os-arch", "sWidth" : "100px"},
