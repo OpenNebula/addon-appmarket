@@ -31,9 +31,21 @@ set :appmarket_config, appmarket_conf
 
 helpers do
     def appmarket_call(&block)
+        client  = $cloud_auth.client(session[:user])
+        user_id = OpenNebula::User::SELF
+        user    = OpenNebula::User.new_with_id(user_id, client)
+        rc = user.info
+        if OpenNebula.is_error?(rc)
+            logger.error { rc.message }
+            return [500, ""]
+        end
+
+        user = user['TEMPLATE/APPMARKET_USER'] || settings.appmarket_config[:appmarket_username]
+        pass = user['TEMPLATE/APPMARKET_PASSWORD'] || settings.appmarket_config[:appmarket_password]
+
         appmarket_client = AppMarket::Client.new(
-            settings.appmarket_config[:appmarket_username],
-            settings.appmarket_config[:appmarket_password],
+            user,
+            pass,
             settings.appmarket_config[:appmarket_url],
             "Sunstone")
 
