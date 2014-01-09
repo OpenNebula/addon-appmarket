@@ -486,8 +486,16 @@ var appmarketplace_jobs_panel = {
     }
 };
 
+var appmarketplace_template_panel = {
+    "appmarketplace_template_tab" : {
+        title: tr("Template"),
+        content:""
+    }
+};
+
 Sunstone.addInfoPanel("appmarketplace_info_panel", appmarketplace_info_panel);
 Sunstone.addInfoPanel("appmarketplace_jobs_panel", appmarketplace_jobs_panel);
+Sunstone.addInfoPanel("appmarketplace_template_panel", appmarketplace_template_panel);
 
 function appmarketplaceElements(){
     return getSelectedNodes(dataTable_appmarket);
@@ -582,8 +590,18 @@ function updateMarketInfo(request,app){
         </div>'
     }
 
+    var template_tab = {
+        title: tr("Template"),
+        content : '<div class="columns twelve">\
+            <table id="template_template_table" class="info_table transparent_table" style="width:80%">'+
+            prettyPrintJSON(app)+'\
+            </table>\
+        </div>'
+    }
+
     Sunstone.updateInfoPanelTab("appmarketplace_info_panel", "appmarketplace_info_tab", info_tab);
     Sunstone.updateInfoPanelTab("appmarketplace_info_panel", "appmarketplace_jobs_tab", jobs_tab);
+    Sunstone.updateInfoPanelTab("appmarketplace_info_panel", "appmarketplace_template_tab", template_tab);
 
     Sunstone.popUpInfoPanel("appmarketplace_info_panel", "apptools-appmarket-appliances");
 

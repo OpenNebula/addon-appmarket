@@ -89,6 +89,7 @@ add_view "apptools-appmarket-appliances:" \
         panel_tabs:
             appmarketplace_info_tab: true
             appmarketplace_jobs_tab: true
+            appmarketplace_template_tab: true
         table_columns:
             - 0         # Checkbox
             #- 1         # ID
