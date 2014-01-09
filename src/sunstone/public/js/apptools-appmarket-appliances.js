@@ -224,6 +224,11 @@ var appmarket_actions = {
         elements: appmarketplaceElements,
         call: AppMarket.show,
         callback: function(request,response){
+            if (response['status'] != 'ready') {
+                notifyError(tr("The appliance is not ready"));
+                return;
+            }
+
             if ($appmarket_import_dialog != undefined) {
               $appmarket_import_dialog.remove();
             }
@@ -294,7 +299,6 @@ var appmarket_actions = {
 
             initialize_create_template_dialog(template_dialog);
             fillTemplatePopUp(
-              null,
               JSON.parse(response['opennebula_template']),
               template_dialog);
 
