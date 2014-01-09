@@ -67,12 +67,12 @@ module AppConverter
                         'url' => {
                             :type => :uri
                         },
-                        'formats' => {
-                            :type => :array,
-                            :items => {
-                                :type => :string,
-                                :enum => AppConverter::Job::FORMATS
-                            }
+                        'from_appliance' => {
+                            :type => :string
+                        },
+                        'format' => {
+                            :type => :string,
+                            :enum => AppConverter::Job::FORMATS
                         }
                     }
                 }

@@ -57,9 +57,7 @@ var AppMarket = {
         var request = OpenNebula.Helper.request('APPMARKET','convert');
         var data = {
             params: {
-                formats: [
-                    params.data.extra_param
-                ]
+                format: params.data.extra_param
             }
         }
 

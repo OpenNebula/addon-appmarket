@@ -278,12 +278,10 @@ describe 'MarketPlace Appliance tests' do
 
             body = JSON.parse last_response.body
 
-            body['appliances'].size.should eql(2)
+            body['appliances'].size.should eql(1)
 
             body['appliances'][0]['_id']['$oid'].should == $new_oid
             body['appliances'][0]['name'].should == 'Ubuntu Server 12.04 LTS (Precise Pangolin)'
-            body['appliances'][1]['_id']['$oid'].should == $new_oid2
-            body['appliances'][1]['name'].should == 'CentOS 6.2'
         end
 
         it "should be able to retrieve metadata of the  appliance" do

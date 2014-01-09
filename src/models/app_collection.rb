@@ -192,7 +192,10 @@ module AppConverter
             data['creation_time'] = Time.now.to_i
             data['publisher'] = session.publisher
             data['status'] = 'init'
-            # TODO add from_appliance attr
+
+            if hash['params'] && hash['params']['format']
+                data['files'].each {|f| f['format'] = hash['params']['format']}
+            end
 
             begin
                 object_id = collection.insert(data, {:w => 1})
@@ -205,10 +208,14 @@ module AppConverter
             # TODO check hash keys
             job_hash = {
                 'name' => 'convert',
-                'appliance_id' => app.object_id
+                'appliance_id' => app.object_id,
+                'params' => {
+                    'from_appliance' => object_id.to_s
+                }
             }.deep_merge(hash)
 
-            AppConverter::JobCollection.create(session, job_hash)
+            job = AppConverter::JobCollection.create(session, job_hash)
+            # TODO Check if the creation fails
 
             return [201, app.to_hash]
         end
