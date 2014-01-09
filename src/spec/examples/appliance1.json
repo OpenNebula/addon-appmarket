@@ -1,6 +1,5 @@
 {
     "name": "CentOS",
-    "catalog": "public",
     "logo": "/img/logos/ubuntu.png",
     "tags": ["linux", "ubuntu"],
     "short_description": "aa",

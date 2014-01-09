@@ -232,11 +232,15 @@ module AppConverter
         def self.generate_filter(session, app_id)
             filter = Hash.new
 
-            #if session.allowed_catalogs
-            #    filter["catalog"] = {
-            #        "$in" => session.allowed_catalogs
-            #    }
-            #end
+            if session.anonymous?
+                filter["status"] = 'ready'
+            end
+
+            if session.allowed_catalogs
+                filter["catalog"] = {
+                    "$in" => session.allowed_catalogs
+                }
+            end
 
             if app_id
                 filter["_id"] = BSON::ObjectId(app_id)

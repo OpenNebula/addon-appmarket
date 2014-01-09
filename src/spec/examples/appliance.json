@@ -1,6 +1,5 @@
 {
     "name": "Ubuntu Server 12.04 LTS (Precise Pangolin)",
-    "catalog": "public",
     "logo": "/img/logos/ubuntu.png",
     "tags": ["linux", "ubuntu"],
     "short_description": "aa",
