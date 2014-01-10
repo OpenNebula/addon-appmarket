@@ -41,6 +41,8 @@ DRIVERS_LOCATION   = RUBY_LIB_LOCATION + '/appconverter/drivers'
 CONFIGURATION_FILE = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
+$: << RUBY_LIB_LOCATION + '/oneapps/market'
+$: << RUBY_LIB_LOCATION + '/cloud'
 
 ###############################################################################
 # Gems
@@ -55,7 +57,7 @@ require 'fileutils'
 ###############################################################################
 # Libraries
 ###############################################################################
-require 'appconverter-client'
+require 'appmarket_client'
 
 def get_job_dir(json_hash)
     return JOBS_DIR + '/' + json_hash['_id']['$oid']
@@ -123,12 +125,11 @@ end
     end
 }
 
-
-$client = AppConverter::Client.new
+$client = AppMarket::Client.new(CONF[:username], CONF[:password], CONF[:url])
 
 while !$exit do
     response = $client.get_next_job(CONF[:worker_name])
-    if AppConverter::CloudClient.is_error?(response)
+    if CloudClient.is_error?(response)
         puts response.message
     else
         json_hash = JSON.parse(response.body)
@@ -139,7 +140,7 @@ while !$exit do
         CONF[:worker_name],
         'status' => 'cancelling')
 
-    if AppConverter::CloudClient.is_error?(response)
+    if CloudClient.is_error?(response)
         puts response.message
     else
         json_array = JSON.parse(response.body)
