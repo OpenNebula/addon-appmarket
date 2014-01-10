@@ -25,9 +25,12 @@ module AppConverter
         FILE_SCHEMA = {
             :type => :object,
             :properties => {
+                'name' => {
+                    :type => :string
+                },
                 'type' => {
                     :type => :string,
-                    :enum => ['OS'],
+                    :enum => %w{OS CDROM DATABLOCK},
                     :default => 'OS'
                 },
                 'hypervisor' => {

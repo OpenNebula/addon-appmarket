@@ -441,3 +441,12 @@ get '/appliance/:id/download' do
         redirect app.file_url
     end
 end
+
+get '/appliance/:id/download/:file_id' do
+    app = AppConverter::AppCollection.get(@session, params[:id])
+    if AppConverter::Collection.is_error?(app)
+        error app
+    else
+        redirect app.file_url(params[:file_id])
+    end
+end

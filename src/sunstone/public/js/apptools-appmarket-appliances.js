@@ -236,53 +236,53 @@ var appmarket_actions = {
 
             var tab_id = 1;
 
-            // Append the new div containing the tab and add the tab to the list
-            var image_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
-              create_image_tmpl +
-            '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+            $.each(response['files'], function(index, value){
+                // Append the new div containing the tab and add the tab to the list
+                var image_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+                  create_image_tmpl +
+                '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
 
-            var a_image_dialog = $("<dd>\
-              <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Image")+"</a>\
-            </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+                var a_image_dialog = $("<dd>\
+                  <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Image")+"</a>\
+                </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
 
-            $(document).foundationTabs("set_tab", a_image_dialog);
+                initialize_create_image_dialog(image_dialog);
+                initialize_datastore_info_create_image_dialog(image_dialog);
 
-            initialize_create_image_dialog(image_dialog);
-            initialize_datastore_info_create_image_dialog(image_dialog);
+                $('#img_name', image_dialog).val(value['name']||response['name']);
+                $('#img_path', image_dialog).val(response['links']['download']['href']+'/'+index);
+                $('#src_path_select input[value="path"]', image_dialog).trigger('click');
+                $('select#img_type', image_dialog).val(value['type']);
+                $('select#img_type', image_dialog).trigger('change');
 
-            $('#img_name', image_dialog).val(response['name']);
-            $('#img_path', image_dialog).val(response['links']['download']['href']);
-            $('#src_path_select input[value="path"]', image_dialog).trigger('click');
-            $('select#img_type', image_dialog).val('OS');
-            $('select#img_type', image_dialog).trigger('change');
+                //remove any options from the custom vars dialog box
+                $("#custom_var_image_box",image_dialog).empty();
 
-            //remove any options from the custom vars dialog box
-            $("#custom_var_image_box",image_dialog).empty();
+                var md5 = value['md5']
+                if ( md5 ) {
+                    option = '<option value=\'' +
+                        md5 + '\' name="MD5">MD5=' +
+                        md5 + '</option>';
+                    $("#custom_var_image_box",image_dialog).append(option);
+                }
 
-            var md5 = response['files'][0]['md5']
-            if ( md5 ) {
-                option = '<option value=\'' +
-                    md5 + '\' name="MD5">MD5=' +
-                    md5 + '</option>';
-                $("#custom_var_image_box",image_dialog).append(option);
-            }
+                var sha1 = value['sha1']
+                if ( sha1 ) {
+                    option = '<option value=\'' +
+                        sha1 + '\' name="SHA1">SHA1=' +
+                        sha1 + '</option>';
+                    $("#custom_var_image_box",image_dialog).append(option);
+                }
 
-            var sha1 = response['files'][0]['sha1']
-            if ( sha1 ) {
-                option = '<option value=\'' +
-                    sha1 + '\' name="SHA1">SHA1=' +
-                    sha1 + '</option>';
-                $("#custom_var_image_box",image_dialog).append(option);
-            }
+                image_dialog.on("reveal:close", function(){
+                  a_image_dialog.remove();
+                  image_dialog.remove();
+                  $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+                  return false;
+                });
 
-            image_dialog.on("reveal:close", function(){
-              a_image_dialog.remove();
-              image_dialog.remove();
-              $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
-              return false;
-            });
-
-            tab_id++;
+                tab_id++;
+            })
 
             $create_template_dialog.remove();
             // Template
@@ -310,6 +310,8 @@ var appmarket_actions = {
             $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
             $appmarket_import_dialog.reveal();
             //popUpCreateImageDialog();
+
+            $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
         },
         error: onError
     },
