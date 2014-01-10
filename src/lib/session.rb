@@ -272,6 +272,8 @@ class Session
             :anonymous
         elsif @user['role'] == AppConverter::User::ADMIN_ROLE
             :admin
+        elsif @user['role'] == AppConverter::User::WORKER_ROLE
+            :worker
         else
             :user
         end

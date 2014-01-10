@@ -19,8 +19,9 @@ require 'bcrypt'
 module AppConverter
     class User < Collection
         # User will be created by default in this role
-        USER_ROLE  = 'user'
-        ADMIN_ROLE = 'admin'
+        USER_ROLE   = 'user'
+        ADMIN_ROLE  = 'admin'
+        WORKER_ROLE = 'worker'
 
         SCHEMA = {
             :type => :object,
