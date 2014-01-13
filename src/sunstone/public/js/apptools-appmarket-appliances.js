@@ -303,10 +303,14 @@ var appmarket_actions = {
                     $("#custom_var_image_box",image_dialog).append(option);
                 }
 
+                a_image_dialog.on('click', function(){
+                    $create_image_dialog = image_dialog;
+                })
+
                 image_dialog.on("reveal:close", function(){
                   a_image_dialog.remove();
                   image_dialog.remove();
-                  $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+                  $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
                   return false;
                 });
 
@@ -329,10 +333,14 @@ var appmarket_actions = {
               JSON.parse(response['opennebula_template']),
               template_dialog);
 
+            a_template_dialog.on('click', function(){
+                $create_template_dialog = template_dialog;
+            })
+
             template_dialog.on("reveal:close", function(){
               a_template_dialog.remove();
               template_dialog.remove();
-              $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+              $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
               return false;
             });
 
@@ -340,7 +348,7 @@ var appmarket_actions = {
             $appmarket_import_dialog.reveal();
             //popUpCreateImageDialog();
 
-            $(document).foundationTabs("set_tab", $("dl#appmarket_import_dialog_tabs").children().first());
+            $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
         },
         error: onError
     },
