@@ -101,3 +101,7 @@ end
 delete '/appmarket/appliance/:id' do
     appmarket_call { |client| client.delete_appliance(params[:id]) }
 end
+
+delete '/appmarket/job/:id' do
+    appmarket_call { |client| client.delete_job(params[:id]) }
+end

@@ -56,6 +56,10 @@ module AppMarket
             get('/job/' + job_id)
         end
 
+        def delete_job(job_id)
+            delete('/job/' + job_id)
+        end
+
         def get_next_job(worker_id)
             get('/worker/' + worker_id + '/nextjob')
         end

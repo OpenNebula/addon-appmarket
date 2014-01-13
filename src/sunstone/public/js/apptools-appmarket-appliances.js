@@ -108,6 +108,9 @@ var Job = {
     "show" : function(params){
         OpenNebula.Action.show(params,Job.resource, false, Job.path);
     },
+    "del": function(params){
+        OpenNebula.Action.del(params, Job.resource, Job.path);
+    },
     "list" : function(params){
         //Custom list request function, since the contents do not come
         //in the same format as the rest of opennebula resources.
@@ -143,10 +146,36 @@ var appconverter_job_actions = {
         error: function(request, error_json) {
             onError(request, error_json, $("#appconverter-jobs #error_message"));
         }
+    },
+    "Job.delete" : {
+        type: "multiple",
+        call: Job.del,
+        callback: jobCallback,
+        elements: jobElements,
+        error: onError,
+        notify: true
     }
 }
 
 Sunstone.addActions(appconverter_job_actions);
+
+function jobElements() {
+    return getSelectedNodes(datatable_appconverter_job);
+};
+
+function jobCallback() {
+// TODO
+    return $("#service_info_panel_refresh", $("#service_info_panel")).click();
+}
+
+var job_buttons = {
+    "Job.delete" : {
+        type: "action",
+        text: tr("Delete"),
+        layout: "del",
+        tip: tr("This will delete the selected VMs from the database")
+    }
+}
 
 var appmarket_actions = {
     "AppMarket.create" : {
@@ -573,7 +602,13 @@ function updateMarketInfo(request,app){
 
     var jobs_tab = {
         title: tr("Jobs"),
-        content : '<div class="columns twelve">\
+        content : '<form class="custom" id="jobs_form" action="">\
+        <div class="columns twelve">\
+          <div id="job_actions" class="">\
+            <div class="action_blocks row">\
+            </div>\
+          </div>\
+          <div class="">\
           <table id="datatable_appconverter_job" class="datatable twelve">\
             <thead>\
               <tr>\
@@ -589,7 +624,9 @@ function updateMarketInfo(request,app){
             <tbody id="tbodyappconverter_job">\
             </tbody>\
           </table>\
-        </div>'
+          </div>\
+        </div>\
+        </form>'
     }
 
     var template_tab = {
@@ -619,8 +656,7 @@ function updateMarketInfo(request,app){
                       '" name="selected_items" value="'+
                       o['_id']['$oid']+'"/>'
               },
-              "sWidth" : "60px",
-              "bVisible": false
+              "sWidth" : "60px"
             },
             { "mData": "_id.$oid", "sWidth" : "200px" },
             { "mData": "name" },
@@ -637,6 +673,50 @@ function updateMarketInfo(request,app){
         ]
     });
 
+    insertButtonsInTab("apptools-appmarket-appliances", "appmarketplace_jobs_tab", job_buttons, $('#job_actions', $("#dialog")))
+    $('#job_actions', $("#dialog")).foundationButtons();
+    $('#job_actions', $("#dialog")).foundationButtons();
+
+    $('tbody input.check_item',dataTable_appconverter_jobs).die();
+    $('tbody tr',dataTable_appconverter_jobs).die();
+
+    initCheckAllBoxes(dataTable_appconverter_jobs, $('#job_actions', $("#dialog")));
+    tableCheckboxesListener(dataTable_appconverter_jobs, $('#job_actions', $("#dialog")));
+
+    var last_selected_row_job;
+
+    $('tbody tr',dataTable_appconverter_jobs).die()
+    $('tbody tr',dataTable_appconverter_jobs).live("click",function(e){
+        if ($(e.target).is('input') ||
+            $(e.target).is('select') ||
+            $(e.target).is('option')) return true;
+
+        if (e.ctrlKey || e.metaKey || $(e.target).is('input'))
+        {
+            $('.check_item',this).trigger('click');
+        }
+        else
+        {
+            var aData = dataTable_appconverter_jobs.fnGetData(this);
+            var job_name = $(aData[0]).val();
+
+            $('tbody input.check_item',$(this).parents('table')).removeAttr('checked');
+            $('.check_item',this).click();
+            $('td',$(this).parents('table')).removeClass('markrowchecked');
+
+            if(last_selected_row_job) {
+                last_selected_row_job.children().each(function(){
+                    $(this).removeClass('markrowselected');
+                });
+            }
+
+            last_selected_row_job = $(this);
+            $(this).children().each(function(){
+                $(this).addClass('markrowselected');
+            });
+        }
+    });
+
     Sunstone.runAction('Job.list');
 
     $("#appmarketplace_info_panel_refresh", $("#appmarketplace_info_panel")).click(function(){
@@ -645,7 +725,6 @@ function updateMarketInfo(request,app){
     })
 
     dataTable_appconverter_jobs.fnFilter(app['_id']['$oid'], 5, true);
-
 };
 
  function infoListenerAppMarket(dataTable){
