@@ -108,7 +108,7 @@ class Session
             :schema => {
                 :anonymous => AppConverter::Appliance::SCHEMA,
                 :user      => AppConverter::Appliance::SCHEMA,
-                :worker    => AppConverter::Appliance::SCHEMA,
+                :worker    => AppConverter::Appliance::ADMIN_SCHEMA,
                 :admin     => AppConverter::Appliance::ADMIN_SCHEMA
             }
         },
