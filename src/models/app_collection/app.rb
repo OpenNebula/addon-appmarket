@@ -84,6 +84,12 @@ module AppConverter
                     :type => :string,
                     :required => true
                 },
+                'source' => {
+                    :type => :string
+                },
+                'source_type' => {
+                    :type => :string
+                },
                 'catalog' => {
                     :type => :null,
                     :default => PUBLIC_CATALOG
