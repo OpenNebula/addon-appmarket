@@ -51,8 +51,8 @@ helpers do
 
         resp = block.call(appmarket_client)
 
-        if CloudClient::is_error?(resp)
-            body Error.new(JSON.parse(resp.to_s)['message']).to_json
+        if AppNarket::is_error?(resp)
+            body AppNarket::Error.new(JSON.parse(resp.to_s)['message']).to_json
         else
             body resp.body
         end

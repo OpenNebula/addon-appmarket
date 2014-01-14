@@ -118,7 +118,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.get_users
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             if options[:json]
@@ -160,7 +160,7 @@ EOT
 
         response = client.create(File.read(args[0]))
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0, response.body]
@@ -184,7 +184,7 @@ EOT
 
         response = client.get_user(args[0])
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0,response.body]
@@ -208,7 +208,7 @@ EOT
 
         response = client.delete_user(args[0])
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0,response.body]
@@ -232,7 +232,7 @@ EOT
 
         response = client.enable_user(args[0])
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0,response.body]
@@ -256,7 +256,7 @@ EOT
 
         response = client.update_user(args[0], File.read(args[1]))
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0, response.body]

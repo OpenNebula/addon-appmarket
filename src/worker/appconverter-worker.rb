@@ -129,7 +129,7 @@ $client = AppMarket::Client.new(CONF[:username], CONF[:password], CONF[:url])
 
 while !$exit do
     response = $client.get_next_job(CONF[:worker_name])
-    if CloudClient.is_error?(response)
+    if AppMarket.is_error?(response)
         puts response.message
     else
         json_hash = JSON.parse(response.body)
@@ -140,7 +140,7 @@ while !$exit do
         CONF[:worker_name],
         'status' => 'cancelling')
 
-    if CloudClient.is_error?(response)
+    if AppMarket.is_error?(response)
         puts response.message
     else
         json_array = JSON.parse(response.body)

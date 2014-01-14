@@ -15,9 +15,11 @@
 #--------------------------------------------------------------------------- #
 
 require 'uri'
-require 'CloudClient'
+require 'net/https'
 
 module AppMarket
+    VERSION = "4.5.80"
+
     class Client
         def initialize(username, password, url, user_agent="Ruby")
             @username = username || ENV['APPMARKET_USER']
@@ -26,7 +28,7 @@ module AppMarket
             url = url || ENV['APPMARKET_URL'] || 'http://localhost:6242/'
             @uri = URI.parse(url)
 
-            @user_agent = "OpenNebula #{CloudClient::VERSION} (#{user_agent})"
+            @user_agent = "OpenNebula #{AppMarket::VERSION} (#{user_agent})"
 
             @host = nil
             @port = nil
@@ -110,8 +112,6 @@ module AppMarket
 
         def callback(url, result, json_body="")
             uri = URI.parse(url)
-
-            # TODO Check result is a valid callback
             post(uri.path + '/' + result, json_body)
         end
 
@@ -174,11 +174,98 @@ module AppMarket
 
             req['User-Agent'] = @user_agent
 
-            res = CloudClient::http_start(@uri, @timeout) do |http|
+            res = AppMarket::Client::http_start(@uri, @timeout) do |http|
                 http.request(req)
             end
 
             res
         end
+
+        # #########################################################################
+        # Starts an http connection and calls the block provided. SSL flag
+        # is set if needed.
+        # #########################################################################
+        def self.http_start(url, timeout, &block)
+            host = nil
+            port = nil
+
+            if ENV['http_proxy']
+                uri_proxy  = URI.parse(ENV['http_proxy'])
+                host = uri_proxy.host
+                port = uri_proxy.port
+            end
+
+            http = Net::HTTP::Proxy(host, port).new(url.host, url.port)
+
+            if timeout
+                http.read_timeout = timeout.to_i
+            end
+
+            if url.scheme=='https'
+                http.use_ssl = true
+                http.verify_mode=OpenSSL::SSL::VERIFY_NONE
+            end
+
+            begin
+                res = http.start do |connection|
+                    block.call(connection)
+                end
+            rescue Errno::ECONNREFUSED => e
+                str =  "Error connecting to server (#{e.to_s}).\n"
+                str << "Server: #{url.host}:#{url.port}"
+
+                return AppMarket::Error.new(str,"503")
+            rescue Errno::ETIMEDOUT => e
+                str =  "Error timeout connecting to server (#{e.to_s}).\n"
+                str << "Server: #{url.host}:#{url.port}"
+
+                return AppMarket::Error.new(str,"504")
+            rescue Timeout::Error => e
+                str =  "Error timeout while connected to server (#{e.to_s}).\n"
+                str << "Server: #{url.host}:#{url.port}"
+
+                return AppMarket::Error.new(str,"504")
+            rescue SocketError => e
+                str =  "Error timeout while connected to server (#{e.to_s}).\n"
+
+                return AppMarket::Error.new(str,"503")
+            rescue
+                return AppMarket::Error.new($!.to_s,"503")
+            end
+
+            if res.is_a?(Net::HTTPSuccess)
+                res
+            else
+                AppMarket::Error.new(res.body, res.code)
+            end
+        end
+    end
+
+
+    # #########################################################################
+    # The Error Class represents a generic error in the Cloud Client
+    # library. It contains a readable representation of the error.
+    # #########################################################################
+    class Error
+        attr_reader :message
+        attr_reader :code
+
+        # +message+ a description of the error
+        def initialize(message=nil, code="500")
+            @message=message
+            @code=code
+        end
+
+        def to_s()
+            @message
+        end
+    end
+
+    # #########################################################################
+    # Returns true if the object returned by a method of the OpenNebula
+    # library is an Error
+    # #########################################################################
+    def self.is_error?(value)
+        value.class==AppMarket::Error
     end
 end

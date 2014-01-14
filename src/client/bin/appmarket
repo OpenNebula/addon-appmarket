@@ -122,7 +122,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.get_appliances
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             if options[:json]
@@ -178,7 +178,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.create(File.read(args[0]))
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0, response.body]
@@ -202,7 +202,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.get_appliance(args[0])
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0,response.body]
@@ -226,7 +226,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.delete_appliance(args[0])
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0,response.body]
@@ -250,7 +250,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
 
         response = client.update_appliance(File.read(args[0]))
 
-        if CloudClient::is_error?(response)
+        if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
         else
             [0, response.body]
