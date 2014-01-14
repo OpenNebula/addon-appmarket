@@ -131,6 +131,7 @@ copy_files "bin/*" "$BIN_LOCATION"
 
 # dirs containing files
 copy_files "drivers" "$LIB_LOCATION/appconverter"
+copy_files "lib" "$LIB_LOCATION/appconverter"
 
 # files
 copy_files "appconverter-worker.rb" "$LIB_LOCATION/appconverter"
@@ -146,6 +147,7 @@ copy_files "appconverter-worker.rb" "$LIB_LOCATION/appconverter"
 # Do not link the ETC files
 LINK="no"
 copy_files "etc/appconverter-worker.conf" "$ETC_LOCATION"
+
 )
 
 #if [ -z "$NOPOSTINSTALL" ]; then
