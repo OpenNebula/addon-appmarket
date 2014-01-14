@@ -108,7 +108,6 @@ module AppConverter
                 return [404, {"message" => $!.message}]
             end
 
-            # TODO return code
             return [202, {}]
         end
 
@@ -124,7 +123,6 @@ module AppConverter
                 return [404, {"message" => $!.message}]
             end
 
-            # TODO return code
             return [200, {}]
         end
 
@@ -279,8 +277,6 @@ module AppConverter
 
             self.update_from_callback(job_hash_update, app_hash_update)
         end
-
-        # TODO Update callback
 
         # Update the information of the job and the appliance with the values
         #   provided by the callbacks

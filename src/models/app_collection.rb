@@ -100,7 +100,6 @@ module AppConverter
 
             app = AppCollection.get(session, object_id.to_s)
 
-            # TODO more than one file, check nils
             if hash['files'][0]['url'].nil?
                 # Create a new Job to upload the new appliance
                 job_hash = {

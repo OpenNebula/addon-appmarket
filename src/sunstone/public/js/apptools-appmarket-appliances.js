@@ -164,8 +164,7 @@ function jobElements() {
 };
 
 function jobCallback() {
-// TODO
-    return $("#service_info_panel_refresh", $("#service_info_panel")).click();
+    return $("#appmarketplace_info_panel_refresh", $("#appmarketplace_info_panel")).click();
 }
 
 var job_buttons = {
