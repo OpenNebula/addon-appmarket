@@ -190,7 +190,6 @@ module AppConverter
                 return [404, {"message" => $!.message}]
             end
 
-            # TODO return code
             return [200, {}]
         end
 
@@ -231,13 +230,10 @@ module AppConverter
                 return [400, {"message" => $!.message}]
             end
 
-            data = @data.deep_merge(opts)
+            @data = @data.deep_merge(opts)
             AppCollection.collection.update(
                     {:_id => Collection.str_to_object_id(self.object_id)},
-                    data)
-
-            # TODO check if update == success
-            # TODO update @data
+                    @data)
 
             return [200, {}]
         end
