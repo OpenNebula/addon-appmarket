@@ -223,8 +223,7 @@ class Session
                 PERMISSIONS[:appliance][:clone]
             when /^\/user\/\w+\/enable$/
                 PERMISSIONS[:user][:enable]
-            when /^\/worker\/\w+\/job\/\w+\/\w+$/
-                # TODO add callback strings to the reg exp
+            when /^\/worker\/\w+\/job\/\w+\/(done|error|update|cancel)$/
                 PERMISSIONS[:worker][:job_callback]
             end
         end

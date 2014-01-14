@@ -182,7 +182,8 @@ module AppConverter
                     job.cancel
                 }
 
-                # TODO Keep app until all the jobs are cancelled?
+                # The app is removed insted of keeping it until all the jobs
+                #   are cancelled?
                 AppCollection.collection.remove(
                     :_id => Collection.str_to_object_id(self.object_id))
             rescue BSON::InvalidObjectId
