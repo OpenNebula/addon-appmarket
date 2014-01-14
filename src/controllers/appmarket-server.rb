@@ -260,7 +260,11 @@ get '/worker/:worker_host/nextjob' do
             else
                 next_job = job_collection.first
                 next_job.start(params[:worker_host], {}, {})
-                @tmp_response = [200, next_job.to_hash]
+
+                job_hash = next_job.to_hash
+                app = AppConverter::AppCollection.get(@session, job_hash['appliance_id'])
+                job_hash['appliance'] = app.to_hash
+                @tmp_response = [200, job_hash]
             end
         end
     end
