@@ -127,8 +127,7 @@ module AppConverter
                 },
                 'files' => {
                     :type => :array,
-                    :items => FILE_SCHEMA,
-                    :required => true
+                    :items => FILE_SCHEMA
                 },
                 'visits' => {
                     :type => :null,
