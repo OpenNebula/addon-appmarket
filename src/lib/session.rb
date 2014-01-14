@@ -56,9 +56,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous  => AppConverter::User::SCHEMA,
-                :user       => AppConverter::User::SCHEMA,
-                :admin      => AppConverter::User::ADMIN_SCHEMA
+                :anonymous => AppConverter::User::SCHEMA,
+                :user      => AppConverter::User::SCHEMA,
+                :worker    => AppConverter::User::SCHEMA,
+                :admin     => AppConverter::User::ADMIN_SCHEMA
             }
         },
         :appliance => {
@@ -105,9 +106,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous  => AppConverter::Appliance::SCHEMA,
-                :user       => AppConverter::Appliance::SCHEMA,
-                :admin      => AppConverter::Appliance::ADMIN_SCHEMA
+                :anonymous => AppConverter::Appliance::SCHEMA,
+                :user      => AppConverter::Appliance::SCHEMA,
+                :worker    => AppConverter::Appliance::SCHEMA,
+                :admin     => AppConverter::Appliance::ADMIN_SCHEMA
             }
         },
         :job => {
@@ -136,9 +138,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous  => AppConverter::Job::SCHEMA,
-                :user       => AppConverter::Job::SCHEMA,
-                :admin      => AppConverter::Job::SCHEMA
+                :anonymous => AppConverter::Job::SCHEMA,
+                :user      => AppConverter::Job::SCHEMA,
+                :worker    => AppConverter::Job::SCHEMA,
+                :admin     => AppConverter::Job::SCHEMA
             }
         },
         :worker => {
