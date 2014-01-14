@@ -900,7 +900,7 @@ $(document).ready(function(){
 
 
       tableCheckboxesListener(dataTable_appmarket);
-      onlyOneCheckboxListener(dataTable_appmarket);
+      //onlyOneCheckboxListener(dataTable_appmarket);
 
       infoListenerAppMarket(dataTable_appmarket);
 
