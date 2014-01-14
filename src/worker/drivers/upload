@@ -15,29 +15,209 @@ end
 CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
+$: << RUBY_LIB_LOCATION + '/appconverter/lib'
 
-###############################################################################
+################################################################################
 # Libraries
-###############################################################################
-require 'appconverter-client'
+################################################################################
+
+# require 'appmarket_client'
+require 'OVFParserOpenNebula'
 
 require 'rubygems'
 require 'json'
+require 'base64'
+require 'yaml'
+require 'tmpdir'
+require 'fileutils'
+require 'open4'
+require 'uuidtools'
+require 'digest/md5'
+require 'digest/sha1'
 
-puts "uploading..."
+require 'pp'
 
+################################################################################
+# Configuration
+################################################################################
+
+begin
+    CONF = YAML.load_file(CONFIGURATION_FILE)
+rescue Exception => e
+    STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
+    exit 1
+end
+
+################################################################################
+# Helper Methods
+################################################################################
+
+def fail(error)
+    STDERR.puts "Error: #{error}."
+    # TODO: client error
+    exit 1
+end
+
+def ensure_value(value, error_msg)
+    fail(error_msg) if value.nil? or value.empty?
+end
+
+################################################################################
+# ApplianceFile
+################################################################################
+
+class ApplianceFile
+    def initialize(hash = nil)
+        @hash = hash || Hash.new
+    end
+
+    # Hash implementation
+    def to_hash; @hash; end
+    def [](key); @hash[key]; end
+    def []=(key, value); @hash[key] = value; end
+
+    # Static methods
+    def self.register(hash)
+        source = hash[:path]
+        name   = hash[:name] || source.split("/")[-1]
+        target = hash[:target]
+
+        uuid = UUIDTools::UUID.random_create.to_s
+
+        path = File.join(CONF[:repo], uuid)
+        url  = File.join(CONF[:base_uri], uuid)
+
+        FileUtils.mv(source, path)
+
+        digests = self.digests(path)
+
+        self.new({
+            "name" => name,
+            "url"  => url,
+            "size" => File.size?(path),
+            "md5"  => digests[:md5],
+            "sha1" => digests[:sha1]
+        })
+    end
+
+    def self.digests(path)
+        md5sum  = Digest::MD5.new
+        sha1sum = Digest::SHA1.new
+
+        File.open(path, 'rb') do |io|
+            buffer = String.new
+            while io.read(4096, buffer)
+                md5sum.update(buffer)
+                sha1sum.update(buffer)
+            end
+        end
+
+        {
+            :md5  => md5sum.to_s,
+            :sha1 => sha1sum.to_s
+        }
+    end
+end
+
+################################################################################
+# Appliance Processing
+################################################################################
+
+class Appliance
+    attr_accessor :files
+
+    def initialize(body)
+        @body   = body
+        @source = @body["source"]
+        @files  = @body["files"] || Array.new
+    end
+
+    def temp_dir
+        return @temp_dir if @temp_dir
+
+        FileUtils.mkdir_p(CONF[:temp_dir])
+        @temp_dir = Dir.mktmpdir(nil, CONF[:temp_dir])
+    end
+
+    def download_cmd
+        if !defined?(@curl_exists) or !defined?(@wget_exists)
+            which_curl = `which curl`
+            @curl_exists = $?.exitstatus == 0
+
+            which_wget = `which wget`
+            @wget_exists = $?.exitstatus == 0
+        end
+
+        if @curl_exists
+            "curl -s #{@source}"
+        elsif @wget_exists
+            "wget -q #{@source} -O-"
+        else
+            fail("No curl or wget found.")
+        end
+    end
+
+    def to_hash
+        @body["files"] = @files
+        @body
+    end
+end
+
+class OVA < Appliance
+    def unpack
+        pid, stdin, stdout, stderr = Open4.popen4("#{download_cmd} | tar -xf- -C #{temp_dir}")
+        _, status = Process::waitpid2 pid
+
+        if !status.success?
+            fail("Download error:\n#{stderr.read}")
+        end
+    end
+
+    def ovf_to_opennebula_template(ovf)
+
+    end
+
+    def register_files
+        ovf_file = Dir["#{temp_dir}/*.ovf"][0]
+
+        ovf = OVFParserOpenNebula.new(ovf_file)
+        ovf.get_disks.each do |disk|
+            disk[:path]    = File.join(temp_dir, disk[:path])
+            appliance_file = ApplianceFile.register(disk)
+            @files << appliance_file.to_hash
+        end
+    end
+end
+
+################################################################################
+# Main
+################################################################################
+
+# Callback URL
 url = ARGV[0]
-job_json = ARGV[1]
 
-client = AppConverter::Client.new
+# Job meta-data
+begin
+    job_json = JSON.parse(Base64::decode64(ARGV[1]))
+rescue
+    fail("Invalid job.")
+end
 
-result_path = '/tmp/appconverter_result'
-file = File.open(result_path, 'r') {|f|
-    str = f.read
-    sleep 60
-    #client.callback(url, str.strip)
-}
+# client = AppConverter::Client.new
 
-puts "...done"
+source      = job_json["appliance"]["source"]
+source_type = job_json["appliance"]["source_type"]
 
+ensure_value(source,      "Attribute 'source' cannot be empty.")
+ensure_value(source_type, "Attribute 'source_type' cannot be empty.")
 
+case source_type
+when "ova" then klass = OVA
+else
+    fail("unknown type #{type}")
+end
+
+appliance = klass.new(job_json["appliance"])
+
+appliance.unpack
+appliance.register_files
