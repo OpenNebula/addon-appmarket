@@ -81,7 +81,7 @@ module AppMarket
         end
 
         def callback_url(worker_id, job_id)
-            return @uri.to_s + 'worker/' + worker_id + '/job/' + job_id
+            return [@uri.to_s, 'worker', worker_id, 'job', job_id].join('/')
         end
 
         def create_appliance(body)
