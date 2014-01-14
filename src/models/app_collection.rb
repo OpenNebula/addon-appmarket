@@ -70,12 +70,6 @@ module AppConverter
             hash['creation_time'] = Time.now.to_i
             hash['publisher'] = session.publisher
 
-            # Remove for OpenNebula 3.6
-            checksum = Hash.new
-            checksum['md5'] = hash['files'][0]['md5'] if hash['files'][0]['md5']
-            checksum['sha1'] = hash['files'][0]['sha1'] if hash['files'][0]['sha1']
-            hash['files'][0]['checksum'] = checksum
-
 #        if hash['files'][0]['url']
 #            uri = URI.parse(hash['files'][0]['url'])
 #
@@ -100,7 +94,7 @@ module AppConverter
 
             app = AppCollection.get(session, object_id.to_s)
 
-            if hash['files'][0]['url'].nil?
+            if hash['files'].nil? || hash['files'][0]['url'].nil?
                 # Create a new Job to upload the new appliance
                 job_hash = {
                     'name' => 'upload',

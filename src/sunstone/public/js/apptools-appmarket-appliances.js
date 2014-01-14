@@ -572,8 +572,8 @@ function updateMarketInfo(request,app){
               <tr>\
                 <td class="key_td">' + tr("Downloads") + '</td>\
                 <td class="value_td">'+app['downloads']+'</td>\
-              </tr>\
-              <tr>\
+              </tr>'+
+              (app['files'] ? '<tr>\
                 <td class="key_td">' + tr("OS") + '</td>\
                 <td class="value_td">'+app['files'][0]['os-id']+' '+app['files'][0]['os-release']+'</td>\
               </tr>\
@@ -588,8 +588,8 @@ function updateMarketInfo(request,app){
               <tr>\
                 <td class="key_td">' + tr("Hypervisor") + '</td>\
                 <td class="value_td">'+app['files'][0]['hypervisor']+'</td>\
-              </tr>\
-            </tbody>\
+              </tr>' : '') +
+            '</tbody>\
         </table>\
         </div>\
         <div class="six columns">\
@@ -876,9 +876,9 @@ $(document).ready(function(){
               { "mData": "name" },
               { "mData": "status" },
               { "mData": "publisher" },
-              { "mData": "files.0.hypervisor", "sWidth" : "100px"},
-              { "mData": "files.0.os-arch", "sWidth" : "100px"},
-              { "mData": "files.0.format", "sWidth" : "100px"},
+              { "mData": "files.0.hypervisor", "sWidth" : "100px", "sDefaultContent" : "-" },
+              { "mData": "files.0.os-arch", "sWidth" : "100px", "sDefaultContent" : "-" },
+              { "mData": "files.0.format", "sWidth" : "100px", "sDefaultContent" : "-" },
               { "mData": "tags"},
               { "mData": function (source) {
                 return pretty_time(source.creation_time)
