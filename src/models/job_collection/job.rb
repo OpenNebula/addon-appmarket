@@ -70,6 +70,9 @@ module AppConverter
                         'from_appliance' => {
                             :type => :string
                         },
+                        'from_format' => {
+                            :type => :string
+                        },
                         'format' => {
                             :type => :string,
                             :enum => AppConverter::Job::FORMATS

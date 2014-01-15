@@ -186,8 +186,13 @@ module AppConverter
             data['publisher'] = session.publisher
             data['status'] = 'init'
 
+            from_format = data['format']
+
             if hash['params'] && hash['params']['format']
-                data['files'].each {|f| f['format'] = hash['params']['format']}
+                data['files'].each {|f|
+                    from_format = data['format'] if from_format.nil?
+                    f['format'] = hash['params']['format']
+                }
             end
 
             begin
@@ -203,7 +208,8 @@ module AppConverter
                 'name' => 'convert',
                 'appliance_id' => app.object_id,
                 'params' => {
-                    'from_appliance' => object_id.to_s
+                    'from_appliance' => object_id.to_s,
+                    'from_format' => from_format
                 }
             }.deep_merge(hash)
 
