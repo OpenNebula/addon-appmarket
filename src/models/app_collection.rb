@@ -158,6 +158,8 @@ module AppConverter
                 return [404, {"message" => "Appliance not found"}]
             end
 
+            source_appliance = data.to_json
+
             if data['publisher'] == session.publisher
                 # if the session user is the owner, retrieve all the metadata
                 data = collection.find_one(filter)
@@ -189,10 +191,8 @@ module AppConverter
             from_format = data['format']
 
             if hash['params'] && hash['params']['format']
-                data['files'].each {|f|
-                    from_format = data['format'] if from_format.nil?
-                    f['format'] = hash['params']['format']
-                }
+                data['format'] = hash['params']['format']
+                data['files'].each {|f| f['format'] = hash['params']['format']}
             end
 
             begin
@@ -206,7 +206,7 @@ module AppConverter
             # TODO check hash keys
             job_hash = {
                 'name' => 'convert',
-                'appliance_id' => app.object_id,
+                'appliance_id' => object_id.to_s,
                 'params' => {
                     'from_appliance' => object_id.to_s,
                     'from_format' => from_format
@@ -261,7 +261,7 @@ module AppConverter
         # @params [Session] session an instance of Session containing the user permisions
         # @return [Hash] a hash of fields
         def self.exclude_fields(session)
-            if session.admin?
+            if session.admin? || session.worker?
                 nil
             else
                 {
