@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-require "OVFParser"
+require "ovf_parser"
 require "erb"
 
 class OVFParserOpenNebula < OVFParser
