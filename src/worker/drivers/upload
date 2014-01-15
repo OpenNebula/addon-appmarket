@@ -21,7 +21,7 @@ $: << RUBY_LIB_LOCATION + '/appconverter/lib'
 # Libraries
 ################################################################################
 
-# require 'appmarket_client'
+require 'appmarket_client'
 require 'OVFParserOpenNebula'
 
 require 'rubygems'
@@ -94,7 +94,7 @@ class ApplianceFile
         self.new({
             "name" => name,
             "url"  => url,
-            "size" => File.size?(path),
+            "size" => File.size?(path).to_s,
             "md5"  => digests[:md5],
             "sha1" => digests[:sha1]
         })
@@ -158,8 +158,10 @@ class Appliance
     end
 
     def to_hash
-        @body["files"] = @files
-        @body
+        {
+            "files" => @files,
+            "opennebula_template" => @body["opennebula_template"]
+        }
     end
 end
 
@@ -173,10 +175,6 @@ class OVA < Appliance
         end
     end
 
-    def ovf_to_opennebula_template(ovf)
-
-    end
-
     def register_files
         ovf_file = Dir["#{temp_dir}/*.ovf"][0]
 
@@ -186,6 +184,8 @@ class OVA < Appliance
             appliance_file = ApplianceFile.register(disk)
             @files << appliance_file.to_hash
         end
+
+        @body["opennebula_template"] = ovf.to_one
     end
 end
 
@@ -194,7 +194,7 @@ end
 ################################################################################
 
 # Callback URL
-url = ARGV[0]
+callback_url = ARGV[0]
 
 # Job meta-data
 begin
@@ -203,7 +203,11 @@ rescue
     fail("Invalid job.")
 end
 
-# client = AppConverter::Client.new
+username = CONF[:username]
+password = CONF[:password]
+url      = CONF[:url]
+
+$client = AppMarket::Client.new(username, password, url)
 
 source      = job_json["appliance"]["source"]
 source_type = job_json["appliance"]["source_type"]
@@ -221,3 +225,7 @@ appliance = klass.new(job_json["appliance"])
 
 appliance.unpack
 appliance.register_files
+
+job_json["appliance"] = appliance.to_hash
+
+out = $client.callback(callback_url, "done", job_json.to_json)
