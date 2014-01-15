@@ -49,7 +49,7 @@ module AppConverter
                 },
                 'compression' => {
                     :type => :string,
-                    :enum => %w{bz2 gzip},
+                    :enum => %w{bz2 gzip none},
                     :default => 'none'
                 },
                 'os-id' => {
