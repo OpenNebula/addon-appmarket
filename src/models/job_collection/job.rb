@@ -23,7 +23,7 @@ module AppConverter
         STATUS  = %w{pending in-progress cancelling done error cancelled}
         NAMES   = %w{upload delete convert publish unpublish}
         # TODO define formats
-        FORMATS = %w{qcow vmdk}
+        FORMATS = %w{qcow2 vmdk}
 
         SCHEMA = {
             :type => :object,

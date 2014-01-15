@@ -385,7 +385,7 @@ var appmarket_buttons = {
         layout: "main",
         select: function(){
             return '<option class="empty_value" value="">'+tr("Please select")+'</option>\
-            <option elem_id="qcow" value="qcow">qcow</option>\
+            <option elem_id="qcow2" value="qcow2">qcow2</option>\
             <option elem_id="vmdk" value="vmdk">vmdk</option>'
         },
         tip: tr("Select the new format, a new appliance will be created")+":"
