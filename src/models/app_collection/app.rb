@@ -136,6 +136,28 @@ module AppConverter
                 'downloads' => {
                     :type => :null,
                     :default => 0
+                },
+                'os-id' => {
+                    :type => :string,
+                    :default => ''
+                },
+                'os-release' => {
+                    :type => :string,
+                    :default => ''
+                },
+                'os-arch' => {
+                    :type => :string,
+                    :default => 'x86_64'
+                },
+                'hypervisor' => {
+                    :type => :string,
+                    :enum => %w{VMWARE XEN KVM},
+                    :default => 'all'
+                },
+                'format' => {
+                    :type => :string,
+                    :enum => %w{raw vmdk qcow2 vdi},
+                    :default => 'raw'
                 }
             }
         }
