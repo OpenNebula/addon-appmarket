@@ -158,6 +158,11 @@ module AppConverter
                 return [404, {"message" => "Appliance not found"}]
             end
 
+            if data['status'] != "ready"
+                return [404, {"message" => "Wrong state [#{data['status']}]" \
+                    " to convert appliance"}]
+            end
+
             source_appliance = data.to_json
 
             if data['publisher'] == session.publisher
