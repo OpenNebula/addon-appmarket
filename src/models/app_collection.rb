@@ -176,7 +176,7 @@ module AppConverter
             data.delete('state')
             data.delete('_id')
             data.delete('creation_time')
-            data['files'].each {|f| f.delete('checksum')}
+            data.delete('files')
 
             begin
                 validator.validate!(data, session.schema(:appliance))
@@ -192,7 +192,6 @@ module AppConverter
 
             if hash['params'] && hash['params']['format']
                 data['format'] = hash['params']['format']
-                data['files'].each {|f| f['format'] = hash['params']['format']}
             end
 
             begin
