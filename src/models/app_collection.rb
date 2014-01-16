@@ -115,11 +115,13 @@ module AppConverter
         # @param [Session] session an instance of Session containing the
         #   user permisions
         # @param [String] object_id id of the resource
+        # @param [true,false] exclude_fields exclude fields from the appliance
+        #   information, the fields are defined in the exclude_fields method
         # @return [AppConverter::Appliance] depends on the factory method
-        def self.get(session, object_id)
+        def self.get(session, object_id, exclude_fields=true)
             begin
                 filter = generate_filter(session, object_id)
-                fields = exclude_fields(session)
+                fields = exclude_fields(session) if exclude_fields
                 data = collection.find_one(filter, :fields => fields)
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]

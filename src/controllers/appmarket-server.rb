@@ -436,7 +436,7 @@ put '/appliance/:id' do
 end
 
 get '/appliance/:id/download' do
-    app = AppConverter::AppCollection.get(@session, params[:id])
+    app = AppConverter::AppCollection.get(@session, params[:id], false)
     if AppConverter::Collection.is_error?(app)
         error app
     else
@@ -445,7 +445,7 @@ get '/appliance/:id/download' do
 end
 
 get '/appliance/:id/download/:file_id' do
-    app = AppConverter::AppCollection.get(@session, params[:id])
+    app = AppConverter::AppCollection.get(@session, params[:id], false)
     if AppConverter::Collection.is_error?(app)
         error app
     else
