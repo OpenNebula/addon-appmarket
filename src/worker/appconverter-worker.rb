@@ -125,7 +125,7 @@ end
     end
 }
 
-$client = AppMarket::Client.new(CONF[:username], CONF[:password], CONF[:url])
+$client = AppMarket::Client.new(CONF[:username], CONF[:password], CONF[:appmarket_url])
 
 while !$exit do
     response = $client.get_next_job(CONF[:worker_name])
