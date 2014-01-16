@@ -186,7 +186,7 @@ class Session
                 PERMISSIONS[:appliance][:list]
             when /^\/appliance\/\w+$/
                 PERMISSIONS[:appliance][:show]
-            when /^\/appliance\/\w+\/download$/
+            when /^\/appliance\/\w+\/download(\/\d+)?$/
                 PERMISSIONS[:appliance][:download]
             when /^\/worker\/\w+\/nextjob$/
                 PERMISSIONS[:worker][:next_job]
