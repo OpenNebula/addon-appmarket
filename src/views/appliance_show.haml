@@ -103,50 +103,51 @@
           %h6
             %small= @app['opennebula_version']
         %hr
-        - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['md5']
+        -if @app['files']
+          - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['md5']
+            %dt
+              %h6 Checksum MD5
+            %dd
+              %h6
+                %small= @app['files'][0]['checksum']['md5']
+          - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['sha1']
+            %dt
+              %h6 Checksum SHA1
+            %dd
+              %h6
+                %small= @app['files'][0]['checksum']['sha1']
           %dt
-            %h6 Checksum MD5
+            %h6 Compression
           %dd
             %h6
-              %small= @app['files'][0]['checksum']['md5']
-        - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['sha1']
+              %small= @app['files'][0]['compression']
           %dt
-            %h6 Checksum SHA1
+            %h6 Size
           %dd
             %h6
-              %small= @app['files'][0]['checksum']['sha1']
-        %dt
-          %h6 Compression
-        %dd
-          %h6
-            %small= @app['files'][0]['compression']
-        %dt
-          %h6 Size
-        %dd
-          %h6
-            %small= Parser.humanize_size(@app['files'][0]['size'])
-        %hr
-        %dt
-          %h6 Format
-        %dd
-          %h6
-            %small= @app['files'][0]['format']
-        - if @app['files'][0]['os-id'] && @app['files'][0]['os-release']
+              %small= Parser.humanize_size(@app['files'][0]['size'])
+          %hr
           %dt
-            %h6 OS
+            %h6 Format
           %dd
             %h6
-              %small= @app['files'][0]['os-id'] + ' ' + @app['files'][0]['os-release']
-        %dt
-          %h6 Hypervisor
-        %dd
-          %h6
-            %small= @app['files'][0]['hypervisor']
-        %dt
-          %h6 Arch
-        %dd
-          %h6
-            %small= @app['files'][0]['os-arch']
+              %small= @app['files'][0]['format']
+          - if @app['files'][0]['os-id'] && @app['files'][0]['os-release']
+            %dt
+              %h6 OS
+            %dd
+              %h6
+                %small= @app['files'][0]['os-id'] + ' ' + @app['files'][0]['os-release']
+          %dt
+            %h6 Hypervisor
+          %dd
+            %h6
+              %small= @app['files'][0]['hypervisor']
+          %dt
+            %h6 Arch
+          %dd
+            %h6
+              %small= @app['files'][0]['os-arch']
 
 %hr
 

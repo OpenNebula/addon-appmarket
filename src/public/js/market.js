@@ -224,7 +224,7 @@ function update_form_content(response, form) {
       var value
       var key = str_array[0]
 
-      if (key == 'files'){
+      if (key == 'files' && response[key]){
         var index = parseInt(str_array[1])
         var sec_key = str_array[2]
 
