@@ -270,7 +270,7 @@ module AppConverter
                     {:_id => Collection.str_to_object_id(self.object_id)},
                     "$inc" => { 'downloads' => 1 })
 
-            @data['files'][file_id]['url']
+            @data['files'][file_id.to_i]['url']
         end
     end
 end
