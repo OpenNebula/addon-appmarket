@@ -56,10 +56,6 @@
           %h6
             %small= @app['downloads']
       %hr.span12
-      %a.btn.span10{'href' => @app['links']['download']['href']}
-        %i.icon-download-alt
-        Download
-      %hr.span12
       - if @session.admin? || @session.publisher == @app['publisher']
         %a.btn.btn-danger#delete_app_btn.span10
           %i.icon-remove
@@ -78,7 +74,58 @@
         %h6
           %i.icon-tags
           %small= @app['tags'].join(', ')
-
+      -if @app['files']
+        %br
+        .row-fluid
+          %ul.nav.nav-tabs
+            - @app['files'].each_with_index do |file, index|
+              %li{'class' => ("active" if index==0)}
+                %a{'href' => "#tab#{index}", 'data-toggle' => 'tab'} File #{index}
+            - if @app['opennebula_template']
+              %li
+                %a{'href' => "#tabTemplate", 'data-toggle' => 'tab'} Template
+          .tab-content
+            - @app['files'].each_with_index do |file, index|
+              .tab-pane{'class' => ("active" if index==0), 'id' => "tab#{index}"}
+                .row-fluid
+                  .span6
+                    %a.btn.span8{'href' => @app['links']['download']['href'] + "/#{index}"}
+                      %i.icon-download-alt
+                      Download
+                  .span6
+                    - if file['name']
+                      %dt
+                        %h6 Name
+                      %dd
+                        %h6
+                          %small= file['name']
+                    - if file['md5']
+                      %dt
+                        %h6 Checksum MD5
+                      %dd
+                        %h6
+                          %small= file['md5']
+                    - if file['sha1']
+                      %dt
+                        %h6 Checksum SHA1
+                      %dd
+                        %h6
+                          %small= file['sha1']
+                    %dt
+                      %h6 Compression
+                    %dd
+                      %h6
+                        %small= file['compression']
+                    %dt
+                      %h6 Size
+                    %dd
+                      %h6
+                        %small= Parser.humanize_size(file['size'])
+            - if @app['opennebula_template']
+              .tab-pane{'id' => "tabTemplate"}
+                .row-fluid
+                  .span12
+                    =@app['opennebula_template']
     .span3
       %dl
         %dt
@@ -96,36 +143,12 @@
         %dd
           %h6
             %small= @app['version']
-        %hr
         %dt
           %h6 OpenNebula version
         %dd
           %h6
             %small= @app['opennebula_version']
-        %hr
         -if @app['files']
-          - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['md5']
-            %dt
-              %h6 Checksum MD5
-            %dd
-              %h6
-                %small= @app['files'][0]['checksum']['md5']
-          - if @app['files'][0]['checksum'] && @app['files'][0]['checksum']['sha1']
-            %dt
-              %h6 Checksum SHA1
-            %dd
-              %h6
-                %small= @app['files'][0]['checksum']['sha1']
-          %dt
-            %h6 Compression
-          %dd
-            %h6
-              %small= @app['files'][0]['compression']
-          %dt
-            %h6 Size
-          %dd
-            %h6
-              %small= Parser.humanize_size(@app['files'][0]['size'])
           %hr
           %dt
             %h6 Format
@@ -176,6 +199,13 @@
         type: "GET",
         dataType: "json",
         success: function(response){
+          if (response.files) {
+            $.each(response.files, function(index, value){
+              if (index !== 0)
+                $(".add_file_button", $("#update_app_form")).click();
+            })
+          }
+
           update_form_content(response, "#update_app_form");
           $('#update_app').modal('toggle')
         },

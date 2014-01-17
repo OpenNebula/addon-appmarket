@@ -42,31 +42,43 @@
     .controls
       %input.input-xlarge{'name' => 'tags', 'id' => 'tags_form', 'type' => 'text'}
       %p Comma-separated tags. Example: ubuntu,hpc,mysql
-  %hr
+  #file_section
+    %hr
+    %p
+      File 0
+    .control-group
+      %label.control-label{'for' => 'files.0.name_form'} Name
+      .controls
+        %input.input-xlarge{'name' => 'files.0.name','id' => 'files.0.name_form', 'type' => 'text'}
+    .control-group
+      %label.control-label{"for" => "files.0.url_form"} URL
+      .controls
+        %input.input-xlarge{"name" => "files.0.url", "id" => "files.0.url_form", "type" => "text"}
+    .control-group
+      %label.control-label{"for" => "files.0.size"} Size
+      .controls
+        %input.input{"name" => "files.0.size", "id" => "files.0.size_form", "type" => "text"}
+        %p Bytes
+    .control-group
+      %label.control-label{"for" => "files.0.md5"} MD5
+      .controls
+        %input.input-xlarge{"name" => "files.0.md5", "id" => "files.0.md5_form", "type" => "text"}
+    .control-group
+      %label.control-label{"for" => "files.0.sha1"} SHA1
+      .controls
+        %input.input-xlarge{"name" => "files.0.sha1", "id" => "files.0.sha1_form", "type" => "text"}
+    .control-group
+      %label.control-label{"for" => "files.0.compression"} Compression
+      .controls
+        %select{"name" => "files.0.compression", "id" => "files.0.compression_form"}
+          %option{"value" => ""}
+          - AppConverter::Appliance::FILE_SCHEMA[:properties]["compression"][:enum].each do |elem|
+            %option= elem
+  #more_files
   .control-group
-    %label.control-label{'for' => 'url_form'} URL
     .controls
-      %input.input-xlarge{'name' => 'files.0.url', 'id' => 'files.0.url_form', 'type' => 'text'}
-  .control-group
-    %label.control-label{'for' => 'files.0.size'} Size
-    .controls
-      %input.input{'name' => 'files.0.size', 'id' => 'files.0.size_form', 'type' => 'text'}
-      %p Bytes
-  .control-group
-    %label.control-label{'for' => 'files.0.md5'} MD5
-    .controls
-      %input.input-xlarge{'name' => 'files.0.md5', 'id' => 'files.0.md5_form', 'type' => 'text'}
-  .control-group
-    %label.control-label{'for' => 'files.0.sha1'} SHA1
-    .controls
-      %input.input-xlarge{'name' => 'files.0.sha1', 'id' => 'files.0.sha1_form', 'type' => 'text'}
-  .control-group
-    %label.control-label{'for' => 'files.0.compression'} Compression
-    .controls
-      %select{'name' => 'files.0.compression', 'id' => 'files.0.compression_form'}
-        %option{'value' => ""}
-        - AppConverter::Appliance::FILE_SCHEMA[:properties]['compression'][:enum].each do |elem|
-          %option= elem
+    %br
+    %input.btn.btn-inverse.pull-right.add_file_button{'href' => '#', 'type' => 'custom', 'value' => 'Add another file'}
   %hr
   .control-group
     %label.control-label{'for' => 'files.0.hypervisor'} Hypervisor
@@ -98,6 +110,12 @@
     .controls
       %input.input-xlarge{'name' => 'files.0.os-arch', 'id' => 'files.0.os-arch_form', 'type' => 'text'}
       %p Example: x86_64
+  .control-group
+    %label.control-label{'for' => 'opennebula_template'} OpenNebula Template
+    .controls
+      %textarea.input-xlarge{'name' => 'opennebula_template', 'id' => 'opennebula_template', 'rows' => '8'}
+      %p
+        The template must be defined in JSON
   - if @session.admin?
     Admin parameters
     %hr
@@ -114,3 +132,4 @@
       .controls
         %input.input-xlarge{'name' => 'publisher','id' => 'publisher_form', 'type' => 'text'}
 %hr
+

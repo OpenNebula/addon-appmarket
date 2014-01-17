@@ -202,4 +202,15 @@
     $('.dropdown input, .dropdown label').click(function(e) {
       e.stopPropagation();
     });
+
+    $.each([$("#create_app"), $("#update_app")], function(index, context){
+      var file_index = 0;
+
+      $(".add_file_button", context).on("click", function (){
+        file_index++;
+        $("#more_files", context).append($('#file_section', context).html().replace(/0/g,file_index));
+        return false;
+      });
+    })
+
   } );
