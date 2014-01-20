@@ -1,8 +1,23 @@
+require 'ovf_parser_opennebula'
+require 'appliance_file_converter'
+
+require 'fileutils'
+require 'tmpdir'
+require 'uuidtools'
+require 'open4'
+
 ################################################################################
-# ApplianceFile
+# WorkerError
 ################################################################################
 
-class ApplianceFile
+class WorkerError < RuntimeError
+end
+
+################################################################################
+# ApplianceFileHandler
+################################################################################
+
+class ApplianceFileHandler
     def initialize(hash = nil)
         @hash = hash || Hash.new
     end
@@ -16,7 +31,7 @@ class ApplianceFile
     def self.register(hash)
         source = hash[:path]
         name   = hash[:name] || source.split("/")[-1]
-        target = hash[:target]
+        target = hash[:target] if hash[:target]
 
         uuid = UUIDTools::UUID.random_create.to_s
 
@@ -56,10 +71,10 @@ class ApplianceFile
 end
 
 ################################################################################
-# Appliance Processing
+# ApplianceHandler Processing
 ################################################################################
 
-class Appliance
+class ApplianceHandler
     attr_accessor :files
 
     def initialize(body)
@@ -89,7 +104,7 @@ class Appliance
         elsif @wget_exists
             "wget -q #{@source} -O-"
         else
-            fail("No curl or wget found.")
+            raise WorkerErrror, "No curl or wget found."
         end
     end
 
@@ -107,15 +122,37 @@ class Appliance
             "opennebula_template" => @body["opennebula_template"]
         }
     end
+
+    def convert(files, from_format, format)
+        converter = ApplianceFileConverter.new(from_format, format)
+
+        files.each do |file|
+            uuid        = file["url"].split("/")[-1]
+            name        = file["name"]
+
+            source_path = File.join(CONF[:repo],uuid)
+            target_path = File.join(temp_dir,uuid)
+
+            converter.convert(source_path, target_path)
+
+            file_hash = {
+                :path => target_path,
+                :name => name
+            }
+
+            appliance_file = ApplianceFileHandler.register(file_hash)
+            @files << appliance_file.to_hash
+        end
+    end
 end
 
-class OVA < Appliance
+class OVA < ApplianceHandler
     def unpack
         pid, stdin, stdout, stderr = Open4.popen4("#{download_cmd} | tar -xf- -C #{temp_dir}")
         _, status = Process::waitpid2 pid
 
         if !status.success?
-            fail("Download error:\n#{stderr.read}")
+            raise WorkerErrror, "Download error:\n#{stderr.read}"
         end
     end
 
@@ -125,10 +162,10 @@ class OVA < Appliance
         ovf = OVFParserOpenNebula.new(ovf_file)
         ovf.get_disks.each do |disk|
             disk[:path]    = File.join(temp_dir, disk[:path])
-            appliance_file = ApplianceFile.register(disk)
+            appliance_file = ApplianceFileHandler.register(disk)
             @files << appliance_file.to_hash
         end
 
-        @body["opennebula_template"] = ovf.to_one
+        @body["opennebula_template"] = ovf.to_one_json
     end
 end

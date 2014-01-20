@@ -16,6 +16,7 @@
 
 require "ovf_parser"
 require "erb"
+require "json"
 
 class OVFParserOpenNebula < OVFParser
     VM_TEMPLATE = %q{
@@ -51,5 +52,27 @@ class OVFParserOpenNebula < OVFParser
     def disk_to_one(disk)
         template = ERB.new(DISK_TEMPLATE)
         template.result(binding).strip
+    end
+
+    def to_one_json
+        name = get_name
+
+        capacity = get_capacity
+        cpu      = get_capacity[:cpu]
+        memory   = get_capacity[:memory]
+
+        disks = []
+        get_disks.each do |disk|
+            h = {"image" => disk[:name]}
+            h["target"] = disk[:target] if disk[:target] if
+            disks << h
+        end
+
+        {
+            "name"   => name,
+            "cpu"    => cpu,
+            "memory" => memory,
+            "disks"  => disks
+        }.to_json
     end
 end

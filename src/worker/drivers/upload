@@ -22,17 +22,13 @@ $: << RUBY_LIB_LOCATION + '/appconverter/lib'
 ################################################################################
 
 require 'appmarket_client'
-require 'ovf_parser_opennebula'
-require 'appliance'
+require 'appliance_handler'
 
 require 'rubygems'
 require 'json'
 require 'base64'
 require 'yaml'
-require 'tmpdir'
-require 'fileutils'
 require 'open4'
-require 'uuidtools'
 require 'digest/md5'
 require 'digest/sha1'
 
@@ -55,7 +51,6 @@ end
 
 def fail(error)
     STDERR.puts "Error: #{error}."
-    # TODO: client error
     exit 1
 end
 
@@ -70,18 +65,19 @@ end
 # Callback URL
 callback_url = ARGV[0]
 
+username = CONF[:username]
+password = CONF[:password]
+url      = CONF[:appmarket_url]
+
+client = AppMarket::Client.new(username, password, url)
+
 # Job meta-data
 begin
     job_json = JSON.parse(Base64::decode64(ARGV[1]))
 rescue
-    fail("Invalid job.")
+    STDERR.puts("Invalid job.")
+    exit 1
 end
-
-username = CONF[:username]
-password = CONF[:password]
-url      = CONF[:url]
-
-$client = AppMarket::Client.new(username, password, url)
 
 source      = job_json["appliance"]["source"]
 source_type = job_json["appliance"]["source_type"]
@@ -89,17 +85,22 @@ source_type = job_json["appliance"]["source_type"]
 ensure_value(source,      "Attribute 'source' cannot be empty.")
 ensure_value(source_type, "Attribute 'source_type' cannot be empty.")
 
-case source_type
-when "ova" then klass = OVA
-else
-    fail("unknown type #{type}")
+begin
+    appliance = klass.new(job_json, username, password, url)
+
+    case source_type
+    when "ova" then klass = OVA
+    else
+        raise WorkerFile, "Unknown source_type: #{type}"
+    end
+
+    appliance.unpack
+    appliance.register_files
+
+    job_json["appliance"] = appliance.to_hash
+rescue Exception => e
+    job_json["error_message"] = "[#{e.class.to_s}] #{e.message}"
+    client.callback(callback_url, "error", job_json.to_json)
 end
 
-appliance = klass.new(job_json["appliance"])
-
-appliance.unpack
-appliance.register_files
-
-job_json["appliance"] = appliance.to_hash
-
-$client.callback(callback_url, "done", job_json.to_json)
+client.callback(callback_url, "done", job_json.to_json)

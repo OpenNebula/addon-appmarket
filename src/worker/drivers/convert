@@ -15,24 +15,65 @@ end
 CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
+$: << RUBY_LIB_LOCATION + '/appconverter/lib'
 
-###############################################################################
+################################################################################
 # Libraries
-###############################################################################
-require 'appconverter-client'
+################################################################################
+
+require 'appmarket_client'
+require 'appliance_handler'
 
 require 'rubygems'
 require 'json'
+require 'base64'
+require 'yaml'
 
-url = ARGV[0]
-job_json = ARGV[1]
+################################################################################
+# Configuration
+################################################################################
 
-client = AppConverter::Client.new
+begin
+    CONF = YAML.load_file(CONFIGURATION_FILE)
+rescue Exception => e
+    STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
+    exit 1
+end
 
-result_path = '/tmp/appconverter_result'
-file = File.open(result_path, 'r') {|f|
-    str = f.read
-    client.callback(url, str.strip)
-}
+################################################################################
+# Main
+################################################################################
 
+# Callback URL
+callback_url = ARGV[0]
 
+username = CONF[:username]
+password = CONF[:password]
+url      = CONF[:appmarket_url]
+
+client = AppMarket::Client.new(username, password, url)
+
+# Job meta-data
+begin
+    job_json = JSON.parse(Base64::decode64(ARGV[1]))
+rescue
+    STDERR.puts("Invalid job.")
+    exit 1
+end
+
+begin
+    from_appliance = Appliance.new(JSON.parse(job_json["params"]["from_appliance"]))
+    appliance      = Appliance.new(job_json["appliance"])
+
+    from_format = job_json["params"]["from_format"]
+    format = job_json["params"]["format"]
+
+    appliance.convert(from_appliance.files, from_format, format)
+
+    job_json["appliance"] = appliance.to_hash
+rescue Exception => e
+    job_json["error_message"] = "[#{e.class.to_s}] #{e.message}"
+    client.callback(callback_url, "error", job_json.to_json)
+end
+
+client.callback(callback_url, "done", job_json.to_json)
