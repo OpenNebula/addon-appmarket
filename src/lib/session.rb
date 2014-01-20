@@ -101,13 +101,13 @@ class Session
             },
             :clone => {
                 :anonymous  => false,
-                :user       => true,
+                :user       => false,
                 :worker     => false,
                 :admin      => true
             },
             :schema => {
-                :anonymous => AppConverter::Appliance::SCHEMA,
-                :user      => AppConverter::Appliance::SCHEMA,
+                :anonymous => AppConverter::Appliance::USER_SCHEMA,
+                :user      => AppConverter::Appliance::USER_SCHEMA,
                 :worker    => AppConverter::Appliance::ADMIN_SCHEMA,
                 :admin     => AppConverter::Appliance::ADMIN_SCHEMA
             }

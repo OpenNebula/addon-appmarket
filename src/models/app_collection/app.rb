@@ -35,7 +35,7 @@ module AppConverter
                 },
                 'hypervisor' => {
                     :type => :string,
-                    :enum => %w{VMWARE XEN KVM},
+                    :enum => %w{VMWARE XEN KVM all},
                     :default => 'all'
                 },
                 'format' => {
@@ -64,10 +64,6 @@ module AppConverter
                     :type => :string,
                     :default => 'x86_64'
                 },
-                'url' => {
-                    :type => :string,
-                    :format => :uri
-                },
                 'md5' => {
                     :type => :string
                 },
@@ -76,6 +72,25 @@ module AppConverter
                 }
             }
         }
+
+        ADMIN_FILE_SCHEMA = FILE_SCHEMA.deep_merge({
+            :properties => {
+                'url' => {
+                    :type => :string,
+                    :format => :uri
+                }
+            }
+        })
+
+        USER_FILE_SCHEMA = FILE_SCHEMA.deep_merge({
+            :properties => {
+                'url' => {
+                    :type => :string,
+                    :format => :uri,
+                    :required => true
+                }
+            }
+        })
 
         SCHEMA = {
             :type => :object,
@@ -89,15 +104,6 @@ module AppConverter
                 },
                 'source_type' => {
                     :type => :string
-                },
-                'catalog' => {
-                    :type => :null,
-                    :default => PUBLIC_CATALOG
-                },
-                'logo' => {
-                    :type => :null,
-                    :format => :uri,
-                    :default => "/img/logos/default.png"
                 },
                 'tags' => {
                     :type => :array,
@@ -125,10 +131,6 @@ module AppConverter
                 'opennebula_template' => {
                     :type => :string
                 },
-                'files' => {
-                    :type => :array,
-                    :items => FILE_SCHEMA
-                },
                 'visits' => {
                     :type => :null,
                     :default => 0
@@ -151,7 +153,7 @@ module AppConverter
                 },
                 'hypervisor' => {
                     :type => :string,
-                    :enum => %w{VMWARE XEN KVM},
+                    :enum => %w{VMWARE XEN KVM all},
                     :default => 'all'
                 },
                 'format' => {
@@ -166,15 +168,46 @@ module AppConverter
             :extends => SCHEMA,
             :properties => {
                 'catalog' => {
-                    :type => :string
+                    :type => :string,
+                    :default => PUBLIC_CATALOG
                 },
                 'logo' => {
-                    :type => :string
+                    :type => :string,
+                    :format => :uri,
+                    :default => "/img/logos/default.png"
                 },
                 'status' => {
                     :type => :string,
                     :default => 'init',
                     :enum => AppConverter::Appliance::STATUS,
+                },
+                'files' => {
+                    :type => :array,
+                    :items => ADMIN_FILE_SCHEMA
+                }
+            }
+        }
+
+        USER_SCHEMA = {
+            :extends => SCHEMA,
+            :properties => {
+                'catalog' => {
+                    :type => :null,
+                    :default => PUBLIC_CATALOG
+                },
+                'logo' => {
+                    :type => :null,
+                    :format => :uri,
+                    :default => "/img/logos/default.png"
+                },
+                'status' => {
+                    :type => :null,
+                    :default => 'init',
+                    :enum => AppConverter::Appliance::STATUS,
+                },
+                'files' => {
+                    :type => :array,
+                    :items => USER_FILE_SCHEMA
                 }
             }
         }
