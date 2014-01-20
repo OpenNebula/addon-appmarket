@@ -214,7 +214,7 @@ module AppConverter
                 'name' => 'convert',
                 'appliance_id' => object_id.to_s,
                 'params' => {
-                    'from_appliance' => object_id.to_s,
+                    'from_appliance' => source_appliance,
                     'from_format' => from_format
                 }
             }.deep_merge(hash)
