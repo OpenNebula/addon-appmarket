@@ -293,6 +293,19 @@ module AppConverter
             return [200, {}]
         end
 
+        # Get the stored size of a file
+        #   The role of the user will be used to filter the appliance
+        #
+        # @param [Integer] file_id the fiel file that will be downloaded, default value: 0
+        # @return [String] size of the file
+        def file_size(file_id=0)
+            AppCollection.collection.update(
+                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    "$inc" => { 'downloads' => 1 })
+
+            @data['files'][file_id.to_i]['size']
+        end
+
         # Get the link to download a file
         #   The role of the user will be used to filter the appliance
         #

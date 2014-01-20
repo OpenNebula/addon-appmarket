@@ -440,6 +440,12 @@ get '/appliance/:id/download' do
     if AppConverter::Collection.is_error?(app)
         error app
     else
+        file_id = params[:file_id]
+
+        if (size = app.file_size(params[:file_id]))
+            headers["OpenNebula-AppMarket-Size"] = size
+        end
+
         redirect app.file_url
     end
 end
@@ -449,6 +455,12 @@ get '/appliance/:id/download/:file_id' do
     if AppConverter::Collection.is_error?(app)
         error app
     else
+        file_id = params[:file_id]
+
+        if (size = app.file_size(params[:file_id]))
+            headers["OpenNebula-AppMarket-Size"] = size
+        end
+
         redirect app.file_url(params[:file_id])
     end
 end
