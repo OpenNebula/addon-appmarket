@@ -555,21 +555,29 @@ describe 'clone appliance' do
         basic_authorize('default','default')
     end
 
-    it "should be able to retrieve metadata of the new appliance" do
-        get "/appliance/#{$new_oid2}", {}, {'HTTP_ACCEPT' => 'application/json'}
+    it "should create a new appliance" do
+        post '/appliance', File.read(EXAMPLES_PATH + '/appliance2.json')
+        last_response.status.should == 201
+        body = JSON.parse last_response.body
+
+        $new_oid3 = body['_id']['$oid']
+    end
+
+    it "check the appliance status is ready" do
+        get "/appliance/#{$new_oid3}", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 200
         body = JSON.parse last_response.body
 
-        body['_id']['$oid'].should == $new_oid2
-        body['name'].should == 'CentOS'
-        body['status'].should == 'init'
+        body['_id']['$oid'].should == $new_oid3
+        body['name'].should == 'CentOS 6.2'
+        body['status'].should == 'ready'
         body['creation_time'].should <= Time.now.to_i
     end
 
     it "appliance list should contain 1 element" do
         get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
         body = JSON.parse last_response.body
-        body['appliances'].size.should eql(1)
+        body['appliances'].size.should eql(2)
         body['appliances'][0]['name'].should == 'CentOS'
         body['appliances'][0]['status'].should == 'init'
         body['appliances'][0]['creation_time'].should <= Time.now.to_i
@@ -582,22 +590,21 @@ describe 'clone appliance' do
         body.size.should eql(4)
     end
 
-    it "appliance list should contain 1 element" do
-        post "/appliance/#{$new_oid2}/clone", {}, {'HTTP_ACCEPT' => 'application/json'}
+    it "clone the appliance" do
+        post "/appliance/#{$new_oid3}/clone", {}, {'HTTP_ACCEPT' => 'application/json'}
         last_response.status.should == 201
         body = JSON.parse last_response.body
 
         $new_oid3 = body['_id']['$oid']
     end
 
-
-    it "appliance list should contain 1 element" do
+    it "appliance list should contain 3 element" do
         get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
         body = JSON.parse last_response.body
-        body['appliances'].size.should eql(2)
-        body['appliances'][1]['name'].should == 'CentOS'
-        body['appliances'][1]['status'].should == 'init'
-        body['appliances'][1]['creation_time'].should <= Time.now.to_i
+        body['appliances'].size.should eql(3)
+        body['appliances'][2]['name'].should == 'CentOS 6.2'
+        body['appliances'][2]['status'].should == 'init'
+        body['appliances'][2]['creation_time'].should <= Time.now.to_i
     end
 
     it "job list should contain 5 element" do
@@ -622,10 +629,10 @@ describe 'clone appliance' do
     it "appliance list should contain 1 element" do
         get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
         body = JSON.parse last_response.body
-        body['appliances'].size.should eql(2)
-        body['appliances'][1]['name'].should == 'CentOS'
-        body['appliances'][1]['status'].should == 'ready'
-        body['appliances'][1]['creation_time'].should <= Time.now.to_i
+        body['appliances'].size.should eql(3)
+        body['appliances'][2]['name'].should == 'CentOS 6.2'
+        body['appliances'][2]['status'].should == 'ready'
+        body['appliances'][2]['creation_time'].should <= Time.now.to_i
     end
 
     it "job list should contain 5 element" do
