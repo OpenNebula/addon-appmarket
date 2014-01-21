@@ -969,6 +969,7 @@ function updateMarketInfo(request,app){
                 <th>'+tr("Worker")+'</th>\
                 <th>'+tr("Appliance")+'</th>\
                 <th>'+tr("Created")+'</th>\
+                <th>'+tr("Error")+'</th>\
               </tr>\
             </thead>\
             <tbody id="tbodyappconverter_job">\
@@ -1015,11 +1016,12 @@ function updateMarketInfo(request,app){
             { "mData": "appliance_id", "sDefaultContent" : "-" },
             { "mData": function (source) {
               return pretty_time(source.creation_time)
-            } }
+            }},
+            { "mData": "error_message", "sDefaultContent" : "-" }
           ],
           "aoColumnDefs": [
             //{ "bVisible": true, "aTargets": Config.tabTableColumns(tab_name)},
-            //{ "bVisible": false, "aTargets": ['_all']}
+            { "bVisible": false, "aTargets": [1, 5]}
         ]
     });
 
