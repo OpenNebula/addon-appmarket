@@ -253,7 +253,7 @@ var appmarket_actions = {
         elements: appmarketplaceElements,
         call: AppMarket.show,
         callback: function(request,response){
-            if (response['status'] != 'ready') {
+            if (response['status'] && response['status'] != 'ready') {
                 notifyError(tr("The appliance is not ready"));
                 return;
             }
@@ -264,6 +264,8 @@ var appmarket_actions = {
 
             dialogs_context.append(appmarket_import_dialog);
             $appmarket_import_dialog = $('#appmarket_import_dialog',dialogs_context);
+            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
+            $appmarket_import_dialog.reveal();
 
             var tab_id = 1;
 
@@ -312,43 +314,53 @@ var appmarket_actions = {
                 image_dialog.on("reveal:close", function(){
                   a_image_dialog.remove();
                   image_dialog.remove();
-                  $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
+                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
+                    $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
+                  } else {
+                    $appmarket_import_dialog.trigger("reveal:close");
+                  }
                   return false;
                 });
+
+                $("a[href='#img_manual']", image_dialog).closest('dl').remove();
 
                 tab_id++;
             })
 
-            $create_template_dialog.remove();
-            // Template
-            // Append the new div containing the tab and add the tab to the list
-            var template_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
-              create_template_tmpl +
-            '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+            if (response['opennebula_template'] && response['opennebula_template'] !== "CPU=1") {
+                $create_template_dialog.remove();
+                // Template
+                // Append the new div containing the tab and add the tab to the list
+                var template_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+                  create_template_tmpl +
+                '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
 
-            var a_template_dialog = $("<dd>\
-              <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Template")+"</a>\
-            </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+                var a_template_dialog = $("<dd>\
+                  <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Template")+"</a>\
+                </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
 
-            initialize_create_template_dialog(template_dialog);
-            fillTemplatePopUp(
-              JSON.parse(response['opennebula_template']),
-              template_dialog);
+                initialize_create_template_dialog(template_dialog);
+                fillTemplatePopUp(
+                  JSON.parse(response['opennebula_template']),
+                  template_dialog);
 
-            a_template_dialog.on('click', function(){
-                $create_template_dialog = template_dialog;
-            })
+                a_template_dialog.on('click', function(){
+                    $create_template_dialog = template_dialog;
+                })
 
-            template_dialog.on("reveal:close", function(){
-              a_template_dialog.remove();
-              template_dialog.remove();
-              $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
-              return false;
-            });
+                template_dialog.on("reveal:close", function(){
+                  a_template_dialog.remove();
+                  template_dialog.remove();
+                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
+                    $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
+                  } else {
+                    $appmarket_import_dialog.trigger("reveal:close");
+                  }
+                  return false;
+                });
 
-            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
-            $appmarket_import_dialog.reveal();
-            //popUpCreateImageDialog();
+                $("a[href='#manual']", template_dialog).closest('dl').remove();
+            }
 
             $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
         },
