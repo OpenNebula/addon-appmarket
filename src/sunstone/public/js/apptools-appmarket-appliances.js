@@ -418,7 +418,7 @@ var appmarket_import_dialog =
 var file_section_create_from =
 '<div class="row">\
 <fieldset>\
-<legend>File 0</legend>\
+<legend>File 0 <span class="tip">If an OVA url is provided this section will be ignored</span></legend>\
 <div class="row">\
   <div class="three columns">\
     <label class="right inline" for="files.0.name">'+tr("File Name")+':</label>\
@@ -668,21 +668,33 @@ var create_appconverter_appliance =
                 <div class="advanced">\
                     <div class="row">\
                       <div class="three columns">\
+                        <label class="right inline" for="catalog">'+tr("Catalog")+':</label>\
+                      </div>\
+                      <div class="seven columns">\
+                        <input type="text" name="catalog" id="catalog" />\
+                      </div>\
+                      <div class="two columns">\
+                        <div class="tip">'+tr("Comma-separated catalogs. Example: silver,gold. If not provided the appliance will be included in the 'community' catalog")+'</div>\
+                      </div>\
+                    </div>\
+                    <div class="row">\
+                      <div class="three columns">\
                         <label class="right inline" for="opennebula_template">'+tr("OpenNebula Template")+':</label>\
                       </div>\
                       <div class="seven columns">\
                         <textarea rows=5 type="text" name="opennebula_template" id="opennebula_template" />\
                       </div>\
                       <div class="two columns">\
-                        <div class="tip">'+tr("JSON format")+'</div>\
+                        <div class="tip">'+tr("JSON format. If an OVA url is provided this field will be ignored")+'</div>\
                       </div>\
                     </div>' +
                     file_section_create_from +
                     '<div id=more_files_appliance_create>\
                     </div>\
                     <br>\
-                    <button class="button radius right small" type="button" id="more_files_appliance_create_button">'+tr("Add another file")+'</button>\
-                    <br>\
+                    <div class="row">\
+                        <button class="button radius right small" type="button" id="more_files_appliance_create_button">'+tr("Add another file")+'</button>\
+                    </div>\
                 </div>\
                 <div class="reveal-footer">\
                     <hr>\
