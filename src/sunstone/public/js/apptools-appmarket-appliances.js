@@ -180,7 +180,10 @@ var appmarket_actions = {
     "AppMarket.create" : {
         type: "create",
         call: AppMarket.create,
-        callback: addConverterApplianceElement,
+        callback: function() {
+            $create_converter_appliance_dialog.trigger("reveal:close");
+            addConverterApplianceElement(request, response);
+        },
         error: onError,
         notify:true
     },
@@ -231,8 +234,8 @@ var appmarket_actions = {
         type: "single",
         call: AppMarket.update,
         callback: function(request,response){
-           notifyMessage(tr("Appliance updated correctly"));
-           //Sunstone.runAction('ServiceTemplate.show',response.DOCUMENT.ID);
+            notifyMessage(tr("Appliance updated correctly"));
+            $create_converter_appliance_dialog.trigger("reveal:close");
         },
         error: onError
     },
@@ -412,6 +415,88 @@ var appmarket_import_dialog =
   '<a class="close-reveal-modal">&#215;</a>'+
 '</div>';
 
+var file_section_create_from =
+'<div class="row">\
+<fieldset>\
+<legend>File 0</legend>\
+<div class="row">\
+  <div class="three columns">\
+    <label class="right inline" for="files.0.name">'+tr("File Name")+':</label>\
+  </div>\
+  <div class="seven columns">\
+    <input type="text" name="files.0.name" id="files.0.name" />\
+  </div>\
+  <div class="two columns">\
+    <div class="tip">'+tr("Name of the file. This will be used to register the Image in OpenNebula")+'</div>\
+  </div>\
+</div>\
+<div class="row">\
+  <div class="three columns">\
+    <label class="right inline" for="files.0.url">'+tr("URL")+':</label>\
+  </div>\
+  <div class="seven columns">\
+    <input type="text" name="files.0.url" id="files.0.url" />\
+  </div>\
+  <div class="two columns">\
+    <div class="tip">'+tr("URL of the file")+'</div>\
+  </div>\
+</div>\
+<div class="row">\
+  <div class="six columns">\
+    <div class="row">\
+      <div class="five columns">\
+        <label class="right inline" for="files.0.size">'+tr("Size")+':</label>\
+      </div>\
+      <div class="six columns">\
+        <input type="text" name="files.0.size" id="files.0.size" />\
+      </div>\
+      <div class="one columns">\
+        <div class="tip">'+tr("Size of the file in bytes")+'</div>\
+      </div>\
+    </div>\
+    <div class="row">\
+      <div class="five columns">\
+        <label class="right inline" for="files.0.compression">'+tr("Compression")+':</label>\
+      </div>\
+      <div class="six columns">\
+        <select name="files.0.compression" id="files.0.compression">\
+            <option value=""></option>\
+            <option value="bz2">'+tr("bz2")+'</option>\
+            <option value="gzip">'+tr("gzip")+'</option>\
+            <option value="none">'+tr("none")+'</option>\
+        </select>\
+      </div>\
+      <div class="one columns">\
+      </div>\
+    </div>\
+  </div>\
+  <div class="six columns">\
+    <div class="row">\
+      <div class="five columns">\
+        <label class="right inline" for="files.0.md5">'+tr("MD5")+':</label>\
+      </div>\
+      <div class="six columns">\
+        <input type="text" name="files.0.md5" id="files.0.md5" />\
+      </div>\
+      <div class="one columns">\
+      </div>\
+    </div>\
+    <div class="row">\
+      <div class="five columns">\
+        <label class="right inline" for="files.0.sha1">'+tr("SHA1")+':</label>\
+      </div>\
+      <div class="six columns">\
+        <input type="text" name="files.0.sha1" id="files.0.sha1" />\
+      </div>\
+      <div class="one columns">\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+</fieldset>\
+</div>';
+
+
 var create_appconverter_appliance =
 '<div class="panel">\
     <h3>\
@@ -421,18 +506,207 @@ var create_appconverter_appliance =
 </div>\
 <div class="reveal-body">\
     <form id="create_appconverter_appliance" action="" class="custom creation">\
-        <div class="reveal-body">\
-            <textarea id="template" rows="15" style="width:100%;"></textarea>\
-        </div>\
-        <div class="reveal-footer">\
-            <hr>\
-            <div class="form_buttons">\
-                <button class="button success radius right" id="create_appconverter_appliance_manual" value="image/create">'+tr("Create")+'</button>\
-                <button class="button radius right" id="update_appconverter_appliance_manual" value="image/create">'+tr("Update")+'</button>\
-                <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
-                <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
-            </div>\
-        </div>\
+        <dl class="tabs">\
+            <dd class="active"><a href="#appliance_wizard">'+tr("Wizard")+'</a></dd>\
+            <dd><a href="#appliance_raw">'+tr("Advanced mode")+'</a></dd>\
+        </dl>\
+        <ul class="tabs-content">\
+            <li id="appliance_wizardTab" class="active">\
+                <div class="row">\
+                  <div class="three columns">\
+                    <label class="right inline" for="name">'+tr("Name")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <input type="text" name="name" id="name" />\
+                  </div>\
+                  <div class="two columns">\
+                    <div class="tip">'+tr("Name of the appliance")+'</div>\
+                  </div>\
+                </div>\
+                <div class="row">\
+                  <div class="three columns">\
+                    <label class="right inline" for="short_description">'+tr("Short Description")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <input type="text" name="short_description" id="short_description" />\
+                  </div>\
+                  <div class="two columns">\
+                    <div class="tip">'+tr("This information will be shown in the list view")+'</div>\
+                  </div>\
+                </div>\
+                <div class="row">\
+                  <div class="three columns">\
+                    <label class="right inline" for="description">'+tr("Description")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <textarea rows=5 type="text" name="description" id="description" />\
+                  </div>\
+                  <div class="two columns">\
+                    <div class="tip">'+tr("This information will be shown in the detailed view. Markdown syntax is supported.")+'</div>\
+                  </div>\
+                </div>\
+                <div class="row">\
+                  <div class="three columns">\
+                    <label class="right inline" for="tags">'+tr("Tags")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <input type="text" name="tags" id="tags" />\
+                  </div>\
+                  <div class="two columns">\
+                    <div class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</div>\
+                  </div>\
+                </div>\
+                <br>\
+                <div class="row">\
+                  <div class="six columns">\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="version">'+tr("Version")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <input type="text" name="version" id="version" />\
+                      </div>\
+                      <div class="one columns">\
+                        <div class="tip">'+tr("Appliance version")+'</div>\
+                      </div>\
+                    </div>\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="hypervisor">'+tr("Hypervisor")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <select name="hypervisor" id="hypervisor">\
+                            <option value=""></option>\
+                            <option value="all">'+tr("all")+'</option>\
+                            <option value="KVM">'+tr("KVM")+'</option>\
+                            <option value="VMWARE">'+tr("VMWARE")+'</option>\
+                            <option value="XEN">'+tr("XEN")+'</option>\
+                        </select>\
+                      </div>\
+                      <div class="one columns">\
+                      </div>\
+                    </div>\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="img_target">'+tr("Format")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <select name="format" id="format">\
+                            <option value=""></option>\
+                            <option value="qcow2">'+tr("qcow2")+'</option>\
+                            <option value="raw">'+tr("raw")+'</option>\
+                            <option value="vdi">'+tr("vdi")+'</option>\
+                            <option value="vmdk">'+tr("vmdk")+'</option>\
+                        </select>\
+                      </div>\
+                      <div class="one columns">\
+                        <div class="tip">'+tr("Format of the appliance files")+'</div>\
+                      </div>\
+                    </div>\
+                  </div>\
+                  <div class="six columns">\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="os-id">'+tr("OS ID")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <input type="text" name="os-id" id="os-id" />\
+                      </div>\
+                      <div class="one columns">\
+                        <div class="tip">'+tr("Example: Ubuntu")+'</div>\
+                      </div>\
+                    </div>\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="os-release">'+tr("OS Release")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <input type="text" name="os-release" id="os-release" />\
+                      </div>\
+                      <div class="one columns">\
+                        <div class="tip">'+tr("Example: 12.04")+'</div>\
+                      </div>\
+                    </div>\
+                    <div class="row">\
+                      <div class="five columns">\
+                        <label class="right inline" for="os-arch">'+tr("OS Arch")+':</label>\
+                      </div>\
+                      <div class="six columns">\
+                        <input type="text" name="os-arch" id="os-arch" />\
+                      </div>\
+                      <div class="one columns">\
+                        <div class="tip">'+tr("Example: x86_64")+'</div>\
+                      </div>\
+                    </div>\
+                  </div>\
+                </div>\
+                <br>\
+                <div class="row">\
+                  <div class="three columns">\
+                    <label class="right inline" for="source">'+tr("OVA URL")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <input type="text" name="source" id="source" />\
+                  </div>\
+                  <div class="two columns">\
+                    <div class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</div>\
+                  </div>\
+                </div>\
+                <div class="row hidden">\
+                  <div class="three columns">\
+                    <label class="right inline" for="source_type">'+tr("Source type")+':</label>\
+                  </div>\
+                  <div class="seven columns">\
+                    <input type="text" name="source_type" id="source_type" value="ova"/>\
+                  </div>\
+                  <div class="two columns">\
+                  </div>\
+                </div>\
+                <div class="show_hide" id="advanced_appliance_create">\
+                     <h4><small><i class=" icon-caret-down"/> '+tr("Advanced options")+'<a class="icon_left" href="#"></a></small></h4>\
+                </div>\
+                <div class="advanced">\
+                    <div class="row">\
+                      <div class="three columns">\
+                        <label class="right inline" for="opennebula_template">'+tr("OpenNebula Template")+':</label>\
+                      </div>\
+                      <div class="seven columns">\
+                        <textarea rows=5 type="text" name="opennebula_template" id="opennebula_template" />\
+                      </div>\
+                      <div class="two columns">\
+                        <div class="tip">'+tr("JSON format")+'</div>\
+                      </div>\
+                    </div>' +
+                    file_section_create_from +
+                    '<div id=more_files_appliance_create>\
+                    </div>\
+                    <br>\
+                    <button class="button radius right small" type="button" id="more_files_appliance_create_button">'+tr("Add another file")+'</button>\
+                    <br>\
+                </div>\
+                <div class="reveal-footer">\
+                    <hr>\
+                    <div class="form_buttons">\
+                        <button class="button success radius right" id="create_appconverter_appliance_wizard" value="image/create">'+tr("Create")+'</button>\
+                        <button class="button radius right" id="update_appconverter_appliance_wizard" value="image/create">'+tr("Update")+'</button>\
+                        <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
+                        <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
+                    </div>\
+                </div>\
+            </li>\
+            <li id="appliance_rawTab">\
+                <textarea id="template" rows="15" style="width:100%;"></textarea>\
+                <div class="reveal-footer">\
+                    <hr>\
+                    <div class="form_buttons">\
+                        <button class="button success radius right" id="create_appconverter_appliance_raw" value="image/create">'+tr("Create")+'</button>\
+                        <button class="button radius right" id="update_appconverter_appliance_raw" value="image/create">'+tr("Update")+'</button>\
+                        <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
+                        <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
+                    </div>\
+                </div>\
+            </li>\
+        </ul>\
         <a class="close-reveal-modal">&#215;</a>\
     </form>\
 </div>';
@@ -535,6 +809,71 @@ Sunstone.addInfoPanel("appmarketplace_info_panel", appmarketplace_info_panel);
 Sunstone.addInfoPanel("appmarketplace_jobs_panel", appmarketplace_jobs_panel);
 Sunstone.addInfoPanel("appmarketplace_template_panel", appmarketplace_template_panel);
 
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+
+    $.each(a, function() {
+        if (this.value) {
+            var str_array = this.name.split('.')
+            var key = str_array[0]
+
+            if (key == 'files'){
+                var index = str_array[1]
+                var file_key = str_array[2]
+
+                if (!o[key]) {
+                    o[key] = [];
+                }
+
+                if (!o[key][index]) {
+                    o[key][index] = {};
+                }
+
+                o[key][index][file_key] = this.value;
+            } else if (key == 'tags') {
+              o[key] = this.value.split(',');
+            } else if (key == 'catalogs') {
+              o[key] = this.value.split(',');
+            } else {
+              o[key] = this.value;
+            }
+        }
+
+    });
+
+    return o;
+};
+
+function update_form_content(response, form) {
+  var a = $(form).serializeArray();
+
+  $.each(a, function() {
+    var str_array = this.name.split('.')
+
+    var element_id = "#" + str_array.join("\\.")
+
+    if ($(element_id)[0]) {
+      var value
+      var key = str_array[0]
+
+      if (key == 'files' && response[key]){
+        var index = parseInt(str_array[1])
+        var sec_key = str_array[2]
+
+        value = response[key][index][sec_key]
+      } else {
+        value = response[str_array[0]]
+      }
+
+      if (value) {
+        $(element_id, form).val(value);
+      }
+    }
+  } )
+}
+
 function appmarketplaceElements(){
     return getSelectedNodes(dataTable_appmarket);
 }
@@ -575,11 +914,11 @@ function updateMarketInfo(request,app){
               </tr>'+
               (app['files'] ? '<tr>\
                 <td class="key_td">' + tr("OS") + '</td>\
-                <td class="value_td">'+app['files'][0]['os-id']+' '+app['files'][0]['os-release']+'</td>\
+                <td class="value_td">'+app['os-id']+' '+app['os-release']+'</td>\
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Arch") + '</td>\
-                <td class="value_td">'+app['files'][0]['os-arch']+'</td>\
+                <td class="value_td">'+app['os-arch']+'</td>\
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Size") + '</td>\
@@ -587,7 +926,11 @@ function updateMarketInfo(request,app){
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Hypervisor") + '</td>\
-                <td class="value_td">'+app['files'][0]['hypervisor']+'</td>\
+                <td class="value_td">'+app['hypervisor']+'</td>\
+              </tr>\
+              <tr>\
+                <td class="key_td">' + tr("Format") + '</td>\
+                <td class="value_td">'+app['format']+'</td>\
               </tr>' : '') +
             '</tbody>\
         </table>\
@@ -787,26 +1130,52 @@ function setupCreateConverterApplianceDialog(){
 
     dialog.addClass("reveal-modal large max-height");
 
-    $('#create_appconverter_appliance_manual',dialog).click(function(){
+    $('.advanced',dialog).hide();
+
+    $('#advanced_appliance_create',dialog).click(function(){
+        $('.advanced',dialog).toggle();
+        return false;
+    });
+
+    $('#create_appconverter_appliance_raw',dialog).click(function(){
         var template=$('#template',dialog).val();
         Sunstone.runAction("AppMarket.create",JSON.parse(template));
-        $create_converter_appliance_dialog.trigger("reveal:close")
         return false;
     });
 
-    $('#update_appconverter_appliance_manual',dialog).click(function(){
+    $('#update_appconverter_appliance_raw',dialog).click(function(){
         var template=$('#template',dialog).val();
         Sunstone.runAction("AppMarket.update", appliance_update_id, template);
-        $create_converter_appliance_dialog.trigger("reveal:close")
         return false;
     });
 
-    $('#create_appconverter_appliance_reset').click(function(){
+    $('#create_appconverter_appliance_reset', dialog).click(function(){
         $create_converter_appliance_dialog.trigger('reveal:close');
         $create_converter_appliance_dialog.remove();
         setupCreateConverterApplianceDialog();
 
         popUpCreateConverterApplianceialog();
+    });
+
+    $('#create_appconverter_appliance_wizard',dialog).click(function(){
+        Sunstone.runAction("AppMarket.create", $("#create_appconverter_appliance").serializeObject());
+        return false;
+    });
+
+    $('#update_appconverter_appliance_wizard',dialog).click(function(){
+        Sunstone.runAction(
+            "AppMarket.update",
+            appliance_update_id,
+            JSON.stringify($("#create_appconverter_appliance").serializeObject()));
+        return false;
+    });
+
+    var file_index = 0;
+    $("#more_files_appliance_create_button", dialog).click(function(){
+        file_index++;
+        setupTips($("#more_files_appliance_create").append(
+            file_section_create_from.replace(/0/g,file_index)));
+        return false;
     });
 }
 
@@ -815,28 +1184,34 @@ function popUpCreateConverterApplianceialog(){
 
     $("#create_appconverter_appliance_header", dialog).show();
     $("#update_appconverter_appliance_header", dialog).hide();
-    $("#create_appconverter_appliance_manual", dialog).show();
-    $("#update_appconverter_appliance_manual", dialog).hide();
+    $("#create_appconverter_appliance_raw", dialog).show();
+    $("#update_appconverter_appliance_raw", dialog).hide();
+    $("#create_appconverter_appliance_wizard", dialog).show();
+    $("#update_appconverter_appliance_wizard", dialog).hide();
 
     $create_converter_appliance_dialog.reveal();
 }
 
 function popUpUpdateConverterApplianceialog(){
-    var dialog = $create_converter_appliance_dialog;
-
     var selected_nodes = getSelectedNodes(dataTable_appmarket);
     if ( selected_nodes.length != 1 ) {
       notifyMessage("Please select one (and just one) appliance to update.");
       return false;
     }
 
+    $create_converter_appliance_dialog.remove();
+    setupCreateConverterApplianceDialog();
+    var dialog = $create_converter_appliance_dialog;
+
     var appliance_id = ""+selected_nodes[0];
     Sunstone.runAction("AppMarket.show_to_update", appliance_id);
 
     $("#create_appconverter_appliance_header", dialog).hide();
     $("#update_appconverter_appliance_header", dialog).show();
-    $("#create_appconverter_appliance_manual", dialog).hide();
-    $("#update_appconverter_appliance_manual", dialog).show();
+    $("#create_appconverter_appliance_raw", dialog).hide();
+    $("#update_appconverter_appliance_raw", dialog).show();
+    $("#create_appconverter_appliance_wizard", dialog).hide();
+    $("#update_appconverter_appliance_wizard", dialog).show();
 
     $create_converter_appliance_dialog.reveal();
 }
@@ -847,6 +1222,16 @@ function fillUpUpdateConverterApplianceialog(request, response){
     delete template_json["downloads"];
     delete template_json["visits"];
     delete template_json["status"];
+
+    if (template_json.files) {
+        $("#advanced_appliance_create", $("#create_appconverter_appliance")).click();
+        $.each(template_json.files, function(index, value){
+          if (index !== 0)
+            $("#more_files_appliance_create_button", $("#create_appconverter_appliance")).click();
+        })
+    }
+
+    update_form_content(template_json, "#create_appconverter_appliance");
 
     $('#template',$create_converter_appliance_dialog).val(JSON.stringify(template_json, undefined, 2));
 }
