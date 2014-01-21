@@ -100,10 +100,12 @@ module AppConverter
                     :required => true
                 },
                 'source' => {
-                    :type => :string
+                    :type => :string,
+                    :format => :uri
                 },
                 'source_type' => {
-                    :type => :string
+                    :type => :string,
+                    :enum => %w{ova}
                 },
                 'tags' => {
                     :type => :array,
