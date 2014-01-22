@@ -40,11 +40,11 @@ helpers do
             return [500, ""]
         end
 
-        user = user['TEMPLATE/APPMARKET_USER'] || settings.appmarket_config[:appmarket_username]
+        username = user['TEMPLATE/APPMARKET_USER'] || settings.appmarket_config[:appmarket_username]
         pass = user['TEMPLATE/APPMARKET_PASSWORD'] || settings.appmarket_config[:appmarket_password]
 
         appmarket_client = AppMarket::Client.new(
-            user,
+            username,
             pass,
             settings.appmarket_config[:appmarket_url],
             "Sunstone")
