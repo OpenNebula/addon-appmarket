@@ -62,18 +62,23 @@ rescue
 end
 
 begin
-    from_appliance = Appliance.new(JSON.parse(job_json["params"]["from_appliance"]))
-    appliance      = Appliance.new(job_json["appliance"])
+    from_appliance = ApplianceHandler.new(JSON.parse(job_json["params"]["from_appliance"]))
+    appliance      = ApplianceHandler.new(job_json["appliance"])
 
     from_format = job_json["params"]["from_format"]
     format = job_json["params"]["format"]
 
     appliance.convert(from_appliance.files, from_format, format)
-
-    job_json["appliance"] = appliance.to_hash
+    appliance.delete_temp_dir
 rescue Exception => e
-    job_json["error_message"] = "[#{e.class.to_s}] #{e.message}"
-    client.callback(callback_url, "error", job_json.to_json)
+    error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}\n#{e.backtrace}"}}
+    client.callback(callback_url, "error", error_payload.to_json)
+    exit 1
 end
 
-client.callback(callback_url, "done", job_json.to_json)
+appliance_payload ={"appliance" => appliance.to_hash}
+client.callback(callback_url, "done", appliance_payload.to_json)
+
+if from_appliance.body["params"]["delete_source"]
+    client.delete_appliance(job_json["appliance_id"])
+end

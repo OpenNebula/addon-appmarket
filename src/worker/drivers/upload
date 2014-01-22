@@ -86,21 +86,21 @@ ensure_value(source,      "Attribute 'source' cannot be empty.")
 ensure_value(source_type, "Attribute 'source_type' cannot be empty.")
 
 begin
-    appliance = klass.new(job_json, username, password, url)
-
     case source_type
     when "ova" then klass = OVA
     else
         raise WorkerFile, "Unknown source_type: #{type}"
     end
 
+    appliance = klass.new(job_json["appliance"])
     appliance.unpack
     appliance.register_files
-
-    job_json["appliance"] = appliance.to_hash
+    appliance.delete_temp_dir
 rescue Exception => e
-    job_json["error_message"] = "[#{e.class.to_s}] #{e.message}"
-    client.callback(callback_url, "error", job_json.to_json)
+    error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
+    client.callback(callback_url, "error", error_payload.to_json)
+    exit 1
 end
 
-client.callback(callback_url, "done", job_json.to_json)
+appliance_payload ={"appliance" => appliance.to_hash}
+client.callback(callback_url, "done", appliance_payload.to_json)

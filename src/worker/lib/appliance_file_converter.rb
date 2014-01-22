@@ -2,18 +2,20 @@ require 'fileutils'
 require 'open4'
 
 class ApplianceFileConverter
+    class ApplianceFileConverterError < RuntimeError; end
+
     CMDS = {
         "vmdk" => {
             "qcow2" => {
                 "cmd" => lambda {|s,t|
-                    "qemu-img convert -f qcow2 -O vmdk  #{s} #{t}"
+                    "qemu-img convert -O qcow2 #{s} #{t}"
                 }
             }
         },
         "qcow2" => {
             "vmdk" => {
                 "cmd" => lambda {|s,t|
-                    "qemu-img convert -f vmdk  -O qcow2 #{s} #{t}"
+                    "qemu-img convert -O vmdk #{s} #{t}"
                 }
             }
         }
@@ -29,16 +31,19 @@ class ApplianceFileConverter
             cmd_lambda = CMDS[@from_format][@format]["cmd"]
         rescue
             error_msg = "No converter for '#{@from_format}' => '@from_format'."
-            raise WorkerErrror, error_msg
+            raise ApplianceFileConverterError, error_msg
         end
 
-        cmd = cmd_lambda.call(@from_format, @from_format)
+        cmd = cmd_lambda.call(source_path, target_path)
 
         pid, stdin, stdout, stderr = Open4.popen4(cmd)
         _, status = Process::waitpid2 pid
 
         if !status.success?
-            raise WorkerErrror, "Converter Error '#{cmd}':\n#{stderr.read}"
+            FileUtils.rm_f(target_path)
+            raise ApplianceFileConverterError, "Converter Error '#{cmd}':\n#{stderr.read}"
+        else
+            FileUtils
         end
     end
 end

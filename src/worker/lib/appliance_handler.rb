@@ -7,13 +7,6 @@ require 'uuidtools'
 require 'open4'
 
 ################################################################################
-# WorkerError
-################################################################################
-
-class WorkerError < RuntimeError
-end
-
-################################################################################
 # ApplianceFileHandler
 ################################################################################
 
@@ -75,7 +68,9 @@ end
 ################################################################################
 
 class ApplianceHandler
-    attr_accessor :files
+    class ApplianceHandlerError < RuntimeError; end
+
+    attr_accessor :files, :body
 
     def initialize(body)
         @body   = body
@@ -88,6 +83,10 @@ class ApplianceHandler
 
         FileUtils.mkdir_p(CONF[:temp_dir])
         @temp_dir = Dir.mktmpdir(nil, CONF[:temp_dir])
+    end
+
+    def delete_temp_dir
+        FileUtils.rm_r(temp_dir)
     end
 
     def download_cmd
@@ -104,7 +103,7 @@ class ApplianceHandler
         elsif @wget_exists
             "wget -q #{@source} -O-"
         else
-            raise WorkerErrror, "No curl or wget found."
+            raise ApplianceHandlerError, "No curl or wget found."
         end
     end
 
@@ -152,7 +151,7 @@ class OVA < ApplianceHandler
         _, status = Process::waitpid2 pid
 
         if !status.success?
-            raise WorkerErrror, "Download error:\n#{stderr.read}"
+            raise ApplianceHandlerError, "Download error:\n#{stderr.read}"
         end
     end
 
