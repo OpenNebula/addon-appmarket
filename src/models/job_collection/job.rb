@@ -23,7 +23,7 @@ module AppMarket
         STATUS  = %w{pending in-progress cancelling done error cancelled}
         NAMES   = %w{upload delete convert publish unpublish}
         # TODO define formats
-        FORMATS = %w{qcow2 vmdk}
+        FORMATS = %w{qcow2 vmdk raw}
 
         SCHEMA = {
             :type => :object,

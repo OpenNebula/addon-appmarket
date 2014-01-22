@@ -18,6 +18,34 @@ class ApplianceFileConverter
                     "qemu-img convert -O vmdk #{s} #{t}"
                 }
             }
+        },
+        "raw" => {
+            "qcow2" => {
+                "cmd" => lambda {|s,t|
+                    "qemu-img convert -O qcow2 #{s} #{t}"
+                }
+            }
+        },
+        "raw" => {
+            "vmdk" => {
+                "cmd" => lambda {|s,t|
+                    "qemu-img convert -O vmdk #{s} #{t}"
+                }
+            }
+        },
+        "qcow2" => {
+            "raw" => {
+                "cmd" => lambda {|s,t|
+                    "qemu-img convert -O raw #{s} #{t}"
+                }
+            }
+        },
+        "vmdk" => {
+            "raw" => {
+                "cmd" => lambda {|s,t|
+                    "qemu-img convert -O raw #{s} #{t}"
+                }
+            }
         }
     }
 
