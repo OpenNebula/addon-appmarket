@@ -38,6 +38,9 @@ module AppConverter
                     :default => 'pending',
                     :enum => AppConverter::Job::STATUS,
                 },
+                'error_message' => {
+                    :type => :string
+                },
                 'appliance_id' => {
                     :type => :string,
                     :required => true
