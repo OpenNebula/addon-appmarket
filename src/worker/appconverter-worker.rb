@@ -68,7 +68,7 @@ def exec_job(json_hash)
     FileUtils.mkdir_p(job_dir)
 
     callback_url = $client.callback_url(
-        CONF[:worker_name], json_hash['_id']['$oid'])
+        AppMarket::CONF[:worker_name], json_hash['_id']['$oid'])
     # TODO check if name script exists
     command = [
         DRIVERS_LOCATION + '/' + json_hash['name'],
@@ -93,7 +93,7 @@ def exec_job(json_hash)
             end
         end
 
-        if CONF[:debug] == true
+        if AppMarket::CONF[:debug] == true
             File.open(job_dir + '/stdout', 'w+') { |f|
                 f.write(stdout_string)
             }
@@ -117,7 +117,7 @@ def kill_job(json_hash)
 end
 
 begin
-    CONF = YAML.load_file(CONFIGURATION_FILE)
+    AppMarket::CONF = YAML.load_file(CONFIGURATION_FILE)
 rescue Exception => e
     STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
     exit 1
@@ -130,10 +130,10 @@ end
     end
 }
 
-$client = AppMarket::Client.new(CONF[:username], CONF[:password], CONF[:appmarket_url])
+$client = AppMarket::Client.new(AppMarket::CONF[:username], AppMarket::CONF[:password], AppMarket::CONF[:appmarket_url])
 
 while !$exit do
-    response = $client.get_next_job(CONF[:worker_name])
+    response = $client.get_next_job(AppMarket::CONF[:worker_name])
     if AppMarket.is_error?(response)
         puts response.message
     else
@@ -142,7 +142,7 @@ while !$exit do
     end
 
     response = $client.get_worker_jobs(
-        CONF[:worker_name],
+        AppMarket::CONF[:worker_name],
         'status' => 'cancelling')
 
     if AppMarket.is_error?(response)
@@ -154,7 +154,7 @@ while !$exit do
 
             $client.callback(
                 $client.callback_url(
-                    CONF[:worker_name], json_hash['_id']['$oid']),
+                    AppMarket::CONF[:worker_name], json_hash['_id']['$oid']),
                 'cancel')
 
             FileUtils.touch(File.join(job_dir),".cancel")
@@ -163,5 +163,5 @@ while !$exit do
     end
 
     STDOUT.flush
-    sleep CONF[:interval]
+    sleep AppMarket::CONF[:interval]
 end

@@ -30,19 +30,19 @@ RSpec::Core::RakeTask.new(:spec) do |t|
 end
 
 task :bootstrap do
-    AppConverter::UserCollection.bootstrap(CONF['user'])
+    AppMarket::UserCollection.bootstrap(AppMarket::CONF['user'])
 end
 
 task :clean do
-    DB.drop_collection(AppConverter::UserCollection::COLLECTION_NAME)
-    DB.drop_collection(AppConverter::AppCollection::COLLECTION_NAME)
-    DB.drop_collection(AppConverter::JobCollection::COLLECTION_NAME)
+    AppMarket::DB.drop_collection(AppMarket::UserCollection::COLLECTION_NAME)
+    AppMarket::DB.drop_collection(AppMarket::AppCollection::COLLECTION_NAME)
+    AppMarket::DB.drop_collection(AppMarket::JobCollection::COLLECTION_NAME)
 end
 
 task :test => [:clean, :bootstrap, :spec]
 
 task :populate do
-    DB['appliances'].insert({
+    AppMarket::DB['appliances'].insert({
         "name" => "Ubuntu Server 12.04 LTS (Precise Pangolin)",
         "catalog" => "public",
         "publisher" => "OpenNebula.org",
@@ -76,7 +76,7 @@ It has been prepared to work with OpenNebula, i.e. it's contextualized.",
         ]
     })
 
-    DB['appliances'].insert({
+    AppMarket::DB['appliances'].insert({
         "name" => "CentOS 6.2",
         "catalog" => "public",
         "publisher" => "OpenNebula.org",
@@ -114,7 +114,7 @@ It has been prepared to work with OpenNebula, i.e. it's contextualized.",
         ]
     })
 
-    DB['appliances'].insert({
+    AppMarket::DB['appliances'].insert({
         "name" => "ttylinux",
         "catalog" => "public",
         "publisher" => "OpenNebula.org",
@@ -147,7 +147,7 @@ password: password",
         ]
     })
 
-    DB['appliances'].insert({
+    AppMarket::DB['appliances'].insert({
         "name" => "OpenNebula 3.4.1 Front-End Centos 6.2",
         "catalog" => "public",
         "publisher" => "C12G Labs",
@@ -181,7 +181,7 @@ password: opennebula",
         ]
     })
 
-    DB['appliances'].insert({
+    AppMarket::DB['appliances'].insert({
         "name" => "OpenNebula Sandbox KVM 3.4.1",
         "catalog" => "public",
         "publisher" => "C12G Labs",

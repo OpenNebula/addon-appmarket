@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
     class Appliance < Collection
         # Appliances will be created by default in this catalog
         #   This catalog is accesible for all the users even anonymous ones.
@@ -181,7 +181,7 @@ module AppConverter
                 'status' => {
                     :type => :string,
                     :default => 'init',
-                    :enum => AppConverter::Appliance::STATUS,
+                    :enum => AppMarket::Appliance::STATUS,
                 },
                 'files' => {
                     :type => :array,
@@ -205,7 +205,7 @@ module AppConverter
                 'status' => {
                     :type => :null,
                     :default => 'init',
-                    :enum => AppConverter::Appliance::STATUS,
+                    :enum => AppMarket::Appliance::STATUS,
                 },
                 'files' => {
                     :type => :array,
@@ -233,7 +233,7 @@ module AppConverter
                     'appliance_id' => self.object_id
                 }
 
-                job_collection = AppConverter::JobCollection.new(job_selector)
+                job_collection = AppMarket::JobCollection.new(job_selector)
                 job_collection.info
                 job_collection.each { |job|
                     job.cancel
@@ -301,10 +301,6 @@ module AppConverter
         # @param [Integer] file_id the fiel file that will be downloaded, default value: 0
         # @return [String] size of the file
         def file_size(file_id=0)
-            AppCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
-                    "$inc" => { 'downloads' => 1 })
-
             @data['files'][file_id.to_i]['size']
         end
 

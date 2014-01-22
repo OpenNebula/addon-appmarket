@@ -40,14 +40,14 @@ Kind regards
 [3] https://marketplace.c12g.com/
 }
 
-  if CONF['mail']
+  if AppMarket::CONF['mail']
     Mail.defaults do
-      delivery_method :smtp, CONF['mail']
+      delivery_method :smtp, AppMarket::CONF['mail']
     end
 
     def self.send_enable(email, username)
       Mail.deliver do
-        from    CONF['mail'][:user_name]
+        from    AppMarket::CONF['mail'][:user_name]
         to      email
         subject 'OpenNebula Marketplace account'
         body    ERB.new(MESSAGE).result(binding)

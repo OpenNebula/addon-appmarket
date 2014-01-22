@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
     class Collection
         # Return the value of the @data entry
         #
@@ -49,7 +49,7 @@ module AppConverter
         end
 
         def self.collection
-            DB[self::COLLECTION_NAME]
+            AppMarket::DB[self::COLLECTION_NAME]
         end
 
         # Check if the result is an error
@@ -93,7 +93,7 @@ module AppConverter
         #   implemented by subclasses of PoolCollection
         #
         # @param [Integer] index
-        # @return [AppConverter::Collection] It depends on the implemented
+        # @return [AppMarket::Collection] It depends on the implemented
         #   factory method
         def [](index)
             # TODO Handle exception if the index is out of bound

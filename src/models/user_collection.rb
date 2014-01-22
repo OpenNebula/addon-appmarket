@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
 
     class UserCollection < PoolCollection
         COLLECTION_NAME = "users"
@@ -65,7 +65,7 @@ module AppConverter
                 return [400, {"message" => $!.message}]
             end
 
-            hash['password'] = AppConverter::User.generate_password(hash['password'])
+            hash['password'] = AppMarket::User.generate_password(hash['password'])
 
             begin
                 object_id = collection.insert(hash, {:w => 1})
@@ -83,7 +83,7 @@ module AppConverter
         # @param [Session] session an instance of Session containing the
         #   user permisions
         # @param [String] object_id id of the resource
-        # @return [AppConverter::Appliance] depends on the factory method
+        # @return [AppMarket::Appliance] depends on the factory method
         def self.get(session, object_id)
             filter = generate_filter(session, object_id)
             fields = exclude_fields(session)
@@ -112,7 +112,7 @@ module AppConverter
                 }
 
                 user_hash = user_config_hash.merge(default_params)
-                user_hash['password'] = AppConverter::User.generate_password(user_hash.delete('password'))
+                user_hash['password'] = AppMarket::User.generate_password(user_hash.delete('password'))
 
                 collection.insert(user_hash)
             end
@@ -125,7 +125,7 @@ module AppConverter
                 "status" => "enabled"
                 )
 
-            if user && AppConverter::User.check_password(user, password)
+            if user && AppMarket::User.check_password(user, password)
                 return user
             else
                 return nil

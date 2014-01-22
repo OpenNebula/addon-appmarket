@@ -57,16 +57,16 @@ configure do
     end
 
     # Initialize DB with admin credentials
-    if AppConverter::UserCollection.new(nil).info[1].empty?
-        AppConverter::UserCollection.bootstrap(CONF['user'])
+    if AppMarket::UserCollection.new(nil).info[1].empty?
+        AppMarket::UserCollection.bootstrap(AppMarket::CONF['user'])
     end
 
-    set :bind, CONF[:host]
-    set :port, CONF[:port]
+    set :bind, AppMarket::CONF[:host]
+    set :port, AppMarket::CONF[:port]
 
-    set :root_path, (CONF[:proxy_path]||'/')
+    set :root_path, (AppMarket::CONF[:proxy_path]||'/')
 
-    set :config, CONF
+    set :config, AppMarket::CONF
 end
 
 use Rack::Session::Pool, :key => 'appmarket'
@@ -133,7 +133,7 @@ end
 
 # Get the jobs collection
 get '/job' do
-    job_collection = AppConverter::JobCollection.new(@session)
+    job_collection = AppMarket::JobCollection.new(@session)
     @tmp_response = job_collection.info
     content_type :json
     status @tmp_response[0]
@@ -142,8 +142,8 @@ end
 
 # Get a job
 get '/job/:id' do
-    job = AppConverter::JobCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(job)
+    job = AppMarket::JobCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(job)
         @tmp_response = job
     else
         @tmp_response = [200, job.to_hash]
@@ -155,7 +155,7 @@ end
 
 # Create a new job
 post '/job' do
-    @tmp_response = AppConverter::JobCollection.create(@session, Parser.parse_body(request))
+    @tmp_response = AppMarket::JobCollection.create(@session, Parser.parse_body(request))
     content_type :json
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
@@ -163,8 +163,8 @@ end
 
 # Delete a job
 delete '/job/:id' do
-    job = AppConverter::JobCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(job)
+    job = AppMarket::JobCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(job)
         @tmp_response = job
     else
         @tmp_response = job.delete
@@ -184,7 +184,7 @@ get '/worker/:worker_host/job' do
     job_selector['worker_host'] = params[:worker_host]
     job_selector['status'] = params[:status] if params[:status]
 
-    job_collection = AppConverter::JobCollection.new(@session, job_selector, {})
+    job_collection = AppMarket::JobCollection.new(@session, job_selector, {})
     @tmp_response = job_collection.info
     content_type :json
     status @tmp_response[0]
@@ -192,15 +192,15 @@ get '/worker/:worker_host/job' do
 end
 
 # Callbacks from the worker to update the given job
-#   Available callbacks are defined in AppConverter::Job::CALLBACKS
+#   Available callbacks are defined in AppMarket::Job::CALLBACKS
 post '/worker/:worker_host/job/:job_id/:callback' do
     @body_hash = Parser.parse_body(request)
 
-    job = AppConverter::JobCollection.get(@session, params[:job_id])
-    if AppConverter::Collection.is_error?(job)
+    job = AppMarket::JobCollection.get(@session, params[:job_id])
+    if AppMarket::Collection.is_error?(job)
         @tmp_response = job
     else
-        if AppConverter::Job::CALLBACKS.include?(params[:callback])
+        if AppMarket::Job::CALLBACKS.include?(params[:callback])
             # TODO check @body_hash keys
 
             @tmp_response = job.send(
@@ -228,10 +228,10 @@ get '/worker/:worker_host/nextjob' do
         :fields => {}
     }
 
-    app_collection = AppConverter::AppCollection.new(@session, app_selector, app_opts)
+    app_collection = AppMarket::AppCollection.new(@session, app_selector, app_opts)
     app_response = app_collection.info
 
-    if AppConverter::Collection.is_error?(app_response)
+    if AppMarket::Collection.is_error?(app_response)
         @tmp_response = app_response
     else
         # Retrieve the pending jobs that are not associated with any appliance
@@ -247,10 +247,10 @@ get '/worker/:worker_host/nextjob' do
             :sort => ['creation_time', Mongo::ASCENDING]
         }
 
-        job_collection = AppConverter::JobCollection.new(@session, job_selector, job_opts)
+        job_collection = AppMarket::JobCollection.new(@session, job_selector, job_opts)
         job_response = job_collection.info
 
-        if AppConverter::Collection.is_error?(job_response)
+        if AppMarket::Collection.is_error?(job_response)
             @tmp_response = job_response
         else
             if job_collection.empty?
@@ -260,7 +260,7 @@ get '/worker/:worker_host/nextjob' do
                 next_job.start(params[:worker_host], {}, {})
 
                 job_hash = next_job.to_hash
-                app = AppConverter::AppCollection.get(@session, job_hash['appliance_id'])
+                app = AppMarket::AppCollection.get(@session, job_hash['appliance_id'])
                 job_hash['appliance'] = app.to_hash
                 @tmp_response = [200, job_hash]
             end
@@ -277,7 +277,7 @@ end
 
 get '/user' do
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        user_collection = AppConverter::UserCollection.new(@session)
+        user_collection = AppMarket::UserCollection.new(@session)
         @tmp_response = user_collection.info
 
         status @tmp_response[0]
@@ -290,8 +290,8 @@ get '/user' do
 end
 
 get '/user/:id' do
-    @user = AppConverter::UserCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(@user)
+    @user = AppMarket::UserCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(@user)
         error @user
     end
 
@@ -303,8 +303,8 @@ get '/user/:id' do
 end
 
 post '/user/:id/enable' do
-    user = AppConverter::UserCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(user)
+    user = AppMarket::UserCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(user)
         error user
     else
         user.enable
@@ -320,14 +320,14 @@ post '/user/:id/enable' do
 end
 
 post '/user' do
-    @tmp_response = AppConverter::UserCollection.create(@session, Parser.parse_body(request))
+    @tmp_response = AppMarket::UserCollection.create(@session, Parser.parse_body(request))
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
 
 put '/user/:id' do
-    user = AppConverter::UserCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(user)
+    user = AppMarket::UserCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(user)
         error user
     else
         user.update(Parser.parse_body(request))
@@ -335,8 +335,8 @@ put '/user/:id' do
 end
 
 delete '/user/:id' do
-    user = AppConverter::UserCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(user)
+    user = AppMarket::UserCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(user)
         error user
     else
         user.delete
@@ -349,7 +349,7 @@ end
 
 get '/appliance' do
     if request.env["HTTP_ACCEPT"] && request.env["HTTP_ACCEPT"].split(',').grep(/text\/html/).empty?
-        app_collection = AppConverter::AppCollection.new(@session)
+        app_collection = AppMarket::AppCollection.new(@session)
         @tmp_response = app_collection.info
 
         status @tmp_response[0]
@@ -362,8 +362,8 @@ get '/appliance' do
 end
 
 get '/appliance/:id' do
-    app = AppConverter::AppCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(app)
+    app = AppMarket::AppCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(app)
         error app
     end
 
@@ -403,20 +403,20 @@ get '/appliance/:id' do
 end
 
 post '/appliance' do
-    @tmp_response = AppConverter::AppCollection.create(@session, Parser.parse_body(request))
+    @tmp_response = AppMarket::AppCollection.create(@session, Parser.parse_body(request))
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
 
 post '/appliance/:id/clone' do
-    @tmp_response = AppConverter::AppCollection.clone(@session, params[:id], Parser.parse_body(request))
+    @tmp_response = AppMarket::AppCollection.clone(@session, params[:id], Parser.parse_body(request))
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
 
 delete '/appliance/:id' do
-    app = AppConverter::AppCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(app)
+    app = AppMarket::AppCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(app)
         error app
     else
         app.delete
@@ -424,8 +424,8 @@ delete '/appliance/:id' do
 end
 
 put '/appliance/:id' do
-    app = AppConverter::AppCollection.get(@session, params[:id])
-    if AppConverter::Collection.is_error?(app)
+    app = AppMarket::AppCollection.get(@session, params[:id])
+    if AppMarket::Collection.is_error?(app)
         error app
     else
         @tmp_response = app.update(Parser.parse_body(request))
@@ -436,8 +436,8 @@ put '/appliance/:id' do
 end
 
 get '/appliance/:id/download' do
-    app = AppConverter::AppCollection.get(@session, params[:id], false)
-    if AppConverter::Collection.is_error?(app)
+    app = AppMarket::AppCollection.get(@session, params[:id], false)
+    if AppMarket::Collection.is_error?(app)
         error app
     else
         file_id = params[:file_id]
@@ -451,8 +451,8 @@ get '/appliance/:id/download' do
 end
 
 get '/appliance/:id/download/:file_id' do
-    app = AppConverter::AppCollection.get(@session, params[:id], false)
-    if AppConverter::Collection.is_error?(app)
+    app = AppMarket::AppCollection.get(@session, params[:id], false)
+    if AppMarket::Collection.is_error?(app)
         error app
     else
         file_id = params[:file_id]

@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'pp'
 describe 'MarketPlace User tests' do
     before(:all) do
-        DB.drop_collection(AppConverter::AppCollection::COLLECTION_NAME)
-        DB.drop_collection(AppConverter::JobCollection::COLLECTION_NAME)
+        AppMarket::DB.drop_collection(AppMarket::AppCollection::COLLECTION_NAME)
+        AppMarket::DB.drop_collection(AppMarket::JobCollection::COLLECTION_NAME)
     end
 
     describe "admin" do

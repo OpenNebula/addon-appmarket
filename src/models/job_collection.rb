@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
 
     class JobCollection < PoolCollection
         COLLECTION_NAME = "jobs"
@@ -54,13 +54,13 @@ module AppConverter
             )
 
             begin
-                validator.validate!(hash, AppConverter::Job::SCHEMA)
+                validator.validate!(hash, AppMarket::Job::SCHEMA)
             rescue Validator::ParseException
                 return [400, {"message" => $!.message}]
             end
 
             # Check if the app exists
-            app = AppConverter::AppCollection.get(session, hash['appliance_id'])
+            app = AppMarket::AppCollection.get(session, hash['appliance_id'])
             if Collection.is_error?(app)
                 return app
             end
@@ -81,7 +81,7 @@ module AppConverter
         #   to retrieve the resource instead of Job.new
         #
         # @param [String] object_id id of the resource
-        # @return [AppConverter::Job] depends on the factory method
+        # @return [AppMarket::Job] depends on the factory method
         def self.get(session, object_id)
             begin
                 data = collection.find_one(

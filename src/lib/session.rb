@@ -56,10 +56,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous => AppConverter::User::SCHEMA,
-                :user      => AppConverter::User::SCHEMA,
-                :worker    => AppConverter::User::SCHEMA,
-                :admin     => AppConverter::User::ADMIN_SCHEMA
+                :anonymous => AppMarket::User::SCHEMA,
+                :user      => AppMarket::User::SCHEMA,
+                :worker    => AppMarket::User::SCHEMA,
+                :admin     => AppMarket::User::ADMIN_SCHEMA
             }
         },
         :appliance => {
@@ -106,10 +106,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous => AppConverter::Appliance::USER_SCHEMA,
-                :user      => AppConverter::Appliance::USER_SCHEMA,
-                :worker    => AppConverter::Appliance::ADMIN_SCHEMA,
-                :admin     => AppConverter::Appliance::ADMIN_SCHEMA
+                :anonymous => AppMarket::Appliance::USER_SCHEMA,
+                :user      => AppMarket::Appliance::USER_SCHEMA,
+                :worker    => AppMarket::Appliance::ADMIN_SCHEMA,
+                :admin     => AppMarket::Appliance::ADMIN_SCHEMA
             }
         },
         :job => {
@@ -138,10 +138,10 @@ class Session
                 :admin      => true
             },
             :schema => {
-                :anonymous => AppConverter::Job::SCHEMA,
-                :user      => AppConverter::Job::SCHEMA,
-                :worker    => AppConverter::Job::SCHEMA,
-                :admin     => AppConverter::Job::SCHEMA
+                :anonymous => AppMarket::Job::SCHEMA,
+                :user      => AppMarket::Job::SCHEMA,
+                :worker    => AppMarket::Job::SCHEMA,
+                :admin     => AppMarket::Job::SCHEMA
             }
         },
         :worker => {
@@ -241,12 +241,12 @@ class Session
 
     def allowed_catalogs
         if anonymous?
-            [AppConverter::Appliance::PUBLIC_CATALOG]
+            [AppMarket::Appliance::PUBLIC_CATALOG]
         elsif user?
             if  @user['catalogs']
-                [AppConverter::Appliance::PUBLIC_CATALOG] + @user['catalogs']
+                [AppMarket::Appliance::PUBLIC_CATALOG] + @user['catalogs']
             else
-                [AppConverter::Appliance::PUBLIC_CATALOG]
+                [AppMarket::Appliance::PUBLIC_CATALOG]
             end
         elsif admin?
             nil
@@ -272,9 +272,9 @@ class Session
     def role
         if @user.nil?
             :anonymous
-        elsif @user['role'] == AppConverter::User::ADMIN_ROLE
+        elsif @user['role'] == AppMarket::User::ADMIN_ROLE
             :admin
-        elsif @user['role'] == AppConverter::User::WORKER_ROLE
+        elsif @user['role'] == AppMarket::User::WORKER_ROLE
             :worker
         else
             :user
@@ -299,7 +299,7 @@ class Session
             username, password = auth.credentials
 
             #sha1_pass = Digest::SHA1.hexdigest(password)
-            AppConverter::UserCollection.retrieve(username, password)
+            AppMarket::UserCollection.retrieve(username, password)
         else
             nil
         end

@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
 
     class UploadJob < Job
         # This method should be used only by the factory method, to retrieve

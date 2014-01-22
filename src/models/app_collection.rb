@@ -14,7 +14,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-module AppConverter
+module AppMarket
 
     class AppCollection < PoolCollection
         COLLECTION_NAME = "appliances"
@@ -101,7 +101,7 @@ module AppConverter
                     'appliance_id' => app.object_id
                 }
 
-                AppConverter::JobCollection.create(session, job_hash)
+                AppMarket::JobCollection.create(session, job_hash)
             else
                 app.update({'status' => 'ready'})
             end
@@ -117,7 +117,7 @@ module AppConverter
         # @param [String] object_id id of the resource
         # @param [true,false] exclude_fields exclude fields from the appliance
         #   information, the fields are defined in the exclude_fields method
-        # @return [AppConverter::Appliance] depends on the factory method
+        # @return [AppMarket::Appliance] depends on the factory method
         def self.get(session, object_id, exclude_fields=true)
             begin
                 filter = generate_filter(session, object_id)
@@ -146,7 +146,7 @@ module AppConverter
         #   user permisions
         # @param [String] object_id id of the resource
         # @param [Hash] hash containing the values of the resource
-        # @return [AppConverter::Appliance] depends on the factory method
+        # @return [AppMarket::Appliance] depends on the factory method
         def self.clone(session, object_id, hash)
             begin
                 filter = generate_filter(session, object_id)
@@ -174,7 +174,7 @@ module AppConverter
 
             validator = Validator::Validator.new(
                 :default_values => true,
-                :delete_extra_properties => false
+                :extra_properties => false
             )
 
             data.delete('downloads')
@@ -219,7 +219,7 @@ module AppConverter
                 }
             }.deep_merge(hash)
 
-            job = AppConverter::JobCollection.create(session, job_hash)
+            job = AppMarket::JobCollection.create(session, job_hash)
             # TODO Check if the creation fails
 
             return [201, app.to_hash]

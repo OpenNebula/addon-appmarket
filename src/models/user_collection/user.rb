@@ -16,7 +16,7 @@
 
 require 'bcrypt'
 
-module AppConverter
+module AppMarket
     class User < Collection
         # User will be created by default in this role
         USER_ROLE   = 'user'

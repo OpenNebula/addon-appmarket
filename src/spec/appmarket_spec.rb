@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'pp'
 
-describe 'AppConverter tests' do
+describe 'AppMarket tests' do
     before(:all) do
-        DB.drop_collection(AppConverter::AppCollection::COLLECTION_NAME)
-        DB.drop_collection(AppConverter::JobCollection::COLLECTION_NAME)
+        AppMarket::DB.drop_collection(AppMarket::AppCollection::COLLECTION_NAME)
+        AppMarket::DB.drop_collection(AppMarket::JobCollection::COLLECTION_NAME)
 
         basic_authorize('default','default')
         post '/user', File.read(EXAMPLES_PATH + '/worker.json'), {'HTTP_ACCEPT' => 'application/json'}

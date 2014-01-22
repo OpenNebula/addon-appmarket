@@ -28,8 +28,8 @@ class ApplianceFileHandler
 
         uuid = UUIDTools::UUID.random_create.to_s
 
-        path = File.join(CONF[:repo], uuid)
-        url  = File.join(CONF[:base_uri], uuid)
+        path = File.join(AppMarket::CONF[:repo], uuid)
+        url  = File.join(AppMarket::CONF[:base_uri], uuid)
 
         FileUtils.mv(source, path)
 
@@ -81,8 +81,8 @@ class ApplianceHandler
     def temp_dir
         return @temp_dir if @temp_dir
 
-        FileUtils.mkdir_p(CONF[:temp_dir])
-        @temp_dir = Dir.mktmpdir(nil, CONF[:temp_dir])
+        FileUtils.mkdir_p(AppMarket::CONF[:temp_dir])
+        @temp_dir = Dir.mktmpdir(nil, AppMarket::CONF[:temp_dir])
     end
 
     def delete_temp_dir
@@ -129,7 +129,7 @@ class ApplianceHandler
             uuid        = file["url"].split("/")[-1]
             name        = file["name"]
 
-            source_path = File.join(CONF[:repo],uuid)
+            source_path = File.join(AppMarket::CONF[:repo],uuid)
             target_path = File.join(temp_dir,uuid)
 
             converter.convert(source_path, target_path)
