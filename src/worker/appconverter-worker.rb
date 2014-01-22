@@ -84,19 +84,22 @@ def exec_job(json_hash)
     Thread.new do
         ignored, status = Process::waitpid2 pid
 
+        stdout_string = stdout.read.strip
+        stderr_string = stderr.read.strip
+
         if !status.success?
-            # TODO if a process is cancelled a signal is sent and this method
-            #   will be executed
-            # $client.callback(callback_url, 'error')
+            if !File.exists?(File.join(job_dir,".cancel"))
+                $client.callback(callback_url, 'error', {"job"=>{"error_message"=>stderr_string}})
+            end
         end
 
         if CONF[:debug] == true
             File.open(job_dir + '/stdout', 'w+') { |f|
-                f.write(stdout.read.strip)
+                f.write(stdout_string)
             }
 
             File.open(job_dir + '/stderr', 'w+') { |f|
-                f.write(stderr.read.strip)
+                f.write(stderr_string)
             }
         end
     end
@@ -109,6 +112,8 @@ def kill_job(json_hash)
     rescue Errno::ESRCH
         puts "PID:#{pid_to_be_killed} No such process"
     end
+
+    # TODO: SIGKILL if not terminated
 end
 
 begin
@@ -145,12 +150,15 @@ while !$exit do
     else
         json_array = JSON.parse(response.body)
         json_array.each { |json_hash|
-            kill_job(json_hash)
+            job_dir = get_job_dir(json_hash)
 
             $client.callback(
                 $client.callback_url(
                     CONF[:worker_name], json_hash['_id']['$oid']),
                 'cancel')
+
+            FileUtils.touch(File.join(job_dir),".cancel")
+            kill_job(json_hash)
         }
     end
 
