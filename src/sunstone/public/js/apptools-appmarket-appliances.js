@@ -17,6 +17,7 @@
 /* Marketpplace tab plugin */
 var dataTable_appmarket;
 var $appmarket_import_dialog;
+var $appmarket_convert_dialog;
 
 var AppMarket = {
     "resource" : "APPMARKET",
@@ -55,11 +56,7 @@ var AppMarket = {
         var callback_error = params.error;
         var timeout = params.timeout || false;
         var request = OpenNebula.Helper.request('APPMARKET','convert');
-        var data = {
-            params: {
-                format: params.data.extra_param
-            }
-        }
+        var data = params.data.extra_param;
 
         $.ajax({
             url: AppMarket.path + '/' + params.data.id + '/convert',
@@ -189,7 +186,20 @@ var appmarket_actions = {
     },
     "AppMarket.create_dialog" : {
         type : "custom",
-        call: popUpCreateConverterApplianceialog
+        call: popUpCreateApplianceDialog
+    },
+    "AppMarket.convert" : {
+        type: "single",
+        call: AppMarket.convert,
+        callback: function(request, response) {
+            addConverterApplianceElement(request, response);
+        },
+        error: onError,
+        notify:true
+    },
+    "AppMarket.convert_dialog" : {
+        type : "custom",
+        call: popUpConvertApplianceDialog
     },
     "AppMarket.list" : {
         type: "list",
@@ -218,14 +228,14 @@ var appmarket_actions = {
     },
     "AppMarket.update_dialog" : {
         type : "single",
-        call: popUpUpdateConverterApplianceialog,
+        call: popUpUpdateApplianceDialog,
         error: onError
     },
     "AppMarket.show_to_update" : {
         type : "single",
         call: AppMarket.show,
         callback: function(request, response){
-            fillUpUpdateConverterApplianceialog(request, response);
+            fillUpUpdateApplianceDialog(request, response);
             appliance_update_id = request.request.data[0]
         },
         error: onError
@@ -238,13 +248,6 @@ var appmarket_actions = {
             $create_converter_appliance_dialog.trigger("reveal:close");
         },
         error: onError
-    },
-    "AppMarket.convert" : {
-        type: "multiple",
-        call: AppMarket.convert,
-        elements: appmarketplaceElements,
-        error:onError,
-        notify: true
     },
     "AppMarket.import" : {
         //fetches images information and fills in the image creation
@@ -394,16 +397,10 @@ var appmarket_buttons = {
         layout: "main",
         text: tr("Update")
     },
-    "AppMarket.convert" : {
-        type: "confirm_with_select",
-        text: tr("Convert"),
+    "AppMarket.convert_dialog" : {
+        type: "action",
         layout: "main",
-        select: function(){
-            return '<option class="empty_value" value="">'+tr("Please select")+'</option>\
-            <option elem_id="qcow2" value="qcow2">qcow2</option>\
-            <option elem_id="vmdk" value="vmdk">vmdk</option>'
-        },
-        tip: tr("Select the new format, a new appliance will be created")+":"
+        text: tr("Convert")
     },
     "AppMarket.delete" : {
         type: "confirm",
@@ -426,6 +423,45 @@ var appmarket_import_dialog =
   '</div>'+
   '<a class="close-reveal-modal">&#215;</a>'+
 '</div>';
+
+var appmarket_convert_dialog =
+'<div id="appmarket_convert_dialog">\
+  <div class="panel">\
+    <h3><small>'+tr("Convert Appliance")+'</small></h4>\
+  </div>\
+    <div class="row">\
+      <div class="seven columns">\
+        <label class="right inline" for="format">'+tr("Format")+':</label>\
+      </div>\
+      <div class="four columns">\
+        <select name="format" id="format">\
+            <option value=""></option>\
+            <option value="qcow2">'+tr("qcow2")+'</option>\
+            <option value="raw">'+tr("raw")+'</option>\
+            <option value="vdi">'+tr("vdi")+'</option>\
+            <option value="vmdk">'+tr("vmdk")+'</option>\
+        </select>\
+      </div>\
+      <div class="one columns">\
+      </div>\
+    </div>\
+    <div class="row">\
+      <div class="seven columns">\
+        <label class="right inline" for="delete_source">'+tr("Delete original appliance")+':</label>\
+      </div>\
+      <div class="four columns">\
+        <input type="checkbox" name="delete_source" id="delete_source" />\
+      </div>\
+      <div class="one columns">\
+      </div>\
+    </div>\
+    <hr>\
+    <div class="form_buttons">\
+       <button class="button radius right success" id="convert_appliance_button" type="button">'+tr("Convert")+'</button>\
+       <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
+    </div>\
+  <a class="close-reveal-modal">&#215;</a>\
+</div>';
 
 var file_section_create_from =
 '<div class="row">\
@@ -1180,7 +1216,7 @@ function setupCreateConverterApplianceDialog(){
         $create_converter_appliance_dialog.remove();
         setupCreateConverterApplianceDialog();
 
-        popUpCreateConverterApplianceialog();
+        popUpCreateApplianceDialog();
     });
 
     $('#create_appconverter_appliance_wizard',dialog).click(function(){
@@ -1205,7 +1241,7 @@ function setupCreateConverterApplianceDialog(){
     });
 }
 
-function popUpCreateConverterApplianceialog(){
+function popUpCreateApplianceDialog(){
     var dialog = $create_converter_appliance_dialog;
 
     $("#create_appconverter_appliance_header", dialog).show();
@@ -1218,7 +1254,33 @@ function popUpCreateConverterApplianceialog(){
     $create_converter_appliance_dialog.reveal();
 }
 
-function popUpUpdateConverterApplianceialog(){
+function popUpConvertApplianceDialog(){
+    if ($appmarket_convert_dialog != undefined) {
+      $appmarket_convert_dialog.remove();
+    }
+
+    dialogs_context.append(appmarket_convert_dialog);
+    $appmarket_convert_dialog = $('#appmarket_convert_dialog',dialogs_context);
+    $appmarket_convert_dialog.addClass("reveal-modal");
+
+    $("#convert_appliance_button", $appmarket_convert_dialog).click(function(){
+        var extra_info = {};
+        extra_info['format'] = $('#format', dialog).val()
+        extra_info['delete_source'] = $("#delete_source", this).is(":checked") ? true : false
+
+        $.each(getSelectedNodes(dataTable_appmarket), function(index, elem) {
+            Sunstone.runAction("AppMarket.convert", elem, extra_info);
+        });
+
+        $appmarket_convert_dialog .trigger("reveal:close");
+
+        return false;
+    });
+
+    $appmarket_convert_dialog.reveal();
+}
+
+function popUpUpdateApplianceDialog(){
     var selected_nodes = getSelectedNodes(dataTable_appmarket);
     if ( selected_nodes.length != 1 ) {
       notifyMessage("Please select one (and just one) appliance to update.");
@@ -1242,7 +1304,7 @@ function popUpUpdateConverterApplianceialog(){
     $create_converter_appliance_dialog.reveal();
 }
 
-function fillUpUpdateConverterApplianceialog(request, response){
+function fillUpUpdateApplianceDialog(request, response){
     var template_json = response;
     delete template_json["_id"];
     delete template_json["downloads"];
