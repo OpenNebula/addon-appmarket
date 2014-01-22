@@ -89,7 +89,8 @@ def exec_job(json_hash)
 
         if !status.success?
             if !File.exists?(File.join(job_dir,".cancel"))
-                $client.callback(callback_url, 'error', {"job"=>{"error_message"=>stderr_string}})
+                error_payload = {"job"=>{"error_message"=>stderr_string}}
+                $client.callback(callback_url, 'error',error_payload.to_json )
             end
         end
 
@@ -157,7 +158,7 @@ while !$exit do
                     AppMarket::CONF[:worker_name], json_hash['_id']['$oid']),
                 'cancel')
 
-            FileUtils.touch(File.join(job_dir),".cancel")
+            FileUtils.touch(File.join(job_dir,".cancel"))
             kill_job(json_hash)
         }
     end
