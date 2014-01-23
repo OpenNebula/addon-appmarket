@@ -99,7 +99,7 @@ begin
 rescue Exception => e
     error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
     client.callback(callback_url, "error", error_payload.to_json)
-    exit 1
+    exit 0
 end
 
 appliance_payload ={"appliance" => appliance.to_hash}
