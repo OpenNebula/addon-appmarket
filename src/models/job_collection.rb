@@ -65,6 +65,7 @@ module AppMarket
                 return app
             end
 
+            hash['appliance'] = app.to_hash
             hash['creation_time'] = Time.now.to_i
 
             begin
