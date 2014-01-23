@@ -31,6 +31,7 @@ class ApplianceFileHandler
         path = File.join(AppMarket::CONF[:repo], uuid)
         url  = File.join(AppMarket::CONF[:base_uri], uuid)
 
+        FileUtils.mkdir_p(CONF[:repo])
         FileUtils.mv(source, path)
 
         digests = self.digests(path)
@@ -141,6 +142,17 @@ class ApplianceHandler
 
             appliance_file = ApplianceFileHandler.register(file_hash)
             @files << appliance_file.to_hash
+        end
+    end
+
+    UUID_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/
+    def delete_files
+        @body["files"].each do |file|
+            uuid = File.basename(file["url"])
+            if uuid.match(UUID_REGEX)
+                path = File.join(CONF[:repo],uuid)
+                FileUtils.rm_f(path)
+            end
         end
     end
 end

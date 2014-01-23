@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+
+ONE_LOCATION = ENV["ONE_LOCATION"]
+
+if !ONE_LOCATION
+    LOG_LOCATION = "/var/log/one"
+    ETC_LOCATION = "/etc/one"
+    RUBY_LIB_LOCATION = "/usr/lib/one/ruby"
+else
+    LOG_LOCATION = ONE_LOCATION + "/var"
+    ETC_LOCATION = ONE_LOCATION + "/etc"
+    RUBY_LIB_LOCATION = ONE_LOCATION+"/lib/ruby"
+end
+
+CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
+
+$: << RUBY_LIB_LOCATION + '/appconverter'
+$: << RUBY_LIB_LOCATION + '/appconverter/lib'
+
+################################################################################
+# Libraries
+################################################################################
+
+require 'appmarket_client'
+require 'appliance_handler'
+
+require 'rubygems'
+require 'json'
+require 'base64'
+require 'yaml'
+
+################################################################################
+# Configuration
+################################################################################
+
+begin
+    CONF = YAML.load_file(CONFIGURATION_FILE)
+rescue Exception => e
+    STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
+    exit 1
+end
+
+################################################################################
+# Main
+################################################################################
+
+# Callback URL
+callback_url = ARGV[0]
+
+username = CONF[:username]
+password = CONF[:password]
+url      = CONF[:appmarket_url]
+
+client = AppMarket::Client.new(username, password, url)
+
+# Job meta-data
+begin
+    job_json = JSON.parse(Base64::decode64(ARGV[1]))
+rescue
+    STDERR.puts("Invalid job.")
+    exit 1
+end
+
+begin
+    appliance = ApplianceHandler.new(job_json["appliance"])
+    appliance.delete_files
+rescue Exception => e
+    error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}\n#{e.backtrace}"}}
+    client.callback(callback_url, "error", error_payload.to_json)
+    exit 0
+end
