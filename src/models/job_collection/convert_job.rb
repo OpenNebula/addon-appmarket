@@ -81,7 +81,7 @@ module AppMarket
         def cb_error(worker_host, job_hash, app_hash)
             job_hash_merged = {}.deep_merge(job_hash||{})
             app_hash_merged = {
-                'status' => 'init'
+                'status' => 'error'
             }.deep_merge(app_hash||{})
 
             super(job_hash_merged, app_hash_merged)
