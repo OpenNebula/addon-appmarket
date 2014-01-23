@@ -79,6 +79,6 @@ end
 appliance_payload ={"appliance" => appliance.to_hash}
 client.callback(callback_url, "done", appliance_payload.to_json)
 
-if from_appliance.body["params"]["delete_source"]
+if job_json["params"]["delete_source"]
     client.delete_appliance(job_json["appliance_id"])
 end
