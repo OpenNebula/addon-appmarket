@@ -52,7 +52,7 @@ class ApplianceFileConverter
         begin
             cmd_lambda = CMDS[@from_format][@format]["cmd"]
         rescue
-            error_msg = "No converter for '#{@from_format}' => '@from_format'."
+            error_msg = "No converter for '#{@from_format}' => '#{@format}'."
             raise ApplianceFileConverterError, error_msg
         end
 
