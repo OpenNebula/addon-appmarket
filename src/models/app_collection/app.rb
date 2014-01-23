@@ -233,11 +233,18 @@ module AppMarket
                     'appliance_id' => self.object_id
                 }
 
-                job_collection = AppMarket::JobCollection.new(job_selector)
+                job_collection = AppMarket::JobCollection..new(@session, job_selector)
                 job_collection.info
                 job_collection.each { |job|
                     job.cancel
                 }
+
+                job_hash = {
+                    'name'         => 'delete',
+                    'appliance_id' => self.object_id
+                }
+
+                JobCollection.create(@session, job_hash)
 
                 # The app is removed insted of keeping it until all the jobs
                 #   are cancelled?
