@@ -167,7 +167,11 @@ delete '/job/:id' do
     if AppMarket::Collection.is_error?(job)
         @tmp_response = job
     else
-        @tmp_response = job.delete
+        if job["status"] == "in-progress"
+            @tmp_response = job.cancel
+        else
+            @tmp_response = job.delete
+        end
     end
     content_type :json
     status @tmp_response[0]
@@ -238,31 +242,40 @@ get '/worker/:worker_host/nextjob' do
         #   with a running job
         ready_app_ids = app_collection.collect {|app| app['_id'].to_s }
 
-        job_selector = {
-            'status' => 'pending',
-            'appliance_id' => { '$in' => ready_app_ids }
-        }
+        # Retrieve the apps with jobs in progress
+        job_selector = {'status' => 'in-progress'}
+        jobs_in_progress = AppConverter::JobCollection.new(@session, job_selector,{}) #, {:fields => ['appliance_id']})
+        jobs_in_progress_response = jobs_in_progress.info
 
-        job_opts = {
-            :sort => ['creation_time', Mongo::ASCENDING]
-        }
-
-        job_collection = AppMarket::JobCollection.new(@session, job_selector, job_opts)
-        job_response = job_collection.info
-
-        if AppMarket::Collection.is_error?(job_response)
-            @tmp_response = job_response
+        if AppConverter::Collection.is_error?(jobs_in_progress_response)
+            @tmp_response = jobs_in_progress_response
         else
-            if job_collection.empty?
-                @tmp_response = [404, {'message' => "There is no job available"}]
-            else
-                next_job = job_collection.first
-                next_job.start(params[:worker_host], {}, {})
+            apps_in_progress_ids = jobs_in_progress.collect {|job| job['appliance_id'].to_s }
 
-                job_hash = next_job.to_hash
-                app = AppMarket::AppCollection.get(@session, job_hash['appliance_id'])
-                job_hash['appliance'] = app.to_hash
-                @tmp_response = [200, job_hash]
+            job_selector = {
+                'status' => 'pending',
+                'appliance_id' => { '$nin' => apps_in_progress_ids }
+            }
+
+            job_opts = {
+                :sort => ['creation_time', Mongo::ASCENDING]
+            }
+
+            job_collection = AppMarket::Collection.new(@session, job_selector, job_opts)
+            job_response = job_collection.info
+
+            if AppMarket::Collection.is_error?(job_response)
+                @tmp_response = job_response
+            else
+                if job_collection.empty?
+                    @tmp_response = [404, {'message' => "There is no job available"}]
+                else
+                    next_job = job_collection.first
+                    next_job.start(params[:worker_host], {}, {})
+
+                    job_hash = next_job.to_hash
+                    @tmp_response = [200, job_hash]
+                end
             end
         end
     end
