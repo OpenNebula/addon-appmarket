@@ -106,6 +106,8 @@ module AppMarket
                 return UploadJob.new(session, pelem)
             when 'convert'
                 return ConvertJob.new(session, pelem)
+            when 'delete'
+                return DeleteJob.new(session, pelem)
             end
         end
 
