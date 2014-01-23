@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+# -------------------------------------------------------------------------- #
+# Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs        #
+#                                                                            #
+# Licensed under the Apache License, Version 2.0 (the "License"); you may    #
+# not use this file except in compliance with the License. You may obtain    #
+# a copy of the License at                                                   #
+#                                                                            #
+# http://www.apache.org/licenses/LICENSE-2.0                                 #
+#                                                                            #
+# Unless required by applicable law or agreed to in writing, software        #
+# distributed under the License is distributed on an "AS IS" BASIS,          #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   #
+# See the License for the specific language governing permissions and        #
+# limitations under the License.                                             #
+#--------------------------------------------------------------------------- #
+
+ONE_LOCATION=ENV["ONE_LOCATION"]
+
+if !ONE_LOCATION
+    RUBY_LIB_LOCATION="/usr/lib/one/ruby"
+    ETC_LOCATION = "/etc/one"
+else
+    RUBY_LIB_LOCATION=ONE_LOCATION+"/lib/ruby"
+    ETC_LOCATION = ONE_LOCATION + "/etc"
+end
+
+$: << RUBY_LIB_LOCATION
+$: << RUBY_LIB_LOCATION+"/oneapps/market"
+
+require 'init'
+
+##############################################################################
+##############################################################################
+#
+# For new version
+#   * update VERSION and VERSION_CODE in init.rb
+#   * include the version_code in the UPGRADE_SCRIPTS array
+#   * create a new module Version#{version_code}
+#       * define VERSION and VERSION_CODE constants
+#       * define the self.upgrade method
+#
+##############################################################################
+##############################################################################
+
+UPGRADE_SCRIPTS = [10800]
+
+module Version10800
+    VERSION = "1.8.0"
+    VERSION_CODE = 10800
+
+    def self.upgrade
+        AppMarket::DB['appliances'].find().to_a.each { |app|
+            original_app = app.dup
+
+            app['status'] = 'ready'
+            if app['files'][0]
+                app['os-id'] = app['files'][0]['os-id']
+                app['os-release'] = app['files'][0]['os-release']
+                app['os-arch'] = app['files'][0]['os-arch']
+                app['hypervisor'] = app['files'][0]['hypervisor']
+                app['format'] = app['files'][0]['format']
+            end
+
+            app['files'].each_with_index {|file, index|
+                file['name'] = app['name'] + '_file' + index.to_s
+            }
+
+            AppMarket::DB['appliances'].update({'_id' => app['_id']}, app)
+        }
+    end
+end
+
+def call_upgrade_script(script_name)
+    puts "Applying [#{script_name}] upgrade"
+    module_name = Object.const_get("Version"+script_name.to_s)
+    module_name.upgrade
+
+    AppMarket::DBVersioning::insert_db_version(
+        module_name::VERSION,
+        module_name::VERSION_CODE)
+end
+
+version_codes = AppMarket::DBVersioning::get_version_codes
+
+UPGRADE_SCRIPTS.each {|script_name|
+    if !version_codes.include?(script_name)
+        call_upgrade_script(script_name)
+    end
+}
+
+puts "The DB is already in the last version"
+

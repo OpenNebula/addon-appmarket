@@ -34,7 +34,6 @@ else
 end
 
 APPMARKET_LOG      = LOG_LOCATION + "/appmarket-server.log"
-CONFIGURATION_FILE = ETC_LOCATION + "/appmarket-server.conf"
 
 $: << RUBY_LIB_LOCATION
 $: << RUBY_LIB_LOCATION+'/cloud'
@@ -58,8 +57,21 @@ configure do
 
     # Initialize DB with admin credentials
     if AppMarket::UserCollection.new(nil).info[1].empty?
+        STDOUT.puts "Bootstraping DB"
+
         AppMarket::UserCollection.bootstrap(AppMarket::CONF['user'])
+        AppMarket::DBVersioning::insert_db_version(AppMarket::VERSION, AppMarket::VERSION_CODE)
     end
+
+    version_codes = AppMarket::DBVersioning::get_version_codes
+    if version_codes.empty? || (version_codes.last < AppMarket::VERSION_CODE)
+        STDERR.puts "Version mismatch, upgrade required. \n"\
+            "DB VERSION: #{version_codes.last||10000}\n" \
+            "AppMarket VERSION: #{AppMarket::VERSION_CODE}\n" \
+            "Run the 'appmarket-db' command"
+        exit 1
+    end
+
 
     set :bind, AppMarket::CONF[:host]
     set :port, AppMarket::CONF[:port]

@@ -19,6 +19,13 @@ require 'mongo'
 require 'yaml'
 
 module AppMarket
+    VERSION = "1.8.0"
+    VERSION_CODE = 10800
+
+    DB_NAME = ENV['APPMARKET_DB'] || 'market'
+
+    CONFIGURATION_FILE = ETC_LOCATION + "/appmarket-server.conf"
+
     begin
         CONF = YAML.load_file(CONFIGURATION_FILE)
     rescue Exception => e
@@ -26,6 +33,23 @@ module AppMarket
         exit 1
     end
 
-    db_name = 'market'
-    DB = Mongo::Connection.new(AppMarket::CONF['db_host'], AppMarket::CONF['db_port']).db(db_name)
+    DB = Mongo::Connection.new(CONF['db_host'], CONF['db_port']).db(DB_NAME)
+
+    module DBVersioning
+        DB_VERSIONING_COLLECTION = 'db_versioning'
+
+        def self.insert_db_version(version, version_code)
+            AppMarket::DB[DB_VERSIONING_COLLECTION].insert({
+                'version' => version,
+                'version_code' => version_code,
+                'timestamp' => Time.now.to_i})
+        end
+
+        def self.get_version_codes
+            versions = AppMarket::DB[DB_VERSIONING_COLLECTION].find(
+                {},{:fields => {"_id" => 0, "version_code" => 1}}).to_a
+
+            versions.collect {|version| version['version_code']}
+        end
+    end
 end

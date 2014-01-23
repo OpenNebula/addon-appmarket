@@ -35,6 +35,7 @@ require 'oneapps/version'
 require 'command_parser'
 require 'cli_helper'
 
+require 'rubygems'
 require 'json'
 
 USER_AGENT = "CLI"
