@@ -100,10 +100,10 @@ module AppMarket
         # @return [Integer, Hash] status code and hash with the error message
         def cancel
             begin
-                if @data['worker_host'].nil?
-                    status = 'cancelled'
-                else
+                if !@data['worker_host'].nil? && @data['status'] == 'in-progress'
                     status = 'cancelling'
+                else
+                    status = 'cancelled'
                 end
 
                 JobCollection.collection.update({
