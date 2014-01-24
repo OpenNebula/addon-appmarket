@@ -20,7 +20,7 @@ module AppMarket
         #   This catalog is accesible for all the users even anonymous ones.
         PUBLIC_CATALOG = 'community'
 
-        STATUS = %w{init ready converting downloading publishing}
+        STATUS = %w{init ready converting downloading publishing error}
 
         FILE_SCHEMA = {
             :type => :object,

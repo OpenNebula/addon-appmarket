@@ -533,7 +533,7 @@ describe 'creating a second job for the second appliance and callback error' do
 
         body['_id']['$oid'].should == $new_oid2
         body['name'].should == 'CentOS'
-        body['status'].should == 'init'
+        body['status'].should == 'error'
         body['creation_time'].should <= Time.now.to_i
     end
 
@@ -579,7 +579,7 @@ describe 'clone appliance' do
         body = JSON.parse last_response.body
         body['appliances'].size.should eql(2)
         body['appliances'][0]['name'].should == 'CentOS'
-        body['appliances'][0]['status'].should == 'init'
+        body['appliances'][0]['status'].should == 'error'
         body['appliances'][0]['creation_time'].should <= Time.now.to_i
     end
 
