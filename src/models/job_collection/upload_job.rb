@@ -15,7 +15,6 @@
 #--------------------------------------------------------------------------- #
 
 module AppMarket
-
     class UploadJob < Job
         # This method should be used only by the factory method, to retrieve
         #   an existing resource from the database use the JobCollection.get
