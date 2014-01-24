@@ -165,6 +165,10 @@ module AppMarket
                     " to convert appliance"}]
             end
 
+            if data['source'].nil? || data['source'].empty?
+                return [404, {"message" => "Cannot convert external appliances."}]
+            end
+
             source_appliance = data.to_json
 
             if data['publisher'] == session.publisher
