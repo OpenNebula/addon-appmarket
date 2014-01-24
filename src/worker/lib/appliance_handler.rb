@@ -31,7 +31,7 @@ class ApplianceFileHandler
         path = File.join(AppMarket::CONF[:repo], uuid)
         url  = File.join(AppMarket::CONF[:base_uri], uuid)
 
-        FileUtils.mkdir_p(CONF[:repo])
+        FileUtils.mkdir_p(AppMarket::CONF[:repo])
         FileUtils.mv(source, path)
 
         digests = self.digests(path)
@@ -150,7 +150,7 @@ class ApplianceHandler
         @body["files"].each do |file|
             uuid = File.basename(file["url"])
             if uuid.match(UUID_REGEX)
-                path = File.join(CONF[:repo],uuid)
+                path = File.join(AppMarket::CONF[:repo],uuid)
                 FileUtils.rm_f(path)
             end
         end
