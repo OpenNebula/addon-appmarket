@@ -17,7 +17,7 @@
 require 'rubygems'
 require 'mongo'
 require 'yaml'
-require 'version'
+require 'appmarket_version'
 
 module AppMarket
     DB_NAME = ENV['APPMARKET_DB'] || 'market'

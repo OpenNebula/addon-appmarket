@@ -233,7 +233,7 @@ module AppMarket
                     'appliance_id' => self.object_id
                 }
 
-                job_collection = AppMarket::JobCollection..new(@session, job_selector)
+                job_collection = AppMarket::JobCollection.new(@session, job_selector)
                 job_collection.info
                 job_collection.each { |job|
                     job.cancel

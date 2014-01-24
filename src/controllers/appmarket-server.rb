@@ -256,10 +256,10 @@ get '/worker/:worker_host/nextjob' do
 
         # Retrieve the apps with jobs in progress
         job_selector = {'status' => 'in-progress'}
-        jobs_in_progress = AppConverter::JobCollection.new(@session, job_selector,{}) #, {:fields => ['appliance_id']})
+        jobs_in_progress = AppMarket::JobCollection.new(@session, job_selector,{}) #, {:fields => ['appliance_id']})
         jobs_in_progress_response = jobs_in_progress.info
 
-        if AppConverter::Collection.is_error?(jobs_in_progress_response)
+        if AppMarket::Collection.is_error?(jobs_in_progress_response)
             @tmp_response = jobs_in_progress_response
         else
             apps_in_progress_ids = jobs_in_progress.collect {|job| job['appliance_id'].to_s }
@@ -273,7 +273,7 @@ get '/worker/:worker_host/nextjob' do
                 :sort => ['creation_time', Mongo::ASCENDING]
             }
 
-            job_collection = AppMarket::Collection.new(@session, job_selector, job_opts)
+            job_collection = AppMarket::JobCollection.new(@session, job_selector, job_opts)
             job_response = job_collection.info
 
             if AppMarket::Collection.is_error?(job_response)

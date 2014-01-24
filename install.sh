@@ -135,7 +135,7 @@ copy_files "controllers models public views" "$LIB_LOCATION/market"
 
 # files
 copy_files "lib/* models.rb config.ru Gemfile Gemfile.lock \
-            Rakefile config/init.rb config/version.rb" "$LIB_LOCATION/market"
+            Rakefile config/init.rb config/appmarket_version.rb" "$LIB_LOCATION/market"
 
 # Sunstone
 copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
