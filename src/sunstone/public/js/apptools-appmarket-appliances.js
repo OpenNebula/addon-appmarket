@@ -1354,7 +1354,7 @@ $(document).ready(function(){
               { "mData": "files.0.format", "sWidth" : "100px", "sDefaultContent" : "-" },
               { "mData": "tags"},
               { "mData": function (source) {
-                return pretty_time(source.creation_time)
+                return (source.creation_time ? pretty_time(source.creation_time) : '-')
               } }
             ],
             "aoColumnDefs": [
