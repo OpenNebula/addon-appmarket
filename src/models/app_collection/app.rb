@@ -244,7 +244,9 @@ module AppMarket
                     'appliance_id' => self.object_id
                 }
 
-                JobCollection.create(@session, job_hash)
+                if !@data['source'].nil? && !@data['source'].empty?
+                    JobCollection.create(@session, job_hash)
+                end
 
                 # The app is removed insted of keeping it until all the jobs
                 #   are cancelled?
