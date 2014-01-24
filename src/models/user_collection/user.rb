@@ -99,7 +99,7 @@ module AppMarket
         # @return [Integer, Hash] status code and hash with the error message
         def delete
             begin
-                AppCollection.collection.remove(
+                UserCollection.collection.remove(
                     :_id => Collection.str_to_object_id(self.object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
@@ -110,7 +110,7 @@ module AppMarket
         end
 
         def enable
-            AppCollection.collection.update(
+            UserCollection.collection.update(
                     {:_id => Collection.str_to_object_id(self.object_id)},
                     {'$set' => {'status' => 'enabled'}})
 
@@ -124,7 +124,7 @@ module AppMarket
         # @return [Integer, Hash] status code and hash with the info
         def info
             begin
-                @data = AppCollection.collection.find_one(
+                @data = UserCollection.collection.find_one(
                             :_id => Collection.str_to_object_id(self.object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
@@ -158,7 +158,7 @@ module AppMarket
             validator.validate!(hash, @session.schema(:user))
 
             @data = @data.deep_merge(opts)
-            AppCollection.collection.update(
+            UserCollection.collection.update(
                     {:_id => Collection.str_to_object_id(self.object_id)},
                     @data)
 
