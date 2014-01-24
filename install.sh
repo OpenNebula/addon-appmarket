@@ -135,23 +135,17 @@ copy_files "controllers models public views" "$LIB_LOCATION/market"
 
 # files
 copy_files "lib/* models.rb config.ru Gemfile Gemfile.lock \
-            Rakefile config/init.rb" "$LIB_LOCATION/market"
+            Rakefile config/init.rb config/version.rb" "$LIB_LOCATION/market"
 
 # Sunstone
 copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
 copy_files "sunstone/public/images/*" "$SUNSTONE_LOCATION/public/images"
 copy_files "sunstone/routes/*" "$SUNSTONE_LOCATION/routes"
 
-# version
-copy_files "version.rb" "$LIB_LOCATION"
 
 # Do not link the ETC files
 LINK="no"
 copy_files "sunstone/etc/sunstone-appmarket.conf" "$ETC_LOCATION"
 copy_files "config/appmarket-server.conf" "$ETC_LOCATION"
 )
-
-if [ -z "$NOPOSTINSTALL" ]; then
-    ./postinstall
-fi
 

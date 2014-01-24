@@ -17,11 +17,9 @@
 require 'rubygems'
 require 'mongo'
 require 'yaml'
+require 'version'
 
 module AppMarket
-    VERSION = "1.8.0"
-    VERSION_CODE = 10800
-
     DB_NAME = ENV['APPMARKET_DB'] || 'market'
 
     CONFIGURATION_FILE = ETC_LOCATION + "/appmarket-server.conf"
