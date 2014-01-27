@@ -10,7 +10,7 @@ After deploying the AppMarket server, users will be able to access the AppMarket
 
 The [OpenNebula Marketplace](http://marketplace.c12g.com/appliance) is an example of an AppMarket deployment currently running and publicly accessible for the OpenNebula community, every OpenNebula installation is ready to interact with this marketplace, through the Marketplace tab in Sunstone.
 
-In AppMarket 2.0 a new component is included, AppMarket Worker. This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
+In AppMarket 2.0 a new component is included, [AppMarket Worker](doc/appmarket_worker_installation_and_configuration.md). This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
 
 ![market1306](doc/images/market1306.png)
 
@@ -54,3 +54,6 @@ AppMarket 2.0
 
 ## Usage
 [More info](doc/usage.md)
+
+## AppMarket Worker Installation and Configuration
+[More info](doc/appmarket_worker_installation_and_configuration.md)
