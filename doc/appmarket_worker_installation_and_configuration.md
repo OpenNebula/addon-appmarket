@@ -91,6 +91,13 @@ In order to work, the user must exist in the AppMarket. To do so the following c
 
     appmarket-user create <username> <password> -u <admin_user> -p <admin_pass>
 
+### Simultaneous Jobs
+
+Each worker is limited to a maximum number of running simultaneous jobs. To increase or decrease the default number (5) change to following in the configuration:
+
+    # Maximum number of simultaneous jobs
+    :max_jobs: 5
+
 ### Poll Interval
 
 The interval at which the AppMarket Worker polls the AppMarket for new jobs:

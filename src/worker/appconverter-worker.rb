@@ -82,6 +82,8 @@ def exec_job(json_hash)
     }
 
     Thread.new do
+        @threads_mutex.synchronize {@n_threads += 1 }
+
         ignored, status = Process::waitpid2 pid
 
         stdout_string = stdout.read.strip
@@ -103,6 +105,8 @@ def exec_job(json_hash)
                 f.write(stderr_string)
             }
         end
+
+        @threads_mutex.synchronize {@n_threads -= 1 }
     end
 end
 
@@ -133,13 +137,24 @@ end
 
 $client = AppMarket::Client.new(AppMarket::CONF[:username], AppMarket::CONF[:password], AppMarket::CONF[:appmarket_url])
 
+MAX_THREADS    = AppMarket::CONF[:max_jobs] || 5
+@n_threads     = 0
+n_threads      = 0
+@threads_mutex = Mutex.new
+
 while !$exit do
-    response = $client.get_next_job(AppMarket::CONF[:worker_name])
-    if AppMarket.is_error?(response)
-        puts response.message
-    else
-        json_hash = JSON.parse(response.body)
-        exec_job(json_hash)
+    @threads_mutex.synchronize {
+        n_threads = @n_threads
+    }
+
+    if n_threads < MAX_THREADS
+        response = $client.get_next_job(AppMarket::CONF[:worker_name])
+        if AppMarket.is_error?(response)
+            puts response.message
+        else
+            json_hash = JSON.parse(response.body)
+            exec_job(json_hash)
+        end
     end
 
     response = $client.get_worker_jobs(
