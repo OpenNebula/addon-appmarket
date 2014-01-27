@@ -136,6 +136,9 @@ copy_files "lib" "$LIB_LOCATION/appconverter"
 # files
 copy_files "appconverter-worker.rb" "$LIB_LOCATION/appconverter"
 
+# Gemfiles
+copy_files "Gemfile Gemfile.lock" "$LIB_LOCATION/appconverter"
+
 # Sunstone
 #copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
 #copy_files "sunstone/public/images/*" "$SUNSTONE_LOCATION/public/images"

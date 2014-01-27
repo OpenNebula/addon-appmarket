@@ -54,7 +54,7 @@ The following commands are necessary in any of the previous cases to install the
 
 * Required gems. To install the gems needed by AppMarket do this as root:
 
-        cd TODO
+        cd /usr/lib/one/ruby/appconverter/
         bundle install
 
         gem 'json'
