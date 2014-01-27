@@ -41,14 +41,13 @@ fi
 rm -rf $DESTDIR
 mkdir $DESTDIR
 
-NOPOSTINSTALL=true ./install.sh $FLAGS
+./install.sh $FLAGS
 
 cd tmp
 
 fpm -n "$PACKAGE_NAME" -t "$PACKAGE_TYPE" -s dir --vendor "$VENDOR" \
     --license "$LICENSE" --description "$DESCRIPTION" --url "$URL" \
     -m "$MAINTAINER" -v "$VERSION" \
-    --after-install $SCRIPTS_DIR/postinstall \
     -a all -p $SCRIPTS_DIR/$NAME *
 
 echo $NAME

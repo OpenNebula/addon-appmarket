@@ -152,8 +152,3 @@ LINK="no"
 copy_files "etc/appconverter-worker.conf" "$ETC_LOCATION"
 
 )
-
-#if [ -z "$NOPOSTINSTALL" ]; then
-#    ./postinstall
-#fi
-
