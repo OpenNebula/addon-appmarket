@@ -17,5 +17,10 @@
 source "http://rubygems.org"
 
 gem 'json'
-gem 'nokogiri'
 gem 'open4'
+
+if RUBY_VERSION < "1.9"
+    gem 'nokogiri', '<1.6.0'
+else
+    gem 'nokogiri'
+end
