@@ -19,14 +19,20 @@
 VERSION=${VERSION:-4.2.0}
 MAINTAINER=${MAINTAINER:-C12G Labs <support@c12g.com>}
 LICENSE=${LICENSE:-Apache}
-PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
 VENDOR=${VENDOR:-C12G Labs}
 DESC="
 OpenNebula Apps is a group of tools for users and administrators of OpenNebula that simplifies and optimizes cloud application management.
 "
 DESCRIPTION=${DESCRIPTION:-$DESC}
 PACKAGE_TYPE=${PACKAGE_TYPE:-deb}
-URL=${URL:-http://opennebula.pro}
+URL=${URL:-https://github.com/OpenNebula/addon-appmarket}
+
+if [ "$1" = "worker" ]; then
+    PACKAGE_NAME=${PACKAGE_NAME:-appmarket-worker}
+    cd src/worker
+else
+    PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
+fi
 
 SCRIPTS_DIR=$PWD
 NAME="${PACKAGE_NAME}_${VERSION}.${PACKAGE_TYPE}"
