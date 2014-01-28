@@ -140,9 +140,9 @@ The AppMarket tabs are not included in sunstone by default. To enable them, edit
             - apptools-appmarket-dashboard
             - apptools-appmarket-appliances
 
-Also include the appmarket in the routes section of */etc/one/sunstone-server.rb*
+Also include the appmarket in the routes section of */etc/one/sunstone-server.conf*
 
-* */etc/one/sunstone-server.rb*
+* */etc/one/sunstone-server.conf*
 
         ...
         routes:
@@ -180,7 +180,7 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
         apptools-appmarket-dashboard:
             panel_tabs:
             table_columns:
-            actions:"
+            actions:
         apptools-appmarket-appliances:
             panel_tabs:
                 appmarketplace_info_tab: true
@@ -216,7 +216,7 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
             apptools-appmarket-dashboard:
                 panel_tabs:
                 table_columns:
-                actions:"
+                actions:
             apptools-appmarket-appliances:
                 panel_tabs:
                     appmarketplace_info_tab: true
