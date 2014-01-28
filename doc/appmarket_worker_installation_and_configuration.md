@@ -76,14 +76,14 @@ The AppMarket Worker must connect to a running AppMarket. This url has to be con
 ### AppMarket Worker User
 
 The AppMarket Worker must authenticate with the AppMarket. To do so the administrator must configure these two options:
-    
+
     # Username and password for the user that interacts with the AppMarket.
     # It is recommended to use an account that has the 'worker' role.
     :username: worker
     :password: worker
 
 Additionally, a name to identify the particular worker node must be specified here:
-    
+
     # Identifier of the worker
     :worker_name: imtheworker
 
@@ -109,17 +109,17 @@ The interval at which the AppMarket Worker polls the AppMarket for new jobs:
 
 There are several paths that must be configured in the AppMarket worker:
 
-    # Path of the local repository to store imported files. This repository should
-    # be shared across all the worker hosts.
-    :repo: /var/www
+    # Path of the local repository to store imported files. This repository
+    # should be shared across all the worker hosts.
+    :repo: /var/tmp/appmarket-repo
 
-    # Base uri of the imported files. This address should be served by a dedicated
-    # web server or a node balancer.
+    # Base uri of the imported files. This address should be served by a
+    # dedicated web server or a node balancer.
     :base_uri: http://localhost
 
-    # Temporary directory were files are imported and treated. This directory 
+    # Temporary directory were files are imported and treated. This directory
     # should not be accessible via a web server.
-    :temp_dir: /home/jmelis/borrar/appconverter/temp_dir
+    :temp_dir: /var/tmp/appmarket-tempdir
 
 ### Debugging
 
@@ -153,7 +153,7 @@ There are 3 customizable scripts:
 
 * **/usr/lib/one/ruby/appconverter/drivers/upload**: Downloads, unpacks and parses OVA packages. It can be extended to support additional appliance package formats.
 * **/usr/lib/one/ruby/appconverter/drivers/convert**: Converts files of an appliance from one format to another. Currently these conversions are defined:
-        
+
         CMDS = {
             "vmdk" => {
                 "qcow2" => {
