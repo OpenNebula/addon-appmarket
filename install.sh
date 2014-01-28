@@ -134,7 +134,7 @@ copy_files "bin/*" "$BIN_LOCATION"
 copy_files "controllers models public views" "$LIB_LOCATION/market"
 
 # files
-copy_files "lib/* models.rb config.ru Gemfile Gemfile.lock \
+copy_files "lib/* models.rb config.ru Gemfile \
             Rakefile config/init.rb config/appmarket_version.rb" "$LIB_LOCATION/market"
 
 # Sunstone
