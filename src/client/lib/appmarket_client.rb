@@ -17,9 +17,9 @@
 require 'uri'
 require 'net/https'
 
-module AppMarket
-    VERSION = "4.5.80"
+require 'appmarket_version'
 
+module AppMarket
     class Client
         def initialize(username, password, url, user_agent="Ruby")
             @username = username || ENV['APPMARKET_USER']

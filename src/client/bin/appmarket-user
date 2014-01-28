@@ -30,7 +30,6 @@ $: << RUBY_LIB_LOCATION+"/cloud"
 $: << RUBY_LIB_LOCATION+"/cli"
 
 require 'appmarket_client'
-require 'oneapps/version'
 
 require 'command_parser'
 require 'cli_helper'
