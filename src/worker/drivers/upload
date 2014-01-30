@@ -16,6 +16,7 @@ CONFIGURATION_FILE   = ETC_LOCATION + "/appconverter-worker.conf"
 
 $: << RUBY_LIB_LOCATION + '/appconverter'
 $: << RUBY_LIB_LOCATION + '/appconverter/lib'
+$: << RUBY_LIB_LOCATION + '/oneapps/market'
 
 ################################################################################
 # Libraries
