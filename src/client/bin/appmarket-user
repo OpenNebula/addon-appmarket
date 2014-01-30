@@ -158,7 +158,7 @@ EOT
                     options[:server],
                     USER_AGENT)
 
-        response = client.create(File.read(args[0]))
+        response = client.create_user(File.read(args[0]))
 
         if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
