@@ -87,9 +87,23 @@ Additionally, a name to identify the particular worker node must be specified he
     # Identifier of the worker
     :worker_name: imtheworker
 
-In order to work, the user must exist in the AppMarket. To do so the following command must be executed in the AppMarket server:
+In order to work, the user must exist in the AppMarket. To add a user to the AppMarket, first create a json file for the user **worker.json**:
 
-    appmarket-user create <username> <password> -u <admin_user> -p <admin_pass>
+    {
+        "username":     "worker",
+        "password":     "worker",
+        "organization": "worker",
+        "first_name":   "new_user",
+        "last_name":    "new_user",
+        "website":      "new_user",
+        "email":        "new_user",
+        "status":       "enabled",
+        "role":         "worker"
+    }
+
+The user can now be added to the AppMarket:
+
+    appmarket-user create -u <admin_user> -p <admin_pass> worker.json
 
 ### Simultaneous Jobs
 
