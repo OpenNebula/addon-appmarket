@@ -43,11 +43,11 @@ require 'init'
 ##############################################################################
 ##############################################################################
 
-UPGRADE_SCRIPTS = [10800]
+UPGRADE_SCRIPTS = [10980]
 
-module Version10800
-    VERSION = "1.8.0"
-    VERSION_CODE = 10800
+module Version10980
+    VERSION = "1.9.80"
+    VERSION_CODE = 10980
 
     def self.upgrade
         AppMarket::DB['appliances'].find().to_a.each { |app|
