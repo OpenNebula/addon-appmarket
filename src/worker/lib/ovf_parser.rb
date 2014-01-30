@@ -88,7 +88,7 @@ class OVFParser
             aop     = disk.xpath(aop_xpath).text
             hostr   = disk.xpath(hostr_xpath).text.gsub(/^ovf:\/disk\//,"")
 
-            if iids.include? (iid) # scsi
+            if iids.include?(iid) # scsi
                 target="sd" + ("a".unpack('C')[0]+aop.to_i).chr
             else # ide
                 target="hd" + ("a".unpack('C')[0]+aop.to_i).chr
