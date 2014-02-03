@@ -77,7 +77,7 @@ From AppMarket 2.0 creating an appliance can be also done through the AppMarket 
 > Creating an appliances from an OVA file is only supported through this method and only for admin users (defined by the role)
 
 
-![appmarket_create_from_sunstone](images/appmarket_create_from_sunstone.png)
+![appmarket_create_from_sunstone](images/create_appliance_from_sunstone.png)
 
 After sending the new appliance request, it will automatically included in the appliance list and all the users will be able to use it
 
@@ -119,7 +119,7 @@ Sunstone includes a new tab that allows OpenNebula users to interact with the Ap
 
 If you want to import a new appliance into your local infrastructure, you just have to select an image and click the''import'' button. A new dialog box will prompt you to create a new image for each file and the OpenNebula template if it is included in the appliance.
 
-![appmarket_import](images/appmarket_import_from_sunstone.png)
+![appmarket_import](images/import_appliance_from_sunstone.png)
 
 After that you will be able to use that image in a template in order to create a new instance.
 
