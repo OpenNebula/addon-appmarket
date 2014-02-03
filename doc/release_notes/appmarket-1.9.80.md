@@ -29,4 +29,4 @@ A new horizontally-scalable component that subscribes to the AppMarket and execu
 Acknowledgements
 ----------------
 
-The new features introduced in the AppMarket 2.0 were funded by Produban in the context of the Fund a Feature Program.
+The new features introduced in the AppMarket 2.0 were funded by [Produban](http://www.produban.com/) in the context of the Fund a Feature Program.

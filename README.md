@@ -29,6 +29,10 @@ More info:
 * Leader: Daniel Molina Aranda dmolina@opennebula.org
 * Jaime Melis jmelis@opennebula.org
 
+## Acknowledgements
+
+The new features introduced in the AppMarket 2.0 were funded by [Produban](http://www.produban.com/) in the context of the Fund a Feature Program.
+
 ## Compatibility
 
 This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
