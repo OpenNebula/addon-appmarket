@@ -31,7 +31,7 @@ More info:
 
 ## Compatibility
 
-This add-on is compatible with OpenNebula 4.x
+This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
 
 ## Features
 
