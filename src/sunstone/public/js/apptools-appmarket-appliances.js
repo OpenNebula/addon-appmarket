@@ -177,7 +177,7 @@ var appmarket_actions = {
     "AppMarket.create" : {
         type: "create",
         call: AppMarket.create,
-        callback: function() {
+        callback: function(request, response) {
             $create_converter_appliance_dialog.trigger("reveal:close");
             addConverterApplianceElement(request, response);
         },
@@ -1265,11 +1265,13 @@ function popUpConvertApplianceDialog(){
 
     $("#convert_appliance_button", $appmarket_convert_dialog).click(function(){
         var extra_info = {};
-        extra_info['format'] = $('#format', dialog).val()
-        extra_info['delete_source'] = $("#delete_source", this).is(":checked") ? true : false
+        extra_info['format'] = $('#format', $appmarket_convert_dialog).val()
+        extra_info['delete_source'] = $("#delete_source", $appmarket_convert_dialog).is(":checked") ? true : false
+
+        var data = {'params': extra_info}
 
         $.each(getSelectedNodes(dataTable_appmarket), function(index, elem) {
-            Sunstone.runAction("AppMarket.convert", elem, extra_info);
+            Sunstone.runAction("AppMarket.convert", elem, data);
         });
 
         $appmarket_convert_dialog .trigger("reveal:close");
