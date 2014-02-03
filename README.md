@@ -27,6 +27,7 @@ More info:
 ## Authors
 
 * Leader: Daniel Molina Aranda dmolina@opennebula.org
+* Jaime Melis jmelis@opennebula.org
 
 ## Compatibility
 
@@ -46,6 +47,8 @@ AppMarket 2.0
 * Appliances can be created from an OVA file
 * Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
 * Appliances can be grouped in catalogs
+
+Check the release notes in the following [link](doc/release_notes/appmarket-1.9.80.md)
 
 ![appmarket_list](doc/images/appmarket_list.png)
 
