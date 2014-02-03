@@ -186,6 +186,9 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
                 appmarketplace_info_tab: true
                 appmarketplace_jobs_tab: true
                 appmarketplace_template_tab: true
+            panel_tabs_actions:
+                appmarketplace_jobs_tab:
+                    Job.del: true
             table_columns:
                 - 0         # Checkbox
                 #- 1         # ID
@@ -222,6 +225,9 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
                     appmarketplace_info_tab: true
                     appmarketplace_jobs_tab: false
                     appmarketplace_template_tab: true
+                panel_tabs_actions:
+                    appmarketplace_jobs_tab:
+                        Job.del: false
                 table_columns:
                     - 0         # Checkbox
                     #- 1         # ID
