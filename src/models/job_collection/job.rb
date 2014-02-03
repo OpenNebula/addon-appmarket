@@ -79,6 +79,9 @@ module AppMarket
                         'format' => {
                             :type => :string,
                             :enum => AppMarket::Job::FORMATS
+                        },
+                        'delete_source' => {
+                            :type => :string
                         }
                     }
                 }
