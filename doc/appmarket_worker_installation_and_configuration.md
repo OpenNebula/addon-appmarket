@@ -64,7 +64,7 @@ The following commands are necessary in any of the previous cases to install the
 Configure AppMarket Worker
 --------------------------
 
-The AppMarket configuration file can be found at */etc/one/appmarket-worker.conf*. It uses YAML syntax and the following parameters can be configured in this file
+The AppMarket configuration file can be found at */etc/one/appconverter-worker.conf*. It uses YAML syntax and the following parameters can be configured in this file
 
 ### AppMarket Endpoint
 
