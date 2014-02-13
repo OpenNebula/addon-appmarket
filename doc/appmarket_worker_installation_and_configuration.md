@@ -124,7 +124,7 @@ The interval at which the AppMarket Worker polls the AppMarket for new jobs:
 There are several paths that must be configured in the AppMarket worker:
 
     # Path of the local repository to store imported files. This repository
-    # should be shared across all the worker hosts.
+    # should be shared across all the worker hosts, accessible by a web server
     :repo: /var/tmp/appmarket-repo
 
     # Base uri of the imported files. This address should be served by a
@@ -142,8 +142,20 @@ Enable debugging by activating:
     # Enable debugging logs (generated in /var/tmp)
     :debug: true
 
-Scalability
+Web Service
 -----------
+
+Images will be stored in the path pointed by the the ''repo'' parameter of the configuration file. This path should be shared across all the nodes and exported by a web server. This web server can be configured using any technology: ''Apache'', ''Lighttpd'', ''Nginx'', etc. The configuration required is just a plain ''DocumentRoot'' pointing to the repo path (default ''/var/tmp/appmarket-repo'').
+
+The bare minimum for debugging purposes would be to launch an ad-hoc Python web server in that directory
+
+    $ cd /var/tmp/appmarket-repo
+    $ sudo python2 -m SimpleHTTPServer 80
+
+However it is recommended to use one of the classical web servers mentioned above for production deployments.
+
+Start the Worker
+----------------
 
 To start and stop the server, use the ''appconverter-worker start/stop'' command:
 
