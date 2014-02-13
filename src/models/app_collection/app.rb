@@ -297,6 +297,11 @@ module AppMarket
             end
 
             @data = @data.deep_merge(opts)
+
+            if @data['files']
+                @data['files'].each {|f| f['hypervisor'] = @data['hypervisor']}
+            end
+
             AppCollection.collection.update(
                     {:_id => Collection.str_to_object_id(self.object_id)},
                     @data)
