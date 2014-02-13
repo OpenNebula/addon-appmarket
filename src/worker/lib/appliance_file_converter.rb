@@ -65,7 +65,7 @@ class ApplianceFileConverter
             FileUtils.rm_f(target_path)
             raise ApplianceFileConverterError, "Converter Error '#{cmd}':\n#{stderr.read}"
         else
-            FileUtils
+            File.chmod(0644, target_path)
         end
     end
 end
