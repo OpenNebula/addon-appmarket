@@ -53,6 +53,7 @@ The following commands are necessary in any of the previous cases to install the
         gem 'redcarpet'
         gem 'mail'
         gem 'bcrypt-ruby'
+        gem 'opennebula-cli'
 
 Configure AppMarket
 -------------------
