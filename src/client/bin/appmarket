@@ -176,7 +176,7 @@ cmd=CommandParser::CmdParser.new(ARGV) do
                     options[:server],
                     USER_AGENT)
 
-        response = client.create_appliances(File.read(args[0]))
+        response = client.create_appliance(File.read(args[0]))
 
         if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
