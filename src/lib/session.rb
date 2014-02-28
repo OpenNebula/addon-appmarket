@@ -78,7 +78,7 @@ class Session
             :delete => {
                 :anonymous  => false,
                 :user       => true,
-                :worker     => false,
+                :worker     => true,
                 :admin      => true
             },
             :update => {
