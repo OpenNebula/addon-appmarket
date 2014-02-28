@@ -241,14 +241,14 @@ cmd=CommandParser::CmdParser.new(ARGV) do
         Update an appliance of the Marketplace
     EOT
 
-    command :update, update_desc, :file do
+    command :update, update_desc, :id, :file do
         client = AppMarket::Client.new(
                     options[:username],
                     options[:password],
                     options[:server],
                     USER_AGENT)
 
-        response = client.update_appliance(File.read(args[0]))
+        response = client.update_appliance(args[0],File.read(args[1]))
 
         if AppMarket::is_error?(response)
             [response.code.to_i, response.to_s]
