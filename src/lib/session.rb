@@ -20,8 +20,8 @@ class Session
     PERMISSIONS = {
         :user => {
             :create => {
-                :anonymous  => false,
-                :user       => false,
+                :anonymous  => true,
+                :user       => true,
                 :worker     => false,
                 :admin      => true
             },

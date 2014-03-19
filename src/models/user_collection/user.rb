@@ -145,17 +145,17 @@ module AppMarket
         # @return [Integer, Hash] status code and hash with the error message
         def update(opts)
             # TODO check opts keys
-            if !hash['password']
-                hash['password'] = user['password']
+            if !opts['password']
+                opts['password'] = user['password']
             else
-                hash['password'] = User.generate_password(hash['password'])
+                opts['password'] = User.generate_password(opts['password'])
             end
 
             validator = Validator::Validator.new(
                 :default_values => false,
                 :delete_extra_properties => true
             )
-            validator.validate!(hash, @session.schema(:user))
+            validator.validate!(opts, @session.schema(:user))
 
             @data = @data.deep_merge(opts)
             UserCollection.collection.update(
