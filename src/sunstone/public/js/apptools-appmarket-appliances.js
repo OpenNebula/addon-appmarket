@@ -36,7 +36,7 @@ var AppMarket = {
         var callback = params.success;
         var callback_error = params.error;
         var timeout = params.timeout || false;
-        var request = OpenNebula.Helper.request('APPMARKET','update');
+        var request = OpenNebula.Helper.request('APPMARKET','update', [params.data.id]);
 
         $.ajax({
             url: AppMarket.path + '/' + params.data.id,
@@ -55,7 +55,7 @@ var AppMarket = {
         var callback = params.success;
         var callback_error = params.error;
         var timeout = params.timeout || false;
-        var request = OpenNebula.Helper.request('APPMARKET','convert');
+        var request = OpenNebula.Helper.request('APPMARKET','convert', [params.data.id]);
         var data = params.data.extra_param;
 
         $.ajax({
@@ -157,7 +157,7 @@ var appconverter_job_actions = {
 Sunstone.addActions(appconverter_job_actions);
 
 function jobElements() {
-    return getSelectedNodes(datatable_appconverter_job);
+    return getSelectedNodes(dataTable_appconverter_jobs, true);
 };
 
 function jobCallback() {
@@ -178,7 +178,7 @@ var appmarket_actions = {
         type: "create",
         call: AppMarket.create,
         callback: function(request, response) {
-            $create_converter_appliance_dialog.trigger("reveal:close");
+            $create_converter_appliance_dialog.foundation('reveal', 'close');
             addConverterApplianceElement(request, response);
         },
         error: onError,
@@ -215,14 +215,20 @@ var appmarket_actions = {
     "AppMarket.refresh" : {
         type: "custom",
         call: function () {
+          var tab = dataTable_appmarket.parents(".tab");
+          if (Sunstone.rightInfoVisible(tab)) {
+            Sunstone.runAction("AppMarket.show", Sunstone.rightInfoResourceId(tab))
+          } else {
             waitingNodes(dataTable_appmarket);
-            Sunstone.runAction('AppMarket.list');
+            Sunstone.runAction("AppMarket.list");
+          }
         }
     },
     "AppMarket.delete" : {
         type: "multiple",
         call: AppMarket.del,
         elements: appmarketplaceElements,
+        callback: deleteMarketElement,
         error: onError,
         notify: true
     },
@@ -244,8 +250,8 @@ var appmarket_actions = {
         type: "single",
         call: AppMarket.update,
         callback: function(request,response){
-            notifyMessage(tr("Appliance updated correctly"));
-            $create_converter_appliance_dialog.trigger("reveal:close");
+            Sunstone.runAction("AppMarket.show", request.request.data[0]);
+            $create_converter_appliance_dialog.foundation('reveal', 'close');
         },
         error: onError
     },
@@ -268,7 +274,7 @@ var appmarket_actions = {
             dialogs_context.append(appmarket_import_dialog);
             $appmarket_import_dialog = $('#appmarket_import_dialog',dialogs_context);
             $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
-            $appmarket_import_dialog.reveal();
+            $appmarket_import_dialog.foundation('reveal', 'open');
 
             var tab_id = 1;
 
@@ -314,13 +320,13 @@ var appmarket_actions = {
                     $create_image_dialog = image_dialog;
                 })
 
-                image_dialog.on("reveal:close", function(){
+                image_dialog.on("close", function(){
                   a_image_dialog.remove();
                   image_dialog.remove();
                   if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
                     $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
                   } else {
-                    $appmarket_import_dialog.trigger("reveal:close");
+                    $appmarket_import_dialog.foundation('reveal', 'close');
                   }
                   return false;
                 });
@@ -351,13 +357,13 @@ var appmarket_actions = {
                     $create_template_dialog = template_dialog;
                 })
 
-                template_dialog.on("reveal:close", function(){
+                template_dialog.on("close", function(){
                   a_template_dialog.remove();
                   template_dialog.remove();
                   if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
                     $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
                   } else {
-                    $appmarket_import_dialog.trigger("reveal:close");
+                    $appmarket_import_dialog.foundation('reveal', 'close');
                   }
                   return false;
                 });
@@ -369,10 +375,23 @@ var appmarket_actions = {
         },
         error: onError
     },
+
+    "AppMarket.show" : {
+        type: "single",
+        call: AppMarket.show,
+        callback: function(request, response) {
+            updateMarketElement(request, response);
+            if (Sunstone.rightInfoVisible($("#apptools-appmarket-appliances"))) {
+                updateAppMarketInfo(request, response);
+            }
+        },
+        error: onError
+    },
+
     "AppMarket.showinfo" : {
         type: "single",
         call: AppMarket.show,
-        callback: updateMarketInfo,
+        callback: updateAppMarketInfo,
         error: onError
     }
 }
@@ -412,28 +431,30 @@ var appmarket_buttons = {
 
 var appmarket_import_dialog =
 '<div id="appmarket_import_dialog">'+
-  '<div class="panel">'+
-    '<h3><small>'+tr("Import Appliance")+'</small></h4>'+
+  '<div class="row">'+
+    '<div class="large-12">'+
+      '<h3 class="subheader">'+tr("Import Appliance")+'</h3>'+
+    '</div>'+
   '</div>'+
   '<div class="reveal-body">'+
-    '<dl class="tabs" id="appmarket_import_dialog_tabs">'+
+    '<dl class="tabs" id="appmarket_import_dialog_tabs" data-tab>'+
     '</dl>'+
-    '<ul class="tabs-content" id="appmarket_import_dialog_tabs_content">'+
-    '</ul>'+
+    '<div class="tabs-content" id="appmarket_import_dialog_tabs_content">'+
+    '</div>'+
   '</div>'+
   '<a class="close-reveal-modal">&#215;</a>'+
 '</div>';
 
 var appmarket_convert_dialog =
-'<div id="appmarket_convert_dialog">\
-  <div class="panel">\
-    <h3><small>'+tr("Convert Appliance")+'</small></h4>\
-  </div>\
-    <div class="row">\
-      <div class="seven columns">\
-        <label class="right inline" for="format">'+tr("Format")+':</label>\
-      </div>\
-      <div class="four columns">\
+'<div id="appmarket_convert_dialog">'+
+  '<div class="row">'+
+    '<div class="large-12">'+
+      '<h3 class="subheader">'+tr("Import Appliance")+'</h3>'+
+    '</div>'+
+  '</div>'+
+  '<div class="row">\
+      <div class="large-12 columns">\
+        <label for="format">'+tr("Format")+':</label>\
         <select name="format" id="format">\
             <option value=""></option>\
             <option value="qcow2">'+tr("qcow2")+'</option>\
@@ -442,187 +463,142 @@ var appmarket_convert_dialog =
             <option value="vmdk">'+tr("vmdk")+'</option>\
         </select>\
       </div>\
-      <div class="one columns">\
-      </div>\
     </div>\
     <div class="row">\
-      <div class="seven columns">\
-        <label class="right inline" for="delete_source">'+tr("Delete original appliance")+':</label>\
-      </div>\
-      <div class="four columns">\
+      <div class="large-12 columns">\
         <input type="checkbox" name="delete_source" id="delete_source" />\
-      </div>\
-      <div class="one columns">\
+        <label class="inline" for="delete_source">'+tr("Delete original appliance")+':</label>\
       </div>\
     </div>\
-    <hr>\
     <div class="form_buttons">\
        <button class="button radius right success" id="convert_appliance_button" type="button">'+tr("Convert")+'</button>\
-       <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
     </div>\
   <a class="close-reveal-modal">&#215;</a>\
 </div>';
 
 var file_section_create_from =
 '<div class="row">\
-<fieldset>\
-<legend>File 0 <span class="tip">If an OVA url is provided this section will be ignored</span></legend>\
-<div class="row">\
-  <div class="three columns">\
-    <label class="right inline" for="files.0.name">'+tr("File Name")+':</label>\
+  <div class="large-12 columns">\
+    <fieldset>\
+      <legend>File 0 <span class="tip">If an OVA url is provided this section will be ignored</span></legend>\
+      <div class="row">\
+        <div class="large-12 columns">\
+          <label for="files.0.name">'+tr("File Name")+'\
+            <span class="tip">'+tr("Name of the file. This will be used to register the Image in OpenNebula")+'</span>\
+          </label>\
+          <input type="text" name="files.0.name" id="files.0.name" />\
+        </div>\
+      </div>\
+      <div class="row">\
+        <div class="large-12 columns">\
+          <label for="files.0.url">'+tr("URL")+'\
+            <span class="tip">'+tr("URL of the file")+'</span>\
+          </label>\
+          <input type="text" name="files.0.url" id="files.0.url" />\
+        </div>\
+      </div>\
+      <div class="row">\
+        <div class="large-6 columns">\
+          <label for="files.0.size">'+tr("Size")+'\
+            <span class="tip">'+tr("Size of the file in bytes")+'</span>\
+          </label>\
+          <input type="text" name="files.0.size" id="files.0.size" />\
+        </div>\
+        <div class="large-6 columns">\
+          <label for="files.0.compression">'+tr("Compression")+':</label>\
+          <select name="files.0.compression" id="files.0.compression">\
+              <option value=""></option>\
+              <option value="bz2">'+tr("bz2")+'</option>\
+              <option value="gzip">'+tr("gzip")+'</option>\
+              <option value="none">'+tr("none")+'</option>\
+          </select>\
+        </div>\
+      </div>\
+      <div class="row">\
+        <div class="large-6 columns">\
+          <label for="files.0.md5">'+tr("MD5")+':</label>\
+          <input type="text" name="files.0.md5" id="files.0.md5" />\
+        </div>\
+        <div class="large-6 columns">\
+          <label for="files.0.sha1">'+tr("SHA1")+':</label>\
+          <input type="text" name="files.0.sha1" id="files.0.sha1" />\
+        </div>\
+      </div>\
+    </fieldset>\
   </div>\
-  <div class="seven columns">\
-    <input type="text" name="files.0.name" id="files.0.name" />\
-  </div>\
-  <div class="two columns">\
-    <div class="tip">'+tr("Name of the file. This will be used to register the Image in OpenNebula")+'</div>\
-  </div>\
-</div>\
-<div class="row">\
-  <div class="three columns">\
-    <label class="right inline" for="files.0.url">'+tr("URL")+':</label>\
-  </div>\
-  <div class="seven columns">\
-    <input type="text" name="files.0.url" id="files.0.url" />\
-  </div>\
-  <div class="two columns">\
-    <div class="tip">'+tr("URL of the file")+'</div>\
-  </div>\
-</div>\
-<div class="row">\
-  <div class="six columns">\
-    <div class="row">\
-      <div class="five columns">\
-        <label class="right inline" for="files.0.size">'+tr("Size")+':</label>\
-      </div>\
-      <div class="six columns">\
-        <input type="text" name="files.0.size" id="files.0.size" />\
-      </div>\
-      <div class="one columns">\
-        <div class="tip">'+tr("Size of the file in bytes")+'</div>\
-      </div>\
-    </div>\
-    <div class="row">\
-      <div class="five columns">\
-        <label class="right inline" for="files.0.compression">'+tr("Compression")+':</label>\
-      </div>\
-      <div class="six columns">\
-        <select name="files.0.compression" id="files.0.compression">\
-            <option value=""></option>\
-            <option value="bz2">'+tr("bz2")+'</option>\
-            <option value="gzip">'+tr("gzip")+'</option>\
-            <option value="none">'+tr("none")+'</option>\
-        </select>\
-      </div>\
-      <div class="one columns">\
-      </div>\
-    </div>\
-  </div>\
-  <div class="six columns">\
-    <div class="row">\
-      <div class="five columns">\
-        <label class="right inline" for="files.0.md5">'+tr("MD5")+':</label>\
-      </div>\
-      <div class="six columns">\
-        <input type="text" name="files.0.md5" id="files.0.md5" />\
-      </div>\
-      <div class="one columns">\
-      </div>\
-    </div>\
-    <div class="row">\
-      <div class="five columns">\
-        <label class="right inline" for="files.0.sha1">'+tr("SHA1")+':</label>\
-      </div>\
-      <div class="six columns">\
-        <input type="text" name="files.0.sha1" id="files.0.sha1" />\
-      </div>\
-      <div class="one columns">\
-      </div>\
-    </div>\
-  </div>\
-</div>\
-</fieldset>\
 </div>';
 
 
 var create_appconverter_appliance =
-'<div class="panel">\
-    <h3>\
-        <small id="create_appconverter_appliance_header">'+tr("Create Appliance")+'</small>\
-        <small id="update_appconverter_appliance_header">'+tr("Update Appliance")+'</small>\
-    </h3>\
+'<div class="row">\
+  <div class="large-5 columns">\
+    <h3 id="create_appconverter_appliance_header" class="subheader">'+tr("Create Appliance")+'</h3>\
+    <h3 id="update_appconverter_appliance_header" class="subheader">'+tr("Update Appliance")+'</h3>\
+  </div>\
+  <div class="large-7 columns">\
+    <dl class="tabs right" data-tab>\
+        <dd class="active"><a href="#appliance_wizardTab">'+tr("Wizard")+'</a></dd>\
+        <dd><a href="#appliance_rawTab">'+tr("Advanced mode")+'</a></dd>\
+    </dl>\
+  </div>\
 </div>\
 <div class="reveal-body">\
     <form id="create_appconverter_appliance" action="" class="custom creation">\
-        <dl class="tabs">\
-            <dd class="active"><a href="#appliance_wizard">'+tr("Wizard")+'</a></dd>\
-            <dd><a href="#appliance_raw">'+tr("Advanced mode")+'</a></dd>\
-        </dl>\
-        <ul class="tabs-content">\
-            <li id="appliance_wizardTab" class="active">\
+        <div class="tabs-content">\
+            <div id="appliance_wizardTab" class="content  active">\
                 <div class="row">\
-                  <div class="three columns">\
-                    <label class="right inline" for="name">'+tr("Name")+':</label>\
-                  </div>\
-                  <div class="seven columns">\
+                  <div class="large-6 columns">\
+                    <label for="name">'+tr("Name")+'\
+                      <span class="tip">'+tr("Name of the appliance")+'</span>\
+                    </label>\
                     <input type="text" name="name" id="name" />\
                   </div>\
-                  <div class="two columns">\
-                    <div class="tip">'+tr("Name of the appliance")+'</div>\
-                  </div>\
-                </div>\
-                <div class="row">\
-                  <div class="three columns">\
-                    <label class="right inline" for="short_description">'+tr("Short Description")+':</label>\
-                  </div>\
-                  <div class="seven columns">\
+                  <div class="large-6 columns">\
+                    <label for="short_description">'+tr("Short Description")+'\
+                      <span class="tip">'+tr("This information will be shown in the list view")+'</span>\
+                    </label>\
                     <input type="text" name="short_description" id="short_description" />\
                   </div>\
-                  <div class="two columns">\
-                    <div class="tip">'+tr("This information will be shown in the list view")+'</div>\
-                  </div>\
                 </div>\
                 <div class="row">\
-                  <div class="three columns">\
-                    <label class="right inline" for="description">'+tr("Description")+':</label>\
-                  </div>\
-                  <div class="seven columns">\
-                    <textarea rows=5 type="text" name="description" id="description" />\
-                  </div>\
-                  <div class="two columns">\
-                    <div class="tip">'+tr("This information will be shown in the detailed view. Markdown syntax is supported.")+'</div>\
-                  </div>\
-                </div>\
-                <div class="row">\
-                  <div class="three columns">\
-                    <label class="right inline" for="tags">'+tr("Tags")+':</label>\
-                  </div>\
-                  <div class="seven columns">\
+                  <div class="large-6 columns">\
+                    <label for="tags">'+tr("Tags")+'\
+                      <span class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</span>\
+                    </label>\
                     <input type="text" name="tags" id="tags" />\
                   </div>\
-                  <div class="two columns">\
-                    <div class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</div>\
+                  <div class="large-6 columns">\
+                    <label for="description">'+tr("Description")+'\
+                      <span class="tip">'+tr("This information will be shown in the detailed view. Markdown syntax is supported.")+'</span>\
+                    </label>\
+                    <textarea rows=5 type="text" name="description" id="description" />\
                   </div>\
                 </div>\
                 <br>\
                 <div class="row">\
-                  <div class="six columns">\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="version">'+tr("Version")+':</label>\
-                      </div>\
-                      <div class="six columns">\
-                        <input type="text" name="version" id="version" />\
-                      </div>\
-                      <div class="one columns">\
-                        <div class="tip">'+tr("Appliance version")+'</div>\
-                      </div>\
-                    </div>\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="hypervisor">'+tr("Hypervisor")+':</label>\
-                      </div>\
-                      <div class="six columns">\
+                  <div class="large-6 columns">\
+                    <label for="catalog">'+tr("Catalog")+'\
+                      <span class="tip">'+tr("Comma-separated catalogs. Example: silver,gold. If not provided the appliance will be included in the 'community' catalog")+'</span>\
+                    </label>\
+                    <input type="text" name="catalog" id="catalog" />\
+                  </div>\
+                  <div class="large-6 columns">\
+                    <label for="version">'+tr("Version")+'\
+                      <span class="tip">'+tr("Appliance version")+'</span>\
+                    </label>\
+                    <input type="text" name="version" id="version" />\
+                  </div>\
+                </div>\
+                <br>\
+                <div class="row">\
+                  <div class="large-6 columns">\
+                        <label for="os-id">'+tr("OS ID")+'\
+                          <span class="tip">'+tr("Example: Ubuntu")+'</span>\
+                        </label>\
+                        <input type="text" name="os-id" id="os-id" />\
+                  </div>\
+                  <div class="large-6 columns">\
+                        <label for="hypervisor">'+tr("Hypervisor")+':</label>\
                         <select name="hypervisor" id="hypervisor">\
                             <option value=""></option>\
                             <option value="all">'+tr("all")+'</option>\
@@ -630,15 +606,19 @@ var create_appconverter_appliance =
                             <option value="VMWARE">'+tr("VMWARE")+'</option>\
                             <option value="XEN">'+tr("XEN")+'</option>\
                         </select>\
-                      </div>\
-                      <div class="one columns">\
-                      </div>\
-                    </div>\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="img_target">'+tr("Format")+':</label>\
-                      </div>\
-                      <div class="six columns">\
+                  </div>\
+                </div>\
+                <div class="row">\
+                  <div class="large-6 columns">\
+                        <label for="os-release">'+tr("OS Release")+'\
+                          <span class="tip">'+tr("Example: 12.04")+'</span>\
+                        </label>\
+                        <input type="text" name="os-release" id="os-release" />\
+                  </div>\
+                  <div class="large-6 columns">\
+                        <label for="img_target">'+tr("Format")+'\
+                          <span class="tip">'+tr("Format of the appliance files")+'</span>\
+                        </label>\
                         <select name="format" id="format">\
                             <option value=""></option>\
                             <option value="qcow2">'+tr("qcow2")+'</option>\
@@ -646,94 +626,42 @@ var create_appconverter_appliance =
                             <option value="vdi">'+tr("vdi")+'</option>\
                             <option value="vmdk">'+tr("vmdk")+'</option>\
                         </select>\
-                      </div>\
-                      <div class="one columns">\
-                        <div class="tip">'+tr("Format of the appliance files")+'</div>\
-                      </div>\
-                    </div>\
-                  </div>\
-                  <div class="six columns">\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="os-id">'+tr("OS ID")+':</label>\
-                      </div>\
-                      <div class="six columns">\
-                        <input type="text" name="os-id" id="os-id" />\
-                      </div>\
-                      <div class="one columns">\
-                        <div class="tip">'+tr("Example: Ubuntu")+'</div>\
-                      </div>\
-                    </div>\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="os-release">'+tr("OS Release")+':</label>\
-                      </div>\
-                      <div class="six columns">\
-                        <input type="text" name="os-release" id="os-release" />\
-                      </div>\
-                      <div class="one columns">\
-                        <div class="tip">'+tr("Example: 12.04")+'</div>\
-                      </div>\
-                    </div>\
-                    <div class="row">\
-                      <div class="five columns">\
-                        <label class="right inline" for="os-arch">'+tr("OS Arch")+':</label>\
-                      </div>\
-                      <div class="six columns">\
-                        <input type="text" name="os-arch" id="os-arch" />\
-                      </div>\
-                      <div class="one columns">\
-                        <div class="tip">'+tr("Example: x86_64")+'</div>\
-                      </div>\
-                    </div>\
                   </div>\
                 </div>\
-                <br>\
                 <div class="row">\
-                  <div class="three columns">\
-                    <label class="right inline" for="source">'+tr("OVA URL")+':</label>\
+                  <div class="large-6 columns">\
+                        <label for="os-arch">'+tr("OS Arch")+'\
+                          <span class="tip">'+tr("Example: x86_64")+'</span>\
+                        </label>\
+                        <input type="text" name="os-arch" id="os-arch" />\
                   </div>\
-                  <div class="seven columns">\
-                    <input type="text" name="source" id="source" />\
-                  </div>\
-                  <div class="two columns">\
-                    <div class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</div>\
-                  </div>\
-                </div>\
-                <div class="row hidden">\
-                  <div class="three columns">\
-                    <label class="right inline" for="source_type">'+tr("Source type")+':</label>\
-                  </div>\
-                  <div class="seven columns">\
-                    <input type="text" name="source_type" id="source_type" value="ova"/>\
-                  </div>\
-                  <div class="two columns">\
+                  <div class="large-6 columns">\
                   </div>\
                 </div>\
-                <div class="show_hide" id="advanced_appliance_create">\
-                     <h4><small><i class=" icon-caret-down"/> '+tr("Advanced options")+'<a class="icon_left" href="#"></a></small></h4>\
-                </div>\
-                <div class="advanced">\
-                    <div class="row">\
-                      <div class="three columns">\
-                        <label class="right inline" for="catalog">'+tr("Catalog")+':</label>\
-                      </div>\
-                      <div class="seven columns">\
-                        <input type="text" name="catalog" id="catalog" />\
-                      </div>\
-                      <div class="two columns">\
-                        <div class="tip">'+tr("Comma-separated catalogs. Example: silver,gold. If not provided the appliance will be included in the 'community' catalog")+'</div>\
-                      </div>\
+                <br>'+
+                '<div class="row">'+
+                  '<div class="large-12 columns text-center">'+
+                    '<input id="app_radioImage" type="radio" name="source_type" value="ova" checked> <label for="app_radioImage">'+tr("OVA")+'</label>'+
+                    '<input id="app_radioVolatile" type="radio" name="source_type" value=""> <label for="app_radioVolatile">'+tr("Files & Template")+'</label>'+
+                  '</div>'+
+                '</div>'+
+                '<div class="from_ova">'+
+                  '<div class="row">\
+                    <div class="large-12 columns">\
+                      <label for="source">'+tr("OVA URL")+'\
+                        <span class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</span>\
+                      </label>\
+                      <input type="text" name="source" id="source" />\
                     </div>\
+                  </div>\
+                </div>\
+                <div class="from_files hidden">\
                     <div class="row">\
-                      <div class="three columns">\
-                        <label class="right inline" for="opennebula_template">'+tr("OpenNebula Template")+':</label>\
-                      </div>\
-                      <div class="seven columns">\
+                      <div class="large-12 columns">\
+                        <label for="opennebula_template">'+tr("OpenNebula Template")+'\
+                          <span class="tip">'+tr("JSON format. If an OVA url is provided this field will be ignored")+'</span>\
+                        </label>\
                         <textarea rows=5 type="text" name="opennebula_template" id="opennebula_template" />\
-                      </div>\
-                      <div class="two columns">\
-                        <div class="tip">'+tr("JSON format. If an OVA url is provided this field will be ignored")+'</div>\
                       </div>\
                     </div>' +
                     file_section_create_from +
@@ -741,68 +669,50 @@ var create_appconverter_appliance =
                     </div>\
                     <br>\
                     <div class="row">\
+                      <div class="large-12 columns">\
                         <button class="button radius right small" type="button" id="more_files_appliance_create_button">'+tr("Add another file")+'</button>\
+                      </div>\
                     </div>\
                 </div>\
                 <div class="reveal-footer">\
-                    <hr>\
                     <div class="form_buttons">\
                         <button class="button success radius right" id="create_appconverter_appliance_wizard" value="image/create">'+tr("Create")+'</button>\
                         <button class="button radius right" id="update_appconverter_appliance_wizard" value="image/create">'+tr("Update")+'</button>\
                         <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
-                        <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
                     </div>\
                 </div>\
-            </li>\
-            <li id="appliance_rawTab">\
+            </div>\
+            <div id="appliance_rawTab" class="content">\
                 <textarea id="template" rows="15" style="width:100%;"></textarea>\
                 <div class="reveal-footer">\
-                    <hr>\
                     <div class="form_buttons">\
                         <button class="button success radius right" id="create_appconverter_appliance_raw" value="image/create">'+tr("Create")+'</button>\
                         <button class="button radius right" id="update_appconverter_appliance_raw" value="image/create">'+tr("Update")+'</button>\
                         <button class="button secondary radius" id="create_appconverter_appliance_reset"  type="reset" value="reset">'+tr("Reset")+'</button>\
-                        <button class="close-reveal-modal button secondary radius" type="button" value="close">' + tr("Close") + '</button>\
                     </div>\
                 </div>\
-            </li>\
-        </ul>\
+            </div>\
+        </div>\
         <a class="close-reveal-modal">&#215;</a>\
     </form>\
 </div>';
 
-var appmarketplace_tab_content = '\
-<form class="custom" id="template_form" action="">\
-<div class="panel">\
-<div class="row">\
-  <div class="twelve columns">\
-    <h4 class="subheader header">\
-      <span class="header-resource">\
-       <i class="icon-truck"></i> '+tr("OpenNebula AppMarket")+'\
-      </span>\
-      <span class="header-info">\
-        <span/> <small></small>&emsp;\
-      </span>\
-      <span class="user-login">\
-      </span>\
-    </h4>\
-  </div>\
-</div>\
-<div class="row">\
-  <div class="nine columns">\
-    <div class="action_blocks">\
-    </div>\
-  </div>\
-  <div class="three columns">\
-    <input id="appliances_search" type="text" placeholder="'+tr("Search")+'" />\
-  </div>\
-  <br>\
-  <br>\
-</div>\
-</div>\
-  <div class="row">\
-    <div class="twelve columns">\
-      <table id="datatable_appmarketplace" class="datatable twelve">\
+
+var appmarketplace_tab = {
+    title: "Appliances",
+    buttons: appmarket_buttons,
+    tabClass: 'subTab',
+    parentTab: 'apptools-appmarket-dashboard',
+    search_input: '<input id="appliances_search" type="text" placeholder="'+tr("Search")+'" />',
+    list_header: '<i class="fa fa-truck"></i> '+tr("OpenNebula AppMarket"),
+    info_header: '<i class="fa fa-truck"></i> '+tr("Appliance"),
+    subheader: '',
+    content:   '<div class="row" id="error_message" hidden>\
+        <div class="small-6 columns small-centered text-center">\
+            <div class="alert-box alert-box-error radius">'+tr("Cannot connect to AppMarket server")+'</div>\
+        </div>\
+    </div>',
+    table: '<table id="datatable_appmarketplace" class="datatable twelve">\
         <thead>\
           <tr>\
             <th class="check"></th>\
@@ -819,21 +729,7 @@ var appmarketplace_tab_content = '\
         </thead>\
         <tbody id="tbodyappmarketplace">\
         </tbody>\
-      </table>\
-  </div>\
-  </div>\
-<div class="row" id="error_message" hidden>\
-    <div class="alert-box alert">'+tr("Cannot connect to AppMarket server")+'<a href="" class="close">&times;</a></div>\
-</div>\
-</form>';
-
-
-var appmarketplace_tab = {
-    title: "Appliances",
-    content: appmarketplace_tab_content,
-    buttons: appmarket_buttons,
-    tabClass: 'subTab',
-    parentTab: 'apptools-appmarket-dashboard'
+      </table>'
 }
 
 Sunstone.addMainTab('apptools-appmarket-appliances', appmarketplace_tab);
@@ -943,15 +839,16 @@ function addConverterApplianceElement(request, template_json){
     addElement(template_json,dataTable_appmarket);
 }
 
-function updateMarketInfo(request,app){
+function updateAppMarketInfo(request,app){
     var url = app.links.download.href;
     url = url.replace(/\/download$/, '');
     var info_tab = {
-        title : tr("Information"),
+        title : tr("Info"),
+        icon: "fa-info-circle",
         content :
-        '<form class="custom"><div class="">\
-        <div class="six columns">\
-        <table id="info_appmarketplace_table" class="twelve datatable extended_table">\
+        '<div class="row">\
+        <div class="large-6 columns">\
+        <table id="info_appmarketplace_table" class="dataTable">\
             <thead>\
               <tr><th colspan="2">'+tr("Information")+'</th></tr>\
             </thead>\
@@ -970,8 +867,11 @@ function updateMarketInfo(request,app){
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Downloads") + '</td>\
-                <td class="value_td">'+app['downloads']+'</td>\
-              </tr>'+
+                <td class="value_td">'+app['downloads']+'</td>'+
+              (app['status'] ? '<tr>\
+                <td class="key_td">' + tr("Status") + '</td>\
+                <td class="value_td">'+app['status']+'</td>\
+              </tr>' : '') +
               (app['files'] ? '<tr>\
                 <td class="key_td">' + tr("OS") + '</td>\
                 <td class="value_td">'+app['os-id']+' '+app['os-release']+'</td>\
@@ -995,8 +895,8 @@ function updateMarketInfo(request,app){
             '</tbody>\
         </table>\
         </div>\
-        <div class="six columns">\
-        <table id="info_appmarketplace_table2" class="twelve datatable extended_table">\
+        <div class="large-6 columns">\
+        <table id="info_appmarketplace_table2" class="dataTable">\
            <thead>\
              <tr><th colspan="2">'+tr("Description")+'</th></tr>\
            </thead>\
@@ -1006,46 +906,47 @@ function updateMarketInfo(request,app){
               </tr>\
             </tbody>\
         </table>\
-      </div>\
-    </form>'
+      </div>'
     };
 
     var jobs_tab = {
         title: tr("Jobs"),
-        content : '<form class="custom" id="jobs_form" action="">\
-        <div class="columns twelve">\
-          <div id="job_actions" class="">\
-            <div class="action_blocks row">\
+        icon: "fa-cogs",
+        content : '<div id="job_actions" class="row">\
+            <div class="action_blocks large-12 columns">\
             </div>\
           </div>\
-          <div class="">\
-          <table id="datatable_appconverter_job" class="datatable twelve">\
-            <thead>\
-              <tr>\
-                <th class="check"></th>\
-                <th>'+tr("ID")+'</th>\
-                <th>'+tr("Name")+'</th>\
-                <th>'+tr("Status")+'</th>\
-                <th>'+tr("Worker")+'</th>\
-                <th>'+tr("Appliance")+'</th>\
-                <th>'+tr("Created")+'</th>\
-                <th>'+tr("Error")+'</th>\
-              </tr>\
-            </thead>\
-            <tbody id="tbodyappconverter_job">\
-            </tbody>\
-          </table>\
-          </div>\
-        </div>\
-        </form>'
+          <div class="row">\
+            <div class="large-12 columns">\
+              <table id="datatable_appconverter_job" class="dataTable">\
+                <thead>\
+                  <tr>\
+                    <th class="check"></th>\
+                    <th>'+tr("ID")+'</th>\
+                    <th>'+tr("Name")+'</th>\
+                    <th>'+tr("Status")+'</th>\
+                    <th>'+tr("Worker")+'</th>\
+                    <th>'+tr("Appliance")+'</th>\
+                    <th>'+tr("Created")+'</th>\
+                    <th>'+tr("Error")+'</th>\
+                  </tr>\
+                </thead>\
+                <tbody id="tbodyappconverter_job">\
+                </tbody>\
+              </table>\
+            </div>\
+        </div>'
     }
 
     var template_tab = {
         title: tr("Template"),
-        content : '<div class="columns twelve">\
-            <table id="template_template_table" class="info_table transparent_table" style="width:80%">'+
+        icon: "fa-file-o",
+        content : '<div class="row">\
+          <div class="large-12 columns">\
+            <table id="template_template_table" class="info_table dataTable" style="width:80%">'+
             prettyPrintJSON(app)+'\
             </table>\
+          </div>\
         </div>'
     }
 
@@ -1085,15 +986,13 @@ function updateMarketInfo(request,app){
         ]
     });
 
-    insertButtonsInTab("apptools-appmarket-appliances", "appmarketplace_jobs_tab", job_buttons, $('#job_actions', $("#dialog")))
-    $('#job_actions', $("#dialog")).foundationButtons();
-    $('#job_actions', $("#dialog")).foundationButtons();
+    insertButtonsInTab("apptools-appmarket-appliances", "appmarketplace_jobs_tab", job_buttons, $('#job_actions'))
 
     $('tbody input.check_item',dataTable_appconverter_jobs).die();
     $('tbody tr',dataTable_appconverter_jobs).die();
 
-    initCheckAllBoxes(dataTable_appconverter_jobs, $('#job_actions', $("#dialog")));
-    tableCheckboxesListener(dataTable_appconverter_jobs, $('#job_actions', $("#dialog")));
+    initCheckAllBoxes(dataTable_appconverter_jobs, $('#job_actions'));
+    tableCheckboxesListener(dataTable_appconverter_jobs, $('#job_actions'));
 
     var last_selected_row_job;
 
@@ -1131,39 +1030,31 @@ function updateMarketInfo(request,app){
 
     Sunstone.runAction('Job.list');
 
-    $("#appmarketplace_info_panel_refresh", $("#appmarketplace_info_panel")).click(function(){
-      $(this).html(spinner);
-      Sunstone.runAction('AppMarket.showinfo', app['_id']["$oid"]);
-    })
-
     dataTable_appconverter_jobs.fnFilter(app['_id']['$oid'], 5, true);
 };
 
  function infoListenerAppMarket(dataTable){
     $('tbody tr',dataTable).live("click",function(e){
+      if ($(e.target).is('input') ||
+          $(e.target).is('select') ||
+          $(e.target).is('option')) return true;
 
-    if ($(e.target).is('input') ||
-        $(e.target).is('select') ||
-        $(e.target).is('option')) return true;
+      var aData = dataTable.fnGetData(this);
+      var id =aData["_id"]["$oid"];
 
-    var aData = dataTable.fnGetData(this);
-    var id =aData["_id"]["$oid"];
-    if (!id) return true;
-        popDialogLoading();
-        Sunstone.runAction("AppMarket.showinfo",id);
+      if (!id) return true;
 
-        // Take care of the coloring business
-        // (and the checking, do not forget the checking)
-        $('tbody input.check_item',$(this).parents('table')).removeAttr('checked');
-        $('.check_item',this).click();
-        $('td',$(this).parents('table')).removeClass('markrowchecked');
+      if (e.ctrlKey || e.metaKey || $(e.target).is('input')) {
+          $('.check_item',this).trigger('click');
+      } else {
+          var context = $(this).parents(".tab");
+          popDialogLoading();
+          Sunstone.runAction("AppMarket.show",id);
+          $(".resource-id", context).html(id);
+          $('.top_button, .list_button', context).attr('disabled', false);
+      }
 
-        if(last_selected_row)
-            last_selected_row.children().each(function(){$(this).removeClass('markrowselected');});
-        last_selected_row = $("td:first", this).parent();
-        $("td:first", this).parent().children().each(function(){$(this).addClass('markrowselected');});
-
-        return false;
+      return false;
     });
 }
 
@@ -1180,6 +1071,30 @@ function onlyOneCheckboxListener(dataTable) {
     });
 }
 
+function updateMarketElement(request, app_json) {
+  $.each(dataTable_appmarket.fnGetData(), function(index, data){
+    if (data["_id"]["$oid"] === app_json["_id"]["$oid"]) {
+      dataTable_appmarket.fnUpdate(app_json, index, undefined);
+      return;
+    }
+  });
+}
+
+function deleteMarketElement(request) {
+  var tab = dataTable_appmarket.parents(".tab");
+  if (Sunstone.rightInfoVisible(tab)) {
+      $("a[href='back']", tab).click();
+  }
+
+  $.each(dataTable_appmarket.fnGetData(), function(index, data){
+    if (data["_id"]["$oid"] == request.request.data[0]) {
+      dataTable_appmarket.fnDeleteRow(index);
+      recountCheckboxes(dataTable_appmarket);
+      return;
+    }
+  });
+}
+
 // Prepare the image creation dialog
 function setupCreateConverterApplianceDialog(){
     dialogs_context.append('<div id="create_converter_appliance_dialog"></div>');
@@ -1190,7 +1105,7 @@ function setupCreateConverterApplianceDialog(){
 
     setupTips($create_converter_appliance_dialog);
 
-    dialog.addClass("reveal-modal large max-height");
+    dialog.addClass("reveal-modal medium max-height").attr("data-reveal", "");
 
     $('.advanced',dialog).hide();
 
@@ -1198,6 +1113,16 @@ function setupCreateConverterApplianceDialog(){
         $('.advanced',dialog).toggle();
         return false;
     });
+
+    $('input[name="source_type"]', dialog).change(function(){
+      if (this.value == "ova") {
+        $(".from_ova", dialog).toggle();
+        $(".from_files", dialog).hide();
+      } else {
+        $(".from_ova", dialog).hide();
+        $(".from_files", dialog).toggle();
+      }
+    })
 
     $('#create_appconverter_appliance_raw',dialog).click(function(){
         var template=$('#template',dialog).val();
@@ -1212,8 +1137,7 @@ function setupCreateConverterApplianceDialog(){
     });
 
     $('#create_appconverter_appliance_reset', dialog).click(function(){
-        $create_converter_appliance_dialog.trigger('reveal:close');
-        $create_converter_appliance_dialog.remove();
+        $create_converter_appliance_dialog.html("");
         setupCreateConverterApplianceDialog();
 
         popUpCreateApplianceDialog();
@@ -1251,7 +1175,7 @@ function popUpCreateApplianceDialog(){
     $("#create_appconverter_appliance_wizard", dialog).show();
     $("#update_appconverter_appliance_wizard", dialog).hide();
 
-    $create_converter_appliance_dialog.reveal();
+    $create_converter_appliance_dialog.foundation().foundation('reveal', 'open');
 }
 
 function popUpConvertApplianceDialog(){
@@ -1261,7 +1185,7 @@ function popUpConvertApplianceDialog(){
 
     dialogs_context.append(appmarket_convert_dialog);
     $appmarket_convert_dialog = $('#appmarket_convert_dialog',dialogs_context);
-    $appmarket_convert_dialog.addClass("reveal-modal");
+    $appmarket_convert_dialog.addClass("reveal-modal").attr("data-reveal", "");
 
     $("#convert_appliance_button", $appmarket_convert_dialog).click(function(){
         var extra_info = {};
@@ -1274,12 +1198,12 @@ function popUpConvertApplianceDialog(){
             Sunstone.runAction("AppMarket.convert", elem, data);
         });
 
-        $appmarket_convert_dialog .trigger("reveal:close");
+        $appmarket_convert_dialog.foundation('reveal', 'close');
 
         return false;
     });
 
-    $appmarket_convert_dialog.reveal();
+    $appmarket_convert_dialog.foundation().foundation('reveal', 'open');
 }
 
 function popUpUpdateApplianceDialog(){
@@ -1289,7 +1213,7 @@ function popUpUpdateApplianceDialog(){
       return false;
     }
 
-    $create_converter_appliance_dialog.remove();
+    $create_converter_appliance_dialog.html("");
     setupCreateConverterApplianceDialog();
     var dialog = $create_converter_appliance_dialog;
 
@@ -1303,7 +1227,7 @@ function popUpUpdateApplianceDialog(){
     $("#create_appconverter_appliance_wizard", dialog).hide();
     $("#update_appconverter_appliance_wizard", dialog).show();
 
-    $create_converter_appliance_dialog.reveal();
+    $create_converter_appliance_dialog.foundation().foundation('reveal', 'open');
 }
 
 function fillUpUpdateApplianceDialog(request, response){
