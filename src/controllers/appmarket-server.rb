@@ -397,7 +397,7 @@ get '/appliance/:id' do
     appliance_url = (request.env['rack.url_scheme']||'') +
                     '://' +
                     (request.env['HTTP_HOST']||'') +
-                    (request.env['REQUEST_URI']||'')
+                    (request.env['REQUEST_PATH']||'')
 
     @app['links'] = {
         'download' => {
