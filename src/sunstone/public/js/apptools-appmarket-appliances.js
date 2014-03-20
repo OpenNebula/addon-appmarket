@@ -267,26 +267,28 @@ var appmarket_actions = {
                 return;
             }
 
-            if ($appmarket_import_dialog != undefined) {
-              $appmarket_import_dialog.remove();
+            if ($('#appmarket_import_dialog',dialogs_context) != undefined) {
+              $('#appmarket_import_dialog',dialogs_context).remove();
             }
 
             dialogs_context.append(appmarket_import_dialog);
             $appmarket_import_dialog = $('#appmarket_import_dialog',dialogs_context);
-            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height");
-            $appmarket_import_dialog.foundation('reveal', 'open');
+            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height").attr("data-reveal", "");
 
             var tab_id = 1;
 
             $.each(response['files'], function(index, value){
                 // Append the new div containing the tab and add the tab to the list
-                var image_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+                var image_dialog = $('<div id="Tab'+tab_id+'" class="content disk wizard_internal_tab">'+
                   create_image_tmpl +
-                '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+                '</div>').appendTo($("#appmarket_import_dialog_tabs_content"));
 
                 var a_image_dialog = $("<dd>\
-                  <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Image")+"</a>\
+                  <a id='disk_tab"+tab_id+"' href='#Tab"+tab_id+"'>"+tr("Image")+"</a>\
                 </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+
+                $(".create_image_header", image_dialog).hide();
+                $("#wizard_image_reset_button", image_dialog).hide();
 
                 initialize_create_image_dialog(image_dialog);
                 initialize_datastore_info_create_image_dialog(image_dialog);
@@ -320,10 +322,10 @@ var appmarket_actions = {
                     $create_image_dialog = image_dialog;
                 })
 
-                image_dialog.on("close", function(){
+                image_dialog.on("close", function(event){
                   a_image_dialog.remove();
                   image_dialog.remove();
-                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
+                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size() > 0) {
                     $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
                   } else {
                     $appmarket_import_dialog.foundation('reveal', 'close');
@@ -337,21 +339,34 @@ var appmarket_actions = {
             })
 
             if (response['opennebula_template'] && response['opennebula_template'] !== "CPU=1") {
-                $create_template_dialog.remove();
+                var opennebula_template;
+
+                try {
+                  opennebula_template = JSON.parse(response['opennebula_template']);
+                } catch (error) {
+                  notifyError("Error parsing OpenNebula template: " + error.message);
+                  return;
+                }
+
+                if ($create_template_dialog) {
+                  $create_template_dialog.html("");
+                }
+
                 // Template
                 // Append the new div containing the tab and add the tab to the list
-                var template_dialog = $('<li id="'+tab_id+'Tab" class="disk wizard_internal_tab">'+
+                var template_dialog = $('<div id="Tab'+tab_id+'" class="content disk wizard_internal_tab">'+
                   create_template_tmpl +
-                '</li>').appendTo($("ul#appmarket_import_dialog_tabs_content"));
+                '</div>').appendTo($("#appmarket_import_dialog_tabs_content"));
 
                 var a_template_dialog = $("<dd>\
-                  <a id='disk_tab"+tab_id+"' href='#"+tab_id+"'>"+tr("Template")+"</a>\
+                  <a id='disk_tab"+tab_id+"' href='#Tab"+tab_id+"'>"+tr("Template")+"</a>\
                 </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
 
+                $("#create_template_header_row", template_dialog).hide();
+                $("#template_template_reset_button", template_dialog).hide();
+
                 initialize_create_template_dialog(template_dialog);
-                fillTemplatePopUp(
-                  JSON.parse(response['opennebula_template']),
-                  template_dialog);
+                fillTemplatePopUp(opennebula_template, template_dialog);
 
                 a_template_dialog.on('click', function(){
                     $create_template_dialog = template_dialog;
@@ -360,7 +375,7 @@ var appmarket_actions = {
                 template_dialog.on("close", function(){
                   a_template_dialog.remove();
                   template_dialog.remove();
-                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size > 0) {
+                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size() > 0) {
                     $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
                   } else {
                     $appmarket_import_dialog.foundation('reveal', 'close');
@@ -371,7 +386,13 @@ var appmarket_actions = {
                 $("a[href='#manual']", template_dialog).closest('dl').remove();
             }
 
+            $appmarket_import_dialog.foundation().foundation('reveal', 'open');
             $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
+
+            $appmarket_import_dialog.on('closed', function(){
+              $appmarket_import_dialog.remove();
+              $appmarket_import_dialog = undefined;
+            })
         },
         error: onError
     },
@@ -858,6 +879,10 @@ function updateAppMarketInfo(request,app){
                 <td class="value_td">'+app['_id']["$oid"]+'</td>\
               </tr>\
               <tr>\
+                <td class="key_td">' + tr("Name") + '</td>\
+                <td class="value_td">'+app['name']+'</td>\
+              </tr>\
+              <tr>\
                 <td class="key_td">' + tr("URL") + '</td>\
                 <td class="value_td"><a href="'+url+'" target="_blank">'+tr("link")+'</a></td>\
               </tr>\
@@ -872,40 +897,69 @@ function updateAppMarketInfo(request,app){
                 <td class="key_td">' + tr("Status") + '</td>\
                 <td class="value_td">'+app['status']+'</td>\
               </tr>' : '') +
-              (app['files'] ? '<tr>\
+              (app['tags'] ? '<tr>\
+                <td class="key_td">' + tr("Tags") + '</td>\
+                <td class="value_td">'+app['tags'].join(' ')+'</td>\
+              </tr>' : '') +
+              (app['catalog'] ? '<tr>\
+                <td class="key_td">' + tr("Catalog") + '</td>\
+                <td class="value_td">'+app['catalog']+'</td>\
+              </tr>' : '') +
+              '<tr>\
                 <td class="key_td">' + tr("OS") + '</td>\
                 <td class="value_td">'+app['os-id']+' '+app['os-release']+'</td>\
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Arch") + '</td>\
                 <td class="value_td">'+app['os-arch']+'</td>\
-              </tr>\
-              <tr>\
+              </tr>' +
+              (app['files'] ? '<tr>\
                 <td class="key_td">' + tr("Size") + '</td>\
                 <td class="value_td">'+humanize_size(app['files'][0]['size'],true)+'</td>\
-              </tr>\
-              <tr>\
+              </tr>' : '') +
+              '<tr>\
                 <td class="key_td">' + tr("Hypervisor") + '</td>\
                 <td class="value_td">'+app['hypervisor']+'</td>\
               </tr>\
               <tr>\
                 <td class="key_td">' + tr("Format") + '</td>\
                 <td class="value_td">'+app['format']+'</td>\
-              </tr>' : '') +
+              </tr>' +
             '</tbody>\
         </table>\
         </div>\
-        <div class="large-6 columns">\
-        <table id="info_appmarketplace_table2" class="dataTable">\
-           <thead>\
-             <tr><th colspan="2">'+tr("Description")+'</th></tr>\
-           </thead>\
-           <tbody>\
-              <tr>\
-                <td class="value_td">'+app['description'].replace(/\n/g, "<br />")+'</td>\
-              </tr>\
-            </tbody>\
-        </table>\
+        <div class="large-6 columns">'+
+          (app['short_description'] ? '<table class="dataTable">\
+             <thead>\
+               <tr><th colspan="2">'+tr("Short Description")+'</th></tr>\
+             </thead>\
+             <tbody>\
+                <tr>\
+                  <td class="value_td">'+app['short_description'].replace(/\n/g, "<br />")+'</td>\
+                </tr>\
+              </tbody>\
+          </table>' : '') +
+          '<table id="info_appmarketplace_table2" class="dataTable">\
+             <thead>\
+               <tr><th colspan="2">'+tr("Description")+'</th></tr>\
+             </thead>\
+             <tbody>\
+                <tr>\
+                  <td class="value_td">'+app['description'].replace(/\n/g, "<br />")+'</td>\
+                </tr>\
+              </tbody>\
+          </table>'+
+          (app['opennebula_template'] ? '<table class="dataTable">\
+             <thead>\
+               <tr><th colspan="2">'+tr("OpenNebula Template")+'</th></tr>\
+             </thead>\
+             <tbody>\
+                <tr>\
+                  <td class="value_td">'+app['opennebula_template'].replace(/\n/g, "<br />")+'</td>\
+                </tr>\
+              </tbody>\
+          </table>' : '') +
+        '</div>\
       </div>'
     };
 
