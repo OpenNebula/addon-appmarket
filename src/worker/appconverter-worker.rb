@@ -153,6 +153,7 @@ while !$exit do
             puts response.message
         else
             json_hash = JSON.parse(response.body)
+            puts json_hash.inspect
             exec_job(json_hash)
         end
     end
