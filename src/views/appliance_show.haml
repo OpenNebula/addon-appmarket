@@ -154,23 +154,23 @@
             %h6 Format
           %dd
             %h6
-              %small= @app['files'][0]['format']
-          - if @app['files'][0]['os-id'] && @app['files'][0]['os-release']
+              %small= @app['format']
+          - if @app['os-id'] && @app['os-release']
             %dt
               %h6 OS
             %dd
               %h6
-                %small= @app['files'][0]['os-id'] + ' ' + @app['files'][0]['os-release']
+                %small= @app['os-id'] + ' ' + @app['os-release']
           %dt
             %h6 Hypervisor
           %dd
             %h6
-              %small= @app['files'][0]['hypervisor']
+              %small= @app['hypervisor']
           %dt
             %h6 Arch
           %dd
             %h6
-              %small= @app['files'][0]['os-arch']
+              %small= @app['os-arch']
 
 %hr
 

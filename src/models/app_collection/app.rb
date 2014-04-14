@@ -33,11 +33,13 @@ module AppMarket
                     :enum => %w{OS CDROM DATABLOCK},
                     :default => 'OS'
                 },
+                # DEPRECATED, user first level attr in app instead
                 'hypervisor' => {
                     :type => :string,
                     :enum => %w{VMWARE XEN KVM all},
                     :default => 'all'
                 },
+                # DEPRECATED, user first level attr in app instead
                 'format' => {
                     :type => :string,
                     :enum => %w{raw vmdk qcow2 vdi},
@@ -52,14 +54,17 @@ module AppMarket
                     :enum => %w{bz2 gzip none},
                     :default => 'none'
                 },
+                # DEPRECATED, user first level attr in app instead
                 'os-id' => {
                     :type => :string,
                     :default => ''
                 },
+                # DEPRECATED, user first level attr in app instead
                 'os-release' => {
                     :type => :string,
                     :default => ''
                 },
+                # DEPRECATED, user first level attr in app instead
                 'os-arch' => {
                     :type => :string,
                     :default => 'x86_64'

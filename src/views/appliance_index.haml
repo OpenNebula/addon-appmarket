@@ -96,12 +96,12 @@
       "aoColumns": [
         { "mDataProp": "name" },
         { "mDataProp": "catalog", "bVisible": false, "bSearchable": false },
-        { "mDataProp": "files.0.hypervisor", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-" },
+        { "mDataProp": "hypervisor", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-" },
         { "mDataProp": "opennebula_version", "bVisible": false, "bSearchable": false },
         { "mDataProp": "tags", "bVisible": false },
         { "mDataProp": "description", "bVisible": false },
-        { "mDataProp": "files.0.os-arch", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-"  },
-        { "mDataProp": "files.0.format", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-"  },
+        { "mDataProp": "os-arch", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-"  },
+        { "mDataProp": "format", "bVisible": false, "bSearchable": false, "sDefaultContent" : "-"  },
       ],
       "fnRowCallback": function( nRow, oData, iDisplayIndex ) {
         var sOut =
@@ -147,18 +147,16 @@
                   '<hr>'+
               '</div>';
 
-              if (oData.files) {
-                sOut += '<div class="span2">'+
-                  '<dl>'+
-                    '<dt><h6>Hypervisor</h6></dd>'+
-                    '<dd><h6><small>'+oData.files[0].hypervisor+'</small></h6></dd>'+
-                    '<dt><h6>Arch</h6></dd>'+
-                    '<dd><h6><small>'+oData.files[0]['os-arch']+'</small></h6></dd>'+
-                    '<dt><h6>Format</h6></dd>'+
-                    '<dd><h6><small>'+oData.files[0].format+'</small></h6></dd>'+
-                  '</dl>'+
-                '</div>';
-              }
+            sOut += '<div class="span2">'+
+              '<dl>'+
+                '<dt><h6>Hypervisor</h6></dd>'+
+                '<dd><h6><small>'+(oData.hypervisor||'')+'</small></h6></dd>'+
+                '<dt><h6>Arch</h6></dd>'+
+                '<dd><h6><small>'+(oData['os-arch']||'')+'</small></h6></dd>'+
+                '<dt><h6>Format</h6></dd>'+
+                '<dd><h6><small>'+(oData.format||'')+'</small></h6></dd>'+
+              '</dl>'+
+            '</div>';
 
             sOut += '</div>'+
             '</div>';

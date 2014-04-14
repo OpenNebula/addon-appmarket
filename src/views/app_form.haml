@@ -81,34 +81,34 @@
     %input.btn.btn-inverse.pull-right.add_file_button{'href' => '#', 'type' => 'custom', 'value' => 'Add another file'}
   %hr
   .control-group
-    %label.control-label{'for' => 'files.0.hypervisor'} Hypervisor
+    %label.control-label{'for' => 'hypervisor'} Hypervisor
     .controls
-      %select{'name' => 'files.0.hypervisor', 'id' => 'files.0.hypervisor_form'}
+      %select{'name' => 'hypervisor', 'id' => 'hypervisor_form'}
         %option{'value' => ""}
         - AppMarket::Appliance::FILE_SCHEMA[:properties]['hypervisor'][:enum].each do |elem|
           %option= elem
   .control-group
-    %label.control-label{'for' => 'files.0.format'} Format
+    %label.control-label{'for' => 'format'} Format
     .controls
-      %select{'name' => 'files.0.format', 'id' => 'files.0.format_form'}
+      %select{'name' => 'format', 'id' => 'format_form'}
         %option{'value' => ""}
         - AppMarket::Appliance::FILE_SCHEMA[:properties]['format'][:enum].each do |elem|
           %option= elem
   %hr
   .control-group
-    %label.control-label{'for' => 'files.0.os-id'} OS id
+    %label.control-label{'for' => 'os-id'} OS id
     .controls
-      %input.input-xlarge{'name' => 'files.0.os-id', 'id' => 'files.0.os-id_form', 'type' => 'text'}
+      %input.input-xlarge{'name' => 'os-id', 'id' => 'os-id_form', 'type' => 'text'}
       %p Example: Ubuntu
   .control-group
-    %label.control-label{'for' => 'files.0.os-release'} OS release
+    %label.control-label{'for' => 'os-release'} OS release
     .controls
-      %input.input-xlarge{'name' => 'files.0.os-release', 'id' => 'files.0.os-release_form', 'type' => 'text'}
+      %input.input-xlarge{'name' => 'os-release', 'id' => 'os-release_form', 'type' => 'text'}
       %p Example: 12.04
   .control-group
-    %label.control-label{'for' => 'files.0.os-arch'} OS arch
+    %label.control-label{'for' => 'os-arch'} OS arch
     .controls
-      %input.input-xlarge{'name' => 'files.0.os-arch', 'id' => 'files.0.os-arch_form', 'type' => 'text'}
+      %input.input-xlarge{'name' => 'os-arch', 'id' => 'os-arch_form', 'type' => 'text'}
       %p Example: x86_64
   .control-group
     %label.control-label{'for' => 'opennebula_template'} OpenNebula Template
