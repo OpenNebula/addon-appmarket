@@ -68,12 +68,12 @@ module AppMarket
             hash['password'] = AppMarket::User.generate_password(hash['password'])
 
             begin
-                object_id = collection.insert(hash, {:w => 1})
+                mongo_object_id = collection.insert(hash, {:w => 1})
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
 
-            user = UserCollection.get(session, object_id.to_s)
+            user = UserCollection.get(session, mongo_object_id.to_s)
             return [201, user.to_hash]
         end
 
@@ -82,10 +82,10 @@ module AppMarket
         #
         # @param [Session] session an instance of Session containing the
         #   user permisions
-        # @param [String] object_id id of the resource
+        # @param [String] mongo_object_id id of the resource
         # @return [AppMarket::Appliance] depends on the factory method
-        def self.get(session, object_id)
-            filter = generate_filter(session, object_id)
+        def self.get(session, mongo_object_id)
+            filter = generate_filter(session, mongo_object_id)
             fields = exclude_fields(session)
 
             begin

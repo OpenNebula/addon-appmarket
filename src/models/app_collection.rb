@@ -87,18 +87,18 @@ module AppMarket
 #
 
             begin
-                object_id = collection.insert(hash, {:w => 1})
+                mongo_object_id = collection.insert(hash, {:w => 1})
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
 
-            app = AppCollection.get(session, object_id.to_s)
+            app = AppCollection.get(session, mongo_object_id.to_s)
 
             if hash['files'].nil? || hash['files'][0]['url'].nil?
                 # Create a new Job to upload the new appliance
                 job_hash = {
                     'name' => 'upload',
-                    'appliance_id' => app.object_id
+                    'appliance_id' => app.mongo_object_id
                 }
 
                 AppMarket::JobCollection.create(session, job_hash)
@@ -114,13 +114,13 @@ module AppMarket
         #
         # @param [Session] session an instance of Session containing the
         #   user permisions
-        # @param [String] object_id id of the resource
+        # @param [String] mongo_object_id id of the resource
         # @param [true,false] exclude_fields exclude fields from the appliance
         #   information, the fields are defined in the exclude_fields method
         # @return [AppMarket::Appliance] depends on the factory method
-        def self.get(session, object_id, exclude_fields=true)
+        def self.get(session, mongo_object_id, exclude_fields=true)
             begin
-                filter = generate_filter(session, object_id)
+                filter = generate_filter(session, mongo_object_id)
                 fields = exclude_fields(session) if exclude_fields
                 data = collection.find_one(filter, :fields => fields)
             rescue BSON::InvalidObjectId
@@ -144,12 +144,12 @@ module AppMarket
         #
         # @param [Session] session an instance of Session containing the
         #   user permisions
-        # @param [String] object_id id of the resource
+        # @param [String] mongo_object_id id of the resource
         # @param [Hash] hash containing the values of the resource
         # @return [AppMarket::Appliance] depends on the factory method
-        def self.clone(session, object_id, hash)
+        def self.clone(session, mongo_object_id, hash)
             begin
-                filter = generate_filter(session, object_id)
+                filter = generate_filter(session, mongo_object_id)
                 fields = exclude_fields(session)
                 data = collection.find_one(filter, :fields => fields)
             rescue BSON::InvalidObjectId
@@ -206,17 +206,17 @@ module AppMarket
             end
 
             begin
-                object_id = collection.insert(data, {:w => 1})
+                mongo_object_id = collection.insert(data, {:w => 1})
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
 
-            app = AppCollection.get(session, object_id.to_s)
+            app = AppCollection.get(session, mongo_object_id.to_s)
 
             # TODO check hash keys
             job_hash = {
                 'name' => 'convert',
-                'appliance_id' => object_id.to_s,
+                'appliance_id' => mongo_object_id.to_s,
                 'params' => {
                     'from_appliance' => source_appliance,
                     'from_format' => from_format

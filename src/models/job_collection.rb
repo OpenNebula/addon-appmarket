@@ -69,24 +69,24 @@ module AppMarket
             hash['creation_time'] = Time.now.to_i
 
             begin
-                object_id = collection.insert(hash)
+                mongo_object_id = collection.insert(hash)
             rescue Mongo::OperationFailure
                 return [400, {"message" => "already exists"}]
             end
 
-            job = JobCollection.get(session, object_id.to_s)
+            job = JobCollection.get(session, mongo_object_id.to_s)
             return [201, job.to_hash]
         end
 
         # Retrieve the resource from the database. This method must be use
         #   to retrieve the resource instead of Job.new
         #
-        # @param [String] object_id id of the resource
+        # @param [String] mongo_object_id id of the resource
         # @return [AppMarket::Job] depends on the factory method
-        def self.get(session, object_id)
+        def self.get(session, mongo_object_id)
             begin
                 data = collection.find_one(
-                    :_id => Collection.str_to_object_id(object_id))
+                    :_id => Collection.str_to_mongo_object_id(mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end

@@ -235,7 +235,7 @@ module AppMarket
             begin
                 # Remove associated jobs
                 job_selector = {
-                    'appliance_id' => self.object_id
+                    'appliance_id' => self.mongo_object_id
                 }
 
                 job_collection = AppMarket::JobCollection.new(@session, job_selector)
@@ -246,7 +246,7 @@ module AppMarket
 
                 job_hash = {
                     'name'         => 'delete',
-                    'appliance_id' => self.object_id
+                    'appliance_id' => self.mongo_object_id
                 }
 
                 if !@data['source'].nil? && !@data['source'].empty?
@@ -256,7 +256,7 @@ module AppMarket
                 # The app is removed insted of keeping it until all the jobs
                 #   are cancelled?
                 AppCollection.collection.remove(
-                    :_id => Collection.str_to_object_id(self.object_id))
+                    :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -270,7 +270,7 @@ module AppMarket
         def info
             begin
                 @data = AppCollection.collection.find_one(
-                            :_id => Collection.str_to_object_id(self.object_id))
+                            :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -308,7 +308,7 @@ module AppMarket
             end
 
             AppCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    {:_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     @data)
 
             return [200, {}]
@@ -330,7 +330,7 @@ module AppMarket
         # @return [String] url of the file
         def file_url(file_id=0)
             AppCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    {:_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     "$inc" => { 'downloads' => 1 })
 
             @data['files'][file_id.to_i]['url']

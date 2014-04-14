@@ -100,7 +100,7 @@ module AppMarket
         def delete
             begin
                 UserCollection.collection.remove(
-                    :_id => Collection.str_to_object_id(self.object_id))
+                    :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -111,7 +111,7 @@ module AppMarket
 
         def enable
             UserCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    {:_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     {'$set' => {'status' => 'enabled'}})
 
             # TODO check if update == success
@@ -125,7 +125,7 @@ module AppMarket
         def info
             begin
                 @data = UserCollection.collection.find_one(
-                            :_id => Collection.str_to_object_id(self.object_id))
+                            :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -159,7 +159,7 @@ module AppMarket
 
             @data = @data.deep_merge(opts)
             UserCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    {:_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     @data)
 
             # TODO check if update == success

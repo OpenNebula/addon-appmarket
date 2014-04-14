@@ -27,14 +27,14 @@ module AppMarket
         # @return [Hash] containing the resource information
         def to_hash
             if @data.empty?
-                return {"_id" => {"$oid" => @object_id}}
+                return {"_id" => {"$oid" => @mongo_object_id}}
             else
                 return @data
             end
         end
 
-        # @return [String] object_id string
-        def object_id
+        # @return [String] mongo_object_id string
+        def mongo_object_id
             @data['_id'].to_s
         end
 
@@ -44,7 +44,7 @@ module AppMarket
         #
         # @param [String] id_str id of the object
         # @return [BSON::ObjectId]
-        def self.str_to_object_id(id_str)
+        def self.str_to_mongo_object_id(id_str)
             BSON::ObjectId(id_str)
         end
 

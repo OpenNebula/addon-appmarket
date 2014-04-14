@@ -110,7 +110,7 @@ module AppMarket
                 end
 
                 JobCollection.collection.update({
-                    :_id => Collection.str_to_object_id(self.object_id)},
+                    :_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     {'$set' => {"status" => status}
                 })
             rescue BSON::InvalidObjectId
@@ -127,7 +127,7 @@ module AppMarket
             # TODO if status == in-progress then error, the job must be cancelled first
             begin
                 JobCollection.collection.remove(
-                    :_id => Collection.str_to_object_id(self.object_id))
+                    :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -141,7 +141,7 @@ module AppMarket
         def info
             begin
                 @data = JobCollection.collection.find_one(
-                    :_id => Collection.str_to_object_id(self.object_id))
+                    :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
                 return [404, {"message" => $!.message}]
             end
@@ -162,7 +162,7 @@ module AppMarket
         def update(job_hash)
             @data = @data.deep_merge(job_hash)
             JobCollection.collection.update(
-                    {:_id => Collection.str_to_object_id(self.object_id)},
+                    {:_id => Collection.str_to_mongo_object_id(self.mongo_object_id)},
                     @data)
 
             # TODO check if update == success
