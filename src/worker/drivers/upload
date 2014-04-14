@@ -52,7 +52,6 @@ end
 
 def fail(error_payload)
     @client.callback(@callback_url, "error", error_payload)
-    exit 0
 end
 
 def ensure_value(value, error_msg)
@@ -99,8 +98,8 @@ begin
     appliance.delete_temp_dir
 rescue Exception => e
     error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
-    fail(error_payload.to_json)
     STDERR.puts("[#{e.class.to_s}] #{e.message}\n#{e.backtrace}")
+    fail(error_payload.to_json)
     exit 0
 end
 
