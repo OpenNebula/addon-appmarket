@@ -42,6 +42,15 @@ rescue Exception => e
 end
 
 ################################################################################
+# Helper Methods
+################################################################################
+
+def fail(error_payload)
+    @client.callback(@callback_url, "error", error_payload)
+    exit 0
+end
+
+################################################################################
 # Main
 ################################################################################
 
@@ -66,7 +75,8 @@ begin
     appliance = ApplianceHandler.new(job_json["appliance"])
     appliance.delete_files
 rescue Exception => e
-    error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}\n#{e.backtrace}"}}
-    client.callback(callback_url, "error", error_payload.to_json)
+    error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
+    fail(error_payload.to_json)
+    STDERR.puts("[#{e.class.to_s}] #{e.message}\n#{e.backtrace}")
     exit 0
 end

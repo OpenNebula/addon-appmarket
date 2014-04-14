@@ -50,9 +50,9 @@ end
 # Helper Methods
 ################################################################################
 
-def fail(error)
-    STDERR.puts "Error: #{error}."
-    exit 1
+def fail(error_payload)
+    @client.callback(@callback_url, "error", error_payload)
+    exit 0
 end
 
 def ensure_value(value, error_msg)
@@ -64,13 +64,13 @@ end
 ################################################################################
 
 # Callback URL
-callback_url = ARGV[0]
+@callback_url = ARGV[0]
 
 username = AppMarket::CONF[:username]
 password = AppMarket::CONF[:password]
 url      = AppMarket::CONF[:appmarket_url]
 
-client = AppMarket::Client.new(username, password, url)
+@client = AppMarket::Client.new(username, password, url)
 
 # Job meta-data
 begin
@@ -99,9 +99,10 @@ begin
     appliance.delete_temp_dir
 rescue Exception => e
     error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
-    client.callback(callback_url, "error", error_payload.to_json)
+    fail(error_payload.to_json)
+    STDERR.puts("[#{e.class.to_s}] #{e.message}\n#{e.backtrace}")
     exit 0
 end
 
 appliance_payload ={"appliance" => appliance.to_hash}
-client.callback(callback_url, "done", appliance_payload.to_json)
+@client.callback(@callback_url, "done", appliance_payload.to_json)
