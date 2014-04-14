@@ -33,8 +33,14 @@ class OVFParser
         end
 
         # Support for single VMs only (get the fist one)
-        @virtual_system = @doc.xpath("//ovf:VirtualSystem")[0]
-        @virtual_hw     = @virtual_system.xpath("//ovf:VirtualHardwareSection")
+        if @ovf_version >= 1
+            @virtual_system = @doc.xpath("//ovf:VirtualSystem")[0]
+            @virtual_hw = @virtual_system.xpath("//ovf:VirtualHardwareSection")
+        else
+            @virtual_system = @doc.xpath("//ovf:Content")[0]
+            @virtual_hw = @virtual_system.xpath("//ovf:Section")
+        end
+
     end
 
     # Get files to register, returns an array with the file names
