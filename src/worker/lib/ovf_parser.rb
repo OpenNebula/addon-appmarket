@@ -26,6 +26,12 @@ class OVFParser
     def initialize(xml_source)
         @doc = Nokogiri::XML(File.read(xml_source))
 
+        begin
+            @ovf_version = @doc.at_css("Envelope").attribute("version").value.to_f
+        rescue
+            @ovf_version = 1
+        end
+
         # Support for single VMs only (get the fist one)
         @virtual_system = @doc.xpath("//ovf:VirtualSystem")[0]
         @virtual_hw     = @virtual_system.xpath("//ovf:VirtualHardwareSection")
@@ -69,15 +75,24 @@ class OVFParser
     #def get_disks(created_images)
     def get_disks
         # Get the instances ids of the disks
-        iids           = get_scsi_iids
+        iids = get_scsi_iids
 
         # Get all the disks described in the HW section
-        disks_xpath   = "//ovf:Item[rasd:ResourceType[contains(text(),'17')]]"
-        cds_xpath     = "//ovf:Item[rasd:ResourceType[contains(text(),'15')]]"
+        if @ovf_version >= 2.0
+            disks_xpath   = "ovf:StorageItem[sasd:ResourceType[contains(text(),'17')]]"
+            cds_xpath     = "ovf:StorageItem[sasd:ResourceType[contains(text(),'15')]]"
 
-        iid_xpath     = "rasd:InstanceID"
-        aop_xpath     = "rasd:AddressOnParent"
-        hostr_xpath   = "rasd:HostResource"
+            iid_xpath     = "sasd:InstanceID"
+            aop_xpath     = "sasd:AddressOnParent"
+            hostr_xpath   = "sasd:HostResource"
+        else
+            disks_xpath   = "ovf:Item[rasd:ResourceType[contains(text(),'17')]]"
+            cds_xpath     = "ovf:Item[rasd:ResourceType[contains(text(),'15')]]"
+
+            iid_xpath     = "rasd:InstanceID"
+            aop_xpath     = "rasd:AddressOnParent"
+            hostr_xpath   = "rasd:HostResource"
+        end
 
         disk_elements = @virtual_hw.xpath(disks_xpath)
 
@@ -86,7 +101,7 @@ class OVFParser
 
             iid     = disk.xpath(iid_xpath).text
             aop     = disk.xpath(aop_xpath).text
-            hostr   = disk.xpath(hostr_xpath).text.gsub(/^ovf:\/disk\//,"")
+            hostr   = disk.xpath(hostr_xpath).text.gsub(/^(ovf:)?\/disk\//,"")
 
             if iids.include?(iid) # scsi
                 target="sd" + ("a".unpack('C')[0]+aop.to_i).chr
@@ -118,7 +133,7 @@ class OVFParser
     end
 
     def get_name
-        @virtual_system.xpath("ovf:Name").text
+        @virtual_system.attribute("id").value
     end
 
     def get_buses
