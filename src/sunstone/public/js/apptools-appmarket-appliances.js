@@ -470,7 +470,12 @@ var appmarket_convert_dialog =
 '<div id="appmarket_convert_dialog">'+
   '<div class="row">'+
     '<div class="large-12">'+
-      '<h3 class="subheader">'+tr("Import Appliance")+'</h3>'+
+      '<h3 class="subheader">'+tr("Convert Appliance")+'</h3>'+
+    '</div>'+
+  '</div>'+
+  '<div class="row">'+
+    '<div class="large-12">'+
+        '<p>'+tr("Only appliances created from an OVA file can be converted to different formats")+'</p>'+
     '</div>'+
   '</div>'+
   '<div class="row">\
@@ -599,7 +604,7 @@ var create_appconverter_appliance =
                 <div class="row">\
                   <div class="large-6 columns">\
                     <label for="catalog">'+tr("Catalog")+'\
-                      <span class="tip">'+tr("Comma-separated catalogs. Example: silver,gold. If not provided the appliance will be included in the 'community' catalog")+'</span>\
+                      <span class="tip">'+tr("If not provided the appliance will be included in the 'community' catalog. By default all users have access to the 'community' catalog, but each user can be granted with access to different catalogs. Comma-separated catalogs. Example: silver,gold.")+'</span>\
                     </label>\
                     <input type="text" name="catalog" id="catalog" />\
                   </div>\
@@ -662,15 +667,21 @@ var create_appconverter_appliance =
                 <br>'+
                 '<div class="row">'+
                   '<div class="large-12 columns text-center">'+
-                    '<input id="app_radioImage" type="radio" name="source_type" value="ova" checked> <label for="app_radioImage">'+tr("OVA")+'</label>'+
-                    '<input id="app_radioVolatile" type="radio" name="source_type" value=""> <label for="app_radioVolatile">'+tr("Files & Template")+'</label>'+
+                    '<input id="app_radioImage" type="radio" name="source_type" value="ova" checked>'+
+                        '<label for="app_radioImage">'+tr("OVA")+
+                            '<span class="tip">'+tr("In this case you will need the AppMarket Worker component that will download, unpack and generate the files URLs and OpenNebula template. If there is no AppWarket Worker, appliances created providing an OVA url will stay in the init status, and will not be available to be donwloaded")+'</span>'+
+                        '</label>'+
+                    '<input id="app_radioVolatile" type="radio" name="source_type" value="">'+
+                        '<label for="app_radioVolatile">'+tr("Files & Template")+
+                            '<span class="tip">'+tr("In this case the files URLs and OpenNebula template have to be manually specified. The files will not be dowloaded, only the URLs will be stored")+'</span>'+
+                        '</label>'+
                   '</div>'+
                 '</div>'+
                 '<div class="from_ova">'+
                   '<div class="row">\
                     <div class="large-12 columns">\
                       <label for="source">'+tr("OVA URL")+'\
-                        <span class="tip">'+tr("Comma-separated tags. Example: ubuntu,hpc,mysql")+'</span>\
+                        <span></span>\
                       </label>\
                       <input type="text" name="source" id="source" />\
                     </div>\
@@ -725,8 +736,8 @@ var appmarketplace_tab = {
     tabClass: 'subTab',
     parentTab: 'apptools-appmarket-dashboard',
     search_input: '<input id="appliances_search" type="text" placeholder="'+tr("Search")+'" />',
-    list_header: '<i class="fa fa-truck"></i> '+tr("OpenNebula AppMarket"),
-    info_header: '<i class="fa fa-truck"></i> '+tr("Appliance"),
+    list_header: '<i class="fa fa-fw fa-truck"></i>&emsp;'+tr("OpenNebula AppMarket"),
+    info_header: '<i class="fa fa-fw fa-truck"></i>&emsp;'+tr("Appliance"),
     subheader: '',
     content:   '<div class="row" id="error_message" hidden>\
         <div class="small-6 columns small-centered text-center">\

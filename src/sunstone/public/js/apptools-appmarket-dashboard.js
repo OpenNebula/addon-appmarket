@@ -16,7 +16,7 @@
 
 
 var appmarket_dashboard_tab = {
-    title: '<i class="fa fa-truck"></i>AppMarket',
+    title: '<i class="fa fa-fw fa-lg fa-truck"></i>&emsp;AppMarket',
     no_content: true
 }
 
