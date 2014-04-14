@@ -172,6 +172,11 @@ class OVA < ApplianceHandler
         ovf_file = Dir["#{temp_dir}/*.ovf"][0]
 
         ovf = OVFParserOpenNebula.new(ovf_file)
+
+        if ovf.get_disks.empty?
+            raise ApplianceHandlerError, "No disks found in the OVF template."
+        end
+
         ovf.get_disks.each do |disk|
             disk[:path]    = File.join(temp_dir, disk[:path])
             appliance_file = ApplianceFileHandler.register(disk)
