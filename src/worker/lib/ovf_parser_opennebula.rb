@@ -63,16 +63,16 @@ class OVFParserOpenNebula < OVFParser
 
         disks = []
         get_disks.each do |disk|
-            h = {"image" => disk[:name]}
-            h["target"] = disk[:target] if disk[:target] if
+            h = {"IMAGE" => disk[:name]}
+            h["TARGET"] = disk[:target] if disk[:target] if
             disks << h
         end
 
         {
-            "name"   => name,
-            "cpu"    => cpu,
-            "memory" => memory,
-            "disks"  => disks
+            "NAME"   => name,
+            "CPU"    => cpu,
+            "MEMORY" => memory,
+            "DISKS"  => disks
         }.to_json
     end
 end
