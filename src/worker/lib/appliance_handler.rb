@@ -100,9 +100,9 @@ class ApplianceHandler
         end
 
         if @curl_exists
-            "curl -s #{@source}"
+            "curl -s '#{@source}'"
         elsif @wget_exists
-            "wget -q #{@source} -O-"
+            "wget -q '#{@source}' -O-"
         else
             raise ApplianceHandlerError, "No curl or wget found."
         end
