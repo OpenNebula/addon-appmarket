@@ -167,7 +167,14 @@ end
 
 # Create a new job
 post '/job' do
-    @tmp_response = AppMarket::JobCollection.create(@session, Parser.parse_body(request))
+    begin
+        @tmp_response = AppMarket::JobCollection.create(
+                            @session,
+                            Parser.parse_body(request))
+    rescue JSON::ParserError
+        error $!.message
+    end
+
     content_type :json
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
@@ -210,7 +217,11 @@ end
 # Callbacks from the worker to update the given job
 #   Available callbacks are defined in AppMarket::Job::CALLBACKS
 post '/worker/:worker_host/job/:job_id/:callback' do
-    @body_hash = Parser.parse_body(request)
+    begin
+        @body_hash = Parser.parse_body(request)
+    rescue JSON::ParserError
+        error $!.message
+    end
 
     job = AppMarket::JobCollection.get(@session, params[:job_id])
     if AppMarket::Collection.is_error?(job)
@@ -345,7 +356,12 @@ post '/user/:id/enable' do
 end
 
 post '/user' do
-    @tmp_response = AppMarket::UserCollection.create(@session, Parser.parse_body(request))
+    begin
+        @tmp_response = AppMarket::UserCollection.create(@session, Parser.parse_body(request))
+    rescue JSON::ParserError
+        error $!.message
+    end
+
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
@@ -355,7 +371,11 @@ put '/user/:id' do
     if AppMarket::Collection.is_error?(user)
         error user
     else
-        user.update(Parser.parse_body(request))
+        begin
+            user.update(Parser.parse_body(request))
+        rescue JSON::ParserError
+            error $!.message
+        end
     end
 end
 
@@ -428,13 +448,27 @@ get '/appliance/:id' do
 end
 
 post '/appliance' do
-    @tmp_response = AppMarket::AppCollection.create(@session, Parser.parse_body(request))
+    begin
+        @tmp_response = AppMarket::AppCollection.create(
+                            @session,
+                            Parser.parse_body(request))
+    rescue JSON::ParserError
+        error $!.message
+    end
+
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
 
 post '/appliance/:id/clone' do
-    @tmp_response = AppMarket::AppCollection.clone(@session, params[:id], Parser.parse_body(request))
+    begin
+        @tmp_response = AppMarket::AppCollection.clone(
+                            @session,
+                            params[:id],
+                            Parser.parse_body(request))
+    rescue JSON::ParserError
+        error $!.message
+    end
     status @tmp_response[0]
     body Parser.generate_body(@tmp_response[1])
 end
@@ -453,7 +487,12 @@ put '/appliance/:id' do
     if AppMarket::Collection.is_error?(app)
         error app
     else
-        @tmp_response = app.update(Parser.parse_body(request))
+        begin
+            @tmp_response = app.update(Parser.parse_body(request))
+        rescue JSON::ParserError
+            error $!.message
+        end
+
         content_type :json
         status @tmp_response[0]
         body Parser.generate_body(@tmp_response[1])
