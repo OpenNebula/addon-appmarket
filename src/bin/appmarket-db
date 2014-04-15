@@ -43,7 +43,28 @@ require 'init'
 ##############################################################################
 ##############################################################################
 
-UPGRADE_SCRIPTS = [10980]
+UPGRADE_SCRIPTS = [10980, 10985]
+
+module Version10985
+    VERSION = "1.9.85"
+    VERSION_CODE = 10985
+
+    def self.upgrade
+        AppMarket::DB['appliances'].find().to_a.each { |app|
+            original_app = app.dup
+
+            if app['files'] && app['files'][0]
+                app['os-id'] = app['files'][0]['os-id']
+                app['os-release'] = app['files'][0]['os-release']
+                app['os-arch'] = app['files'][0]['os-arch']
+                app['hypervisor'] = app['files'][0]['hypervisor']
+                app['format'] = app['files'][0]['format']
+            end
+
+            AppMarket::DB['appliances'].update({'_id' => app['_id']}, app)
+        }
+    end
+end
 
 module Version10980
     VERSION = "1.9.80"
@@ -54,17 +75,17 @@ module Version10980
             original_app = app.dup
 
             app['status'] = 'ready'
-            if app['files'][0]
+            if app['files'] && app['files'][0]
                 app['os-id'] = app['files'][0]['os-id']
                 app['os-release'] = app['files'][0]['os-release']
                 app['os-arch'] = app['files'][0]['os-arch']
                 app['hypervisor'] = app['files'][0]['hypervisor']
                 app['format'] = app['files'][0]['format']
-            end
 
-            app['files'].each_with_index {|file, index|
-                file['name'] = app['name'] + '_file' + index.to_s
-            }
+                app['files'].each_with_index {|file, index|
+                    file['name'] = app['name'] + '_file' + index.to_s
+                }
+            end
 
             AppMarket::DB['appliances'].update({'_id' => app['_id']}, app)
         }
