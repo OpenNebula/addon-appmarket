@@ -261,8 +261,8 @@ var appmarket_actions = {
         type: "multiple",
         elements: appmarketplaceElements,
         call: AppMarket.show,
-        callback: function(request,response){
-            if (response['status'] && response['status'] != 'ready') {
+        callback: function(request,appliance){
+            if (appliance['status'] && appliance['status'] != 'ready') {
                 notifyError(tr("The appliance is not ready"));
                 return;
             }
@@ -273,125 +273,251 @@ var appmarket_actions = {
 
             dialogs_context.append(appmarket_import_dialog);
             $appmarket_import_dialog = $('#appmarket_import_dialog',dialogs_context);
-            $appmarket_import_dialog.addClass("reveal-modal xlarge max-height").attr("data-reveal", "");
+            $appmarket_import_dialog.addClass("reveal-modal medium").attr("data-reveal", "");
 
-            var tab_id = 1;
+            //var tab_id = 1;
+            $('<div class="row">'+
+                '<div class="large-12 columns">'+
+                    '<p style="font-size:14px">'+
+                        tr("The following images will be created in OpenNebula.")+ ' '+
+                        tr("If you want to edit parameters of the image you can do it later in the images tab")+ ' '+
+                    '</p>'+
+                '</div>'+
+            '</div>').appendTo($("#appmarket_import_dialog_content"));
 
-            $.each(response['files'], function(index, value){
-                // Append the new div containing the tab and add the tab to the list
-                var image_dialog = $('<div id="Tab'+tab_id+'" class="content disk wizard_internal_tab">'+
-                  create_image_tmpl +
-                '</div>').appendTo($("#appmarket_import_dialog_tabs_content"));
+            $('<div class="row">'+
+                '<div class="large-10 large-centered columns">'+
+                    '<div class="large-10 columns">'+
+                        '<label for="appmarket_img_datastore">'+tr("Select the datastore for the images")+
+                        '</label>'+
+                        '<div id="appmarket_img_datastore" name="appmarket_img_datastore">'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="large-2 columns">'+
+                    '</div>'+
+                '</div>'+
+            '</div>').appendTo($("#appmarket_import_dialog_content"));
 
-                var a_image_dialog = $("<dd>\
-                  <a id='disk_tab"+tab_id+"' href='#Tab"+tab_id+"'>"+tr("Image")+"</a>\
-                </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
+            // Filter out DS with type system (1) or file (2)
+            var filter_att = ["TYPE", "TYPE"];
+            var filter_val = ["1", "2"];
 
-                $(".create_image_header", image_dialog).hide();
-                $("#wizard_image_reset_button", image_dialog).hide();
+            insertSelectOptions('div#appmarket_img_datastore', $appmarket_import_dialog, "Datastore",
+                                null, false, null, filter_att, filter_val);
 
-                initialize_create_image_dialog(image_dialog);
-                initialize_datastore_info_create_image_dialog(image_dialog);
-
-                $('#img_name', image_dialog).val(value['name']||response['name']);
-                $('#img_path', image_dialog).val(response['links']['download']['href']+'/'+index);
-                $('#src_path_select input[value="path"]', image_dialog).trigger('click');
-                $('select#img_type', image_dialog).val(value['type']);
-                $('select#img_type', image_dialog).trigger('change');
-
-                //remove any options from the custom vars dialog box
-                $("#custom_var_image_box",image_dialog).empty();
-
-                var md5 = value['md5']
-                if ( md5 ) {
-                    option = '<option value=\'' +
-                        md5 + '\' name="MD5">MD5=' +
-                        md5 + '</option>';
-                    $("#custom_var_image_box",image_dialog).append(option);
-                }
-
-                var sha1 = value['sha1']
-                if ( sha1 ) {
-                    option = '<option value=\'' +
-                        sha1 + '\' name="SHA1">SHA1=' +
-                        sha1 + '</option>';
-                    $("#custom_var_image_box",image_dialog).append(option);
-                }
-
-                a_image_dialog.on('click', function(){
-                    $create_image_dialog = image_dialog;
-                })
-
-                image_dialog.on("close", function(event){
-                  a_image_dialog.remove();
-                  image_dialog.remove();
-                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size() > 0) {
-                    $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
-                  } else {
-                    $appmarket_import_dialog.foundation('reveal', 'close');
-                  }
-                  return false;
-                });
-
-                $("a[href='#img_manual']", image_dialog).closest('dl').remove();
-
-                tab_id++;
+            $.each(appliance['files'], function(index, value){
+                $('<div class="row" id="appmarket_import_file_'+index+'">'+
+                    '<div class="large-10 large-centered columns">'+
+                        '<div class="large-10 columns">'+
+                            '<label>'+
+                                '<i class="fa fa-fw fa-download"/>&emsp;'+
+                                index+' - '+tr("Image Name")+
+                                '<span class="right">'+
+                                    humanize_size(value['size'])+
+                                '</span>'+
+                            '</label>'+
+                            '<input type="text" class="name"    value="' + (value['name']||appliance['name']) +'" />'+
+                        '</div>'+
+                        '<div class="large-2 columns appmarket_image_result">'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="large-10 large-centered columns appmarket_image_response">'+
+                    '</div>'+
+                '</div>').appendTo($("#appmarket_import_dialog_content"));
             })
 
-            if (response['opennebula_template'] && response['opennebula_template'] !== "CPU=1") {
-                var opennebula_template;
+            if (appliance['opennebula_template'] && appliance['opennebula_template'] !== "CPU=1") {
+                $('<br>'+
+                '<div class="row">'+
+                    '<div class="large-12 columns">'+
+                        '<p style="font-size:14px">'+
+                            tr("The following template will be created in OpenNebula and the previous images will be referenced in the disks")+ ' '+
+                            tr("If you want to edit parameters of the template you can do it later in the templates tab")+ ' '+
+                        '</p>'+
+                    '</div>'+
+                '</div>').appendTo($("#appmarket_import_dialog_content"));
 
-                try {
-                  opennebula_template = JSON.parse(response['opennebula_template']);
-                } catch (error) {
-                  notifyError("Error parsing OpenNebula template: " + error.message);
-                  return;
-                }
-
-                if ($create_template_dialog) {
-                  $create_template_dialog.html("");
-                }
-
-                // Template
-                // Append the new div containing the tab and add the tab to the list
-                var template_dialog = $('<div id="Tab'+tab_id+'" class="content disk wizard_internal_tab">'+
-                  create_template_tmpl +
-                '</div>').appendTo($("#appmarket_import_dialog_tabs_content"));
-
-                var a_template_dialog = $("<dd>\
-                  <a id='disk_tab"+tab_id+"' href='#Tab"+tab_id+"'>"+tr("Template")+"</a>\
-                </dd>").appendTo($("dl#appmarket_import_dialog_tabs"));
-
-                $("#create_template_header_row", template_dialog).hide();
-                $("#template_template_reset_button", template_dialog).hide();
-
-                initialize_create_template_dialog(template_dialog);
-                fillTemplatePopUp(opennebula_template, template_dialog);
-
-                a_template_dialog.on('click', function(){
-                    $create_template_dialog = template_dialog;
-                })
-
-                template_dialog.on("close", function(){
-                  a_template_dialog.remove();
-                  template_dialog.remove();
-                  if ($('a', $("dl#appmarket_import_dialog_tabs")).size() > 0) {
-                    $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
-                  } else {
-                    $appmarket_import_dialog.foundation('reveal', 'close');
-                  }
-                  return false;
-                });
-
-                $("a[href='#manual']", template_dialog).closest('dl').remove();
+                $('<div class="row" id="appmarket_import_file_template">'+
+                    '<div class="large-10 large-centered columns">'+
+                        '<div class="large-10 columns">'+
+                            '<label>'+
+                                '<i class="fa fa-fw fa-file-text-o"/>&emsp;'+
+                                tr("Template Name")+
+                            '</label>'+
+                            '<input type="text" class="name" value="' + (appliance['opennebula_template']['NAME']||appliance['name']) +'" />'+
+                        '</div>'+
+                        '<div class="large-2 columns appmarket_template_result">'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="large-10 large-centered columns appmarket_template_response">'+
+                    '</div>'+
+                '</div>').appendTo($("#appmarket_import_dialog_content"));
             }
 
             $appmarket_import_dialog.foundation().foundation('reveal', 'open');
-            $('a', $("dl#appmarket_import_dialog_tabs")).first().click();
 
-            $appmarket_import_dialog.on('closed', function(){
-              $appmarket_import_dialog.remove();
-              $appmarket_import_dialog = undefined;
+            var images_information = [];
+
+            $("#appmarket_import_form").submit(function(){
+                function try_to_create_template(){
+                    var images_created = $(".appmarket_image_result.success", $appmarket_import_dialog).length;
+                    if ((images_created == number_of_files) && !template_created) {
+                        template_created = true;
+
+                        if (appliance['opennebula_template'] && appliance['opennebula_template'] !== "CPU=1") {
+                            var vm_template
+                            try {
+                                vm_template = JSON.parse(appliance['opennebula_template'])
+                            } catch (error) {
+                                $(".appmarket_template_result", template_context).html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                                      '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                                      '<i class="fa  fa-warning fa-stack-1x fa-inverse"></i>'+
+                                    '</span>');
+
+                                $(".appmarket_template_response", template_context).html('<p style="font-size:12px" class="error-color">'+
+                                      (error.message || tr("Cannot contact server: is it running and reachable?"))+
+                                    '</p>');
+
+                                $("input", template_context).removeAttr("disabled");
+                                $("button", $appmarket_import_dialog).removeAttr("disabled");
+                                template_created = false;
+                                return;
+                            }
+
+                            if ($.isEmptyObject(vm_template.DISK))
+                                vm_template.DISK = []
+                            else if (!$.isArray(vm_template.DISK))
+                                vm_template.DISK = [vm_template.DISK]
+
+                            vm_template.NAME = $("input", template_context).val();
+                            if (!vm_template.CPU)
+                                vm_template.CPU = "1"
+                            if (!vm_template.MEMORY)
+                                vm_template.MEMORY = "1024"
+
+                            $.each(images_information, function(image_index, image_info){
+                                if (!vm_template.DISK[image_index]) {
+                                    vm_template.DISK[image_index] = {}
+                                }
+
+                                vm_template.DISK[image_index].IMAGE = image_info.IMAGE.NAME;
+                                vm_template.DISK[image_index].IMAGE_UNAME = image_info.IMAGE.UNAME;
+                            })
+
+                            vm_template.FROM_APP = appliance['_id']["$oid"];
+                            vm_template.FROM_APP_NAME = appliance['name'];
+
+                            OpenNebula.Template.create({
+                                timeout: true,
+                                data: {vmtemplate: vm_template},
+                                success: function (request, response){
+                                    $(".appmarket_template_result", template_context).addClass("success").html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                                          '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                                          '<i class="fa  fa-check fa-stack-1x fa-inverse"></i>'+
+                                        '</span>');
+
+                                    $(".appmarket_template_response", template_context).html('<p style="font-size:12px" class="running-color">'+
+                                          tr("Template created successfully")+' ID:'+response.VMTEMPLATE.ID+
+                                        '</p>');
+
+                                    $("button", $appmarket_import_dialog).hide();
+                                },
+                                error: function (request, error_json){
+                                    $(".appmarket_template_result", template_context).html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                                          '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                                          '<i class="fa  fa-warning fa-stack-1x fa-inverse"></i>'+
+                                        '</span>');
+
+                                    $(".appmarket_template_response", template_context).html('<p style="font-size:12px" class="error-color">'+
+                                          (error_json.error.message || tr("Cannot contact server: is it running and reachable?"))+
+                                        '</p>');
+
+                                    $("input", template_context).removeAttr("disabled");
+                                    $("button", $appmarket_import_dialog).removeAttr("disabled");
+                                    template_created = false;
+                                }
+                            });
+                        } else {
+                            $("button", $appmarket_import_dialog).hide();
+                        }
+                    };
+                }
+
+                var number_of_files = appliance['files'].length;
+                var template_created = false;
+
+                $("input, button", $appmarket_import_dialog).attr("disabled", "disabled");
+                $(".appmarket_image_result:not(.success)",  $appmarket_import_dialog).html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                      '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                      '<i class="fa  fa-spinner fa-spin fa-stack-1x fa-inverse"></i>'+
+                    '</span>');
+                $(".appmarket_template_result",  $appmarket_import_dialog).html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                      '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                      '<i class="fa  fa-spinner fa-spin fa-stack-1x fa-inverse"></i>'+
+                    '</span>');
+
+                var template_context = $("#appmarket_import_file_template",  $appmarket_import_dialog);
+
+                $.each(appliance['files'], function(index, value){
+                    var context = $("#appmarket_import_file_"+index,  $appmarket_import_dialog);
+
+                    if ($(".appmarket_image_result:not(.success)", context).length > 0) {
+                        img_obj = {
+                            "image" : {
+                                "NAME": $("input.name",context).val(),
+                                "PATH": appliance['links']['download']['href']+'/'+index,
+                                "TYPE": value['type'],
+                                "MD5": value['md5'],
+                                "SHA1": value['sha1'],
+                                "FROM_APP": appliance['_id']["$oid"],
+                                "FROM_APP_NAME": appliance['name'],
+                                "FROM_APP_FILE": index
+                            },
+                            "ds_id" : $("#appmarket_img_datastore select", $appmarket_import_dialog).val()
+                        };
+
+                        OpenNebula.Image.create({
+                            timeout: true,
+                            data: img_obj,
+                            success: function (file_index, file_context){
+                                return function(request, response) {
+                                    $(".appmarket_image_result", file_context).addClass("success").html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                                          '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                                          '<i class="fa  fa-check fa-stack-1x fa-inverse"></i>'+
+                                        '</span>');
+
+                                    $(".appmarket_image_response", file_context).html('<p style="font-size:12px" class="running-color">'+
+                                          tr("Image created successfully")+' ID:'+response.IMAGE.ID+
+                                        '</p>');
+
+                                    images_information[file_index] = response;
+
+                                    try_to_create_template();
+                                };
+                            }(index, context),
+                            error: function (request, error_json){
+                                $(".appmarket_template_result", template_context).html('');
+
+                                $(".appmarket_image_result", context).html('<span class="fa-stack fa-2x" style="color: #dfdfdf">'+
+                                      '<i class="fa fa-cloud fa-stack-2x"></i>'+
+                                      '<i class="fa  fa-warning fa-stack-1x fa-inverse"></i>'+
+                                    '</span>');
+
+                                $(".appmarket_image_response", context).html('<p style="font-size:12px" class="error-color">'+
+                                      (error_json.error.message || tr("Cannot contact server: is it running and reachable?"))+
+                                    '</p>');
+
+                                $("input", template_context).removeAttr("disabled");
+                                $("input", context).removeAttr("disabled");
+                                $("button", $appmarket_import_dialog).removeAttr("disabled");
+                            }
+                        });
+                    }
+                });
+
+                try_to_create_template();
+
+                return false;
             })
         },
         error: onError
@@ -457,12 +583,13 @@ var appmarket_import_dialog =
       '<h3 class="subheader">'+tr("Import Appliance")+'</h3>'+
     '</div>'+
   '</div>'+
-  '<div class="reveal-body">'+
-    '<dl class="tabs" id="appmarket_import_dialog_tabs" data-tab>'+
-    '</dl>'+
-    '<div class="tabs-content" id="appmarket_import_dialog_tabs_content">'+
-    '</div>'+
-  '</div>'+
+  '<form id="appmarket_import_form">'+
+      '<div id="appmarket_import_dialog_content">'+
+      '</div>'+
+      '<div class="form_buttons">'+
+          '<button class="button radius right success" id="appmarket_import_button" type="submit">'+tr("Import")+'</button>'+
+      '</div>'+
+  '</form>'+
   '<a class="close-reveal-modal">&#215;</a>'+
 '</div>';
 
