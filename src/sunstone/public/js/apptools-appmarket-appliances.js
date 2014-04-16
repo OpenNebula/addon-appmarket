@@ -550,6 +550,20 @@ var file_section_create_from =
           <input type="text" name="files.0.sha1" id="files.0.sha1" />\
         </div>\
       </div>\
+      <div class="row">\
+        <div class="large-6 columns">\
+          <label for="files.0.driver">'+tr("Driver")+
+            '<span class="tip">'+tr("Specific image mapping driver. KVM: raw, qcow2. XEN: tap:aio, file:")+'</span>'+
+          ':</label>\
+          <input type="text" name="files.0.driver" id="files.0.driver" />\
+        </div>\
+        <div class="large-6 columns">\
+          <label for="files.0.dev_prefix">'+tr("Dev Prefix")+
+            '<span class="tip">'+tr("Prefix for the emulated device this image will be mounted at. For instance, “hd”, “sd”. If omitted, the default value is the one defined in oned.conf (installation default is “hd”).")+'</span>'+
+         ':</label>\
+          <input type="text" name="files.0.dev_prefix" id="files.0.dev_prefix" />\
+        </div>\
+      </div>\
     </fieldset>\
   </div>\
 </div>';

@@ -33,6 +33,12 @@ module AppMarket
                     :enum => %w{OS CDROM DATABLOCK},
                     :default => 'OS'
                 },
+                'driver' => {
+                    :type => :string
+                },
+                'dev_prefix' => {
+                    :type => :string
+                },
                 # DEPRECATED, user first level attr in app instead
                 'hypervisor' => {
                     :type => :string,
