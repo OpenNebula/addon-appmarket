@@ -715,7 +715,7 @@ var create_appconverter_appliance =
                 </div>\
             </div>\
             <div id="appliance_rawTab" class="content">\
-                <textarea id="template" rows="15" style="width:100%;"></textarea>\
+                <textarea id="template" rows="15" style="width:100%; height: 300px"></textarea>\
                 <div class="reveal-footer">\
                     <div class="form_buttons">\
                         <button class="button success radius right" id="create_appconverter_appliance_raw" value="image/create">'+tr("Create")+'</button>\
@@ -874,6 +874,29 @@ function addConverterApplianceElement(request, template_json){
 function updateAppMarketInfo(request,app){
     var url = app.links.download.href;
     url = url.replace(/\/download$/, '');
+
+    var files_table = '<table id="info_appmarketplace_table2" class="dataTable">\
+         <thead>\
+           <tr><th colspan="2">'+tr("Images")+'</th></tr>\
+         </thead>\
+         <tbody>';
+
+    if (app['files']) {
+        $.each(app['files'], function(index, value){
+            files_table +=  '<tr>\
+                      <td class="value_td">'+value['name']+'</td>\
+                      <td class="value_td">'+humanize_size(value['size'])+'</td>\
+                    </tr>'
+        });
+    } else {
+        files_table +=  '<tr>\
+                  <td colspan="2" class="value_td">'+tr("No Images defined")+'</td>\
+                </tr>'
+    }
+
+    files_table += '</tbody>\
+      </table>';
+
     var info_tab = {
         title : tr("Info"),
         icon: "fa-info-circle",
@@ -960,6 +983,7 @@ function updateAppMarketInfo(request,app){
                 </tr>\
               </tbody>\
           </table>'+
+          files_table+
           (app['opennebula_template'] ? '<table class="dataTable">\
              <thead>\
                <tr><th colspan="2">'+tr("OpenNebula Template")+'</th></tr>\
