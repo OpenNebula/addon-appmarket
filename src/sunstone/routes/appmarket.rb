@@ -52,7 +52,11 @@ helpers do
         resp = block.call(appmarket_client)
 
         if AppMarket::is_error?(resp)
-            body Error.new(JSON.parse(resp.to_s)['message']).to_json
+            begin
+                body Error.new(JSON.parse(resp.to_s)['message']).to_json
+            rescue JSON::ParserError
+                body resp.to_s
+            end
         else
             body resp.body
         end
