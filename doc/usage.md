@@ -1,99 +1,52 @@
 Using AppMarket
 ===============
 
-AppMarket manages **Users** and **Appliances**. An OpenNebula Virtual Appliance is a pre-built software solution, consisting of a pre-configured virtual machine image and configuration information, ready-to-run on an OpenNebula cloud.
+AppMarket manages **Users** and **Appliances**. An OpenNebula Virtual Appliance is a pre-built software solution, consisting of a set of pre-configured virtual machine images and a template, ready-to-run on an OpenNebula cloud.
 
 The AppMarket contains metadata that defines the Virtual Appliance but not the appliance files themselves. The metadata includes the links to download the appliance files from third-party servers.
 
+AppMarket is integrated in Sunstone, both admin and users can interact with AppMarket from the AppMarket tab in Sunstone
 
-Managing AppMarket
-------------------
-
-### Request an account (USER)
-
-Users do not need to register to download public images. However they will need an App Developer account to post their Virtual Appliances. Users can get this account through the AppMarket GUI. This account is not enabled by default and it requires admin approval.
-
-* Click on "Request Developer Access"
-
-![request_dev_account](images/request_dev_account.jpg)
-
-* Fill the form with the user information
-
-![developer_account](images/developer_account.jpg)
-
-You can also use the `appmarket-user` command to create a new user:
-```
-appmarket-user create user.json
-```
+![appmarket_list_from_sunstone](images/list_appliance_from_sunstone.png)
 
 
-### Manage Users (ADMIN)
+Managing Appliances
+-------------------
 
-An Admin user can manage the users of the Appmarket through the CLI, or clicking the following link in the main page:
-![manage_user_link](images/manage_user_link.jpg)
-
-From this view the Admin will be able to see all the existing users and enable/disble/update them as required, clicking in the more info button:
-
-![list_user](images/list_user.jpg)
-
-User accounts are not enabled by default and must be enabled from this page:
-
-![manage_user](images/manage_user.jpg)
-
-You can also use the `appmarket-user` command to list and enable users:
-```
-appmarket-user list
-appmarket-user enable 939393029039
-```
-
-You can also define the role and catalogs for a given user. The available roles are:
-
-* admin
-* user
-* worker (required for the AppMarket Worker)
-
-### Create an Appliance (USER)
+### Create an Appliance (ADMIN)
 
 The appliances can be created in two different ways:
 
-* Providing the URLs of the files and the OpenNebula template in the Appliance creation form.
-* Providing an URL of an OVA file. In this case you will need the AppMarket Worker component that will download, unpack and generate the files URLs and OpenNebula template. If there is no AppWarket Worker, appliances created providing an OVA url will stay in the init status, and will not be available to be donwloaded. This method can only be used through the Sunstone tab and using an admin account.
+* Providing the URLs of the files and the OpenNebula template in the Appliance creation form. Note that the AppMarket contains metadata that defines the Virtual Appliance but not the appliance files themselves. The metadata includes the links to download the appliance files from third-party servers. The files will be only downloaded by OpenNebula and the AppMarket will not store any file.
 
-After the user's developer account has been aproved, he will be able to include new appliances in the AppMarket by clicking the 'Create appliance' link:
+![create_ova_appliance_from_sunstone](images/create_ova_appliance_from_sunstone.png)
 
-![create_link](images/create_link.jpg)
+* Providing an URL of an OVA file. In this case you will need the AppMarket Worker component that will download, unpack and generate the files URLs and OpenNebula template, instead of specifying them manually as in the previous case. If there is no AppWarket Worker, appliances created providing an OVA url will stay in the init status, and will not be available to be donwloaded.
 
-A new dialog will prompt with the required fields to create a new appliance. Note that the AppMarket contains metadata that defines the Virtual Appliance but not the appliance files themselves. The metadata includes the links to download the appliance files from third-party servers.
+Appliances created from an OVA file can be converted to different formats, including raw, qcow2 and vmdk.
 
-![create_app](images/create_app.jpg)
+![create_files_appliance_from_sunstone](images/create_files_appliance_from_sunstone.png)
 
-You can also use the `appmarket` command to create a new appliance:
+You can also use the `appmarket` command to create a new appliance and providing the appliance in json:
 ```
 $ appmarket create appliance.json
 ```
 
-From AppMarket 2.0 creating an appliance can be also done through the AppMarket tab in Sunstone.
-
-> Creating an appliances from an OVA file is only supported through this method and only for admin users (defined by the role)
-
-
-![appmarket_create_from_sunstone](images/create_appliance_from_sunstone.png)
+> Creating an appliances from an OVA file is only supported for admin users (defined by the role)
 
 After sending the new appliance request, it will automatically included in the appliance list and all the users will be able to use it
 
 
 ### Manage Appliances (ADMIN)
 
-Appliances can be edited or deleted by the owner or an Admin user after creation, in the appliance view.
+Appliances can be edited or deleted by the owner or an Admin user after creation.
 
-![list_app](images/list_app.jpg)
+![appmarket_list_from_sunstone](images/list_appliance_from_sunstone.png)
 
 You can also use the ''appmarket'' command to list the existing appliances:
 ```
 $ appmarket list
 ```
-
-![manage_app](images/manage_app.jpg)
 
 You can also use the ''appmarket'' command to update or delete an appliance:
 ```
@@ -111,37 +64,90 @@ Appliances that were created from an OVA file can be converted to different form
 
 This operation can be performed through the AppMarket Sunstone tab using an admin account.
 
-### Importing an Appliance from Sunstone
+![convert_appliance_from_sunstone](images/convert_appliance_from_sunstone.png)
 
-Sunstone includes a new tab that allows OpenNebula users to interact with the AppMarket:
+### Importing an Appliance from Sunstone (ADMIN/USER)
 
-![appmarket_list](images/appmarket_list.png)
-
-If you want to import a new appliance into your local infrastructure, you just have to select an image and click the''import'' button. A new dialog box will prompt you to create a new image for each file and the OpenNebula template if it is included in the appliance.
+If you want to import a new appliance into your local infrastructure, you just have to select an appliance and click the''import'' button. A new dialog box will prompt you to create a new image for each file and the OpenNebula template if it is included in the appliance.
 
 ![appmarket_import](images/import_appliance_from_sunstone.png)
 
 After that you will be able to use that image in a template in order to create a new instance.
 
 
-Filtering AppMarket by user permissions
+
+Managing Users
+--------------
+
+Currently, the creation and management of AppMarket users is not available through the Sunstone GUI. You will have to use the CLI for this.
+
+You can use the `appmarket-user` command to list, update, delete, enable/disable users:
+
+    appmarket-user -u <admin_user> -p <admin_pass> list
+    appmarket-user -u <admin_user> -p <admin_pass> enable 939393029039
+
+
+To add a user to the AppMarket, first create a json file for the user **new_user.json**:
+
+    {
+        "username":     "new_user",
+        "password":     "new_pass",
+        "organization": "new_organization",
+        "first_name":   "new_fuser",
+        "last_name":    "new_luser",
+        "website":      "new_wuser",
+        "email":        "new_euser",
+        "status":       "enabled",
+        "role":         "user"
+    }
+
+You can  define the role for a given user. The available roles are:
+
+* admin, will be able to manage all the appliances and users
+* user, will be able to create new appliances and manage them
+* worker (required for the AppMarket Worker)
+
+The user can now be added to the AppMarket:
+
+    appmarket-user create -u <admin_user> -p <admin_pass> new_user.json
+
+The user that interacts with the AppMarket does not correspond with the OpenNebula user. This user account can be defined for **all the users of Sunstone** in the **/etc/one/sunstone-appmarket.conf**
+
+    # AppMarket username and password
+    # If no credentials are provided, an anonymous client will be used
+
+    :appmarket_username:
+    :appmarket_password:
+
+Or you can define a **different account for each user** adding the APPMARKET_USER and APPMARKET_PASSWORD in the template of the user in OpenNebula.
+
+If no account is provided in any of the two options, an annonymous account will be used and only the appliances in the community catalog (this is the catalog where the appliances are created by default) will be accessible. A user using an annonymous account will not be able to create new appliances, but she will be able to import existing ones into OpenNebula.
+
+
+
+Catalogs, Filtering AppMarket Appliances
 ----------------------------------------------
-You are able to filter visibility of Appliances to different Sunstone instances. While adding a new appliance specify catalog to which it will belong:
+You are able to filter visibility of Appliances to different Sunstone instances/users. While adding a new appliance specify catalog to which it will belong:
 
 ![manage_app](images/appmarket_appliance_catalog.png)
 
-If you already have a developer account in AppMarket you should set these credentials in sunstone-server.conf:
+You can assign different catalogs for each user on creation or updating an existing one. This way users will be able to see public appliances and appliances that belong to catalogs which user has been granted access.
 
-```
-# Marketplace username and password
-# If no credentials are provided, an anonymous client will be used
-#
-:marketplace_username: test
-:marketplace_password: password
-```
+    {
+        "username":     "new_user",
+        "password":     "new_pass",
+        "organization": "new_organization",
+        "first_name":   "new_fuser",
+        "last_name":    "new_luser",
+        "website":      "new_wuser",
+        "email":        "new_euser",
+        "status":       "enabled",
+        "role":         "user",
+        "catalogs":     [
+            "dev_appliances",
+            "gold_images"
+        ]
+    }
 
-Then in AppMarket 'Manage Users' tab add names of catalogs that user should have access to.
+To use different AppMarket account for each OpenNebula user or Sunstone instance, please check the previous section "Managing Users"
 
-![manage_app](images/appmarket_user_catalog.png)
-
-This way users will be able to see public appliances and appliances that belong to catalogs which user has been granted access.

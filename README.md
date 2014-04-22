@@ -12,17 +12,7 @@ The [OpenNebula Marketplace](http://marketplace.c12g.com/appliance) is an exampl
 
 In AppMarket 2.0 a new component is included, [AppMarket Worker](doc/appmarket_worker_installation_and_configuration.md). This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
 
-![market1306](doc/images/market1306.png)
-
-## Development
-
-To contribute bug patches or new features, you can use the github Pull Request model. It is assumed that code and documentation are contributed under the Apache License 2.0.
-
-More info:
-* [How to Contribute](http://opennebula.org/software:add-ons#how_to_contribute_to_an_existing_add-on)
-* Support: [OpenNebula user mailing list](http://opennebula.org/community:mailinglists)
-* Development: [OpenNebula developers mailing list](http://opennebula.org/community:mailinglists)
-* Issues Tracking: Github issues
+![market1306](doc/images/list_appliance_from_sunstone.png)
 
 ## Authors
 
@@ -32,10 +22,6 @@ More info:
 ## Acknowledgements
 
 The new features introduced in the AppMarket 2.0 were funded by [Produban](http://www.produban.com/) in the context of the Fund a Feature Program.
-
-## Compatibility
-
-This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
 
 ## Features
 
@@ -54,7 +40,9 @@ AppMarket 2.0
 
 Check the release notes in the following [link](doc/release_notes/appmarket-1.9.80.md)
 
-![appmarket_list](doc/images/appmarket_list.png)
+## Compatibility
+
+This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
 
 ## Installation & Configuration
 [More info](doc/installation_and_configuration.md)
@@ -64,3 +52,13 @@ Check the release notes in the following [link](doc/release_notes/appmarket-1.9.
 
 ## AppMarket Worker Installation and Configuration
 [More info](doc/appmarket_worker_installation_and_configuration.md)
+
+## Development
+
+To contribute bug patches or new features, you can use the github Pull Request model. It is assumed that code and documentation are contributed under the Apache License 2.0.
+
+More info:
+* [How to Contribute](http://opennebula.org/software:add-ons#how_to_contribute_to_an_existing_add-on)
+* Support: [OpenNebula user mailing list](http://opennebula.org/community:mailinglists)
+* Development: [OpenNebula developers mailing list](http://opennebula.org/community:mailinglists)
+* Issues Tracking: Github issues

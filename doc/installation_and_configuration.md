@@ -94,21 +94,6 @@ The first time the AppMarket server is started, the DB will be initialized and a
         website:        default
         email:          default
 
-### Mail
-
-A mail service can be configured to send a notification to the user when her account is activated. By default this service is disabled.
-
-    # Parameters that will be used to configure the delivery method of the
-    #   mail service. More information: http://rubygems.org/gems/mail
-    mail:
-        :address:              mail.default.com
-        :port:                 587
-        :domain:               default.com
-        :user_name:            default@default.com
-        :password:             password
-        :authentication:       plain
-        :enable_starttls_auto: false
-
 
 Start AppMarket
 ---------------
@@ -164,7 +149,7 @@ Also edit */etc/one/sunstone-views/admin.yaml* and */etc/one/sunstone-views/user
 
 And the corresponding sections for the tabs at the end of the file. These tabs are configurable and can be adapted depending on the kind of user that is interacting with the AppMarket. These are the two options that we propose as an example, one for the admin of the marketplace and another one for regular users.
 
-* */etc/one/sunstone-views/admin.yaml*
+### Admin View
 
     The admin will be able to:
 
@@ -176,7 +161,7 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
 
 ![appmarket_admin_view](images/appmarket_admin_view.png)
 
-    Yaml:
+    Yaml /etc/one/sunstone-views/admin.yaml:
 
         apptools-appmarket-dashboard:
             panel_tabs:
@@ -208,14 +193,14 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
                 AppMarket.convert: true
                 AppMarket.create_dialog: true
 
-* */etc/one/sunstone-views/user.yaml*
+### User View
 
     The user will be able to:
 
     * List the appliances in ready state
     * Import appliances into OpenNebula from Sunstone
 
-    Yaml:
+    Yaml /etc/one/sunstone-views/user.yaml:
 
             apptools-appmarket-dashboard:
                 panel_tabs:
@@ -247,7 +232,9 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
                     AppMarket.convert: false
                     AppMarket.create_dialog: false
 
-The user that interacts with the AppMarket does not correspond with the OpenNebula user, so you have to use an AppMarket account if you want to gain admin privileges or access custom appliance catalogs associated with a given user. This user account can be defined for all the users of Sunstone in the **/etc/one/sunstone-appmarket.conf**
+### Credentials
+
+The user that interacts with the AppMarket does not correspond with the OpenNebula user, so you have to use an AppMarket account if you want to gain admin privileges or access custom appliance catalogs associated with a given user. This user account can be defined for **all the users of Sunstone** in the **/etc/one/sunstone-appmarket.conf**
 
     # AppMarket username and password
     # If no credentials are provided, an anonymous client will be used
@@ -255,44 +242,20 @@ The user that interacts with the AppMarket does not correspond with the OpenNebu
     :appmarket_username:
     :appmarket_password:
 
-Or you can define a different account for each user adding the APPMARKET_USER and APPMARKET_PASSWORD in the template of the user. This can be achieved from the settings dialog of Sunstone or using the oneuser command from the CLI.
+Or you can define a **different account for each user** adding the APPMARKET_USER and APPMARKET_PASSWORD in the template of the user. This can be achieved from the settings dialog of Sunstone or using the oneuser command from the CLI.
 
 If no account is provided in any of the two options, an annonymous account will be used and only the appliances in the community catalog (this is the catalog where the appliances are created by default) will be accessible.
 
 It is recommended to use a special account for the oneadmin user with admin privileges in the AppMarket and another one for the rest of the users with restricted privileges, for example the annonymous account.
 
-In the **/etc/one/sunstone-appmarket.conf** you can also define the url of AppMarket
+### Endpoint
+
+In the **/etc/one/sunstone-appmarket.conf** you can define the url of AppMarket
 
     # AppMarket endpoint
     #
     :appmarket_url: http://localhost:6242
 
-Be sure to restart Sunstone for the changes to take effect.
+Note that the url is defined in sunstone-appmarket.conf and not in sunstone-server.conf. Be sure to restart Sunstone for the changes to take effect.
 
 For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://opennebula.org/documentation:rel4.2:suns_views)
-
-Customize AppMarket
--------------------
-
-You can customize the layout of your AppMarket deployment by editing the following files located in */usr/lib/one/ruby/oneapps/market/views/custom*
-
-* *banner.haml*
-* *footer.haml*
-* *logos.haml*
-* *terms_of_use.haml*
-* *tittle.haml*
-
-
-> These files support HAML syntax and Twitter Bootstrap css
-
-![market_custom_1](images/market_custom_1.jpg)
-
-![market_custom_2](images/market_custom_2.jpg)
-
-
-Example `logos.haml`:
-
-    %a.span4{'href' => "http://www.opennebula.org/"}
-      %img{'src' => "/img/opennebula_gray.png"}
-    %a.pull-right{'href' => "http://www.c12g.com/"}
-      %img{'src' => "/img/c12g.png"}
