@@ -19,13 +19,13 @@ The appliances can be created in two different ways:
 
 * Providing the URLs of the files and the OpenNebula template in the Appliance creation form. Note that the AppMarket contains metadata that defines the Virtual Appliance but not the appliance files themselves. The metadata includes the links to download the appliance files from third-party servers. The files will be only downloaded by OpenNebula and the AppMarket will not store any file.
 
-![create_ova_appliance_from_sunstone](images/create_ova_appliance_from_sunstone.png)
+![create_files_appliance_from_sunstone](images/create_files_appliance_from_sunstone.png)
 
 * Providing an URL of an OVA file. In this case you will need the AppMarket Worker component that will download, unpack and generate the files URLs and OpenNebula template, instead of specifying them manually as in the previous case. If there is no AppWarket Worker, appliances created providing an OVA url will stay in the init status, and will not be available to be donwloaded.
 
 Appliances created from an OVA file can be converted to different formats, including raw, qcow2 and vmdk.
 
-![create_files_appliance_from_sunstone](images/create_files_appliance_from_sunstone.png)
+![create_ova_appliance_from_sunstone](images/create_ova_appliance_from_sunstone.png)
 
 You can also use the `appmarket` command to create a new appliance and providing the appliance in json:
 ```
@@ -54,6 +54,15 @@ $ appmarket update 39393939393
 $ appmarket delete 39148302483
 ```
 
+### Importing an Appliance from Sunstone (ADMIN/USER)
+
+If you want to import a new appliance into your local infrastructure, you just have to select an appliance and click the''import'' button. A new dialog box will prompt you to create a new image for each file and the OpenNebula template if it is included in the appliance.
+
+![appmarket_import](images/import_appliance_from_sunstone.png)
+
+After that you will be able to use that image in a template in order to create a new instance.
+
+
 ### Convert an Appliance (ADMIN)
 
 Appliances that were created from an OVA file can be converted to different formats. Currently the supported formats are the following:
@@ -65,15 +74,6 @@ Appliances that were created from an OVA file can be converted to different form
 This operation can be performed through the AppMarket Sunstone tab using an admin account.
 
 ![convert_appliance_from_sunstone](images/convert_appliance_from_sunstone.png)
-
-### Importing an Appliance from Sunstone (ADMIN/USER)
-
-If you want to import a new appliance into your local infrastructure, you just have to select an appliance and click the''import'' button. A new dialog box will prompt you to create a new image for each file and the OpenNebula template if it is included in the appliance.
-
-![appmarket_import](images/import_appliance_from_sunstone.png)
-
-After that you will be able to use that image in a template in order to create a new instance.
-
 
 
 Managing Users
@@ -149,5 +149,5 @@ You can assign different catalogs for each user on creation or updating an exist
         ]
     }
 
-To use different AppMarket account for each OpenNebula user or Sunstone instance, please check the previous section "Managing Users"
+To use a different AppMarket account for each OpenNebula user or Sunstone instance, please check the previous section "Managing Users"
 
