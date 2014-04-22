@@ -29,7 +29,7 @@ If there is more than one worker the filesystem where the images are stored must
 Install AppMarket Worker
 ------------------------
 
-AppMarket packages can be downloaded from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.80) page in two formats:
+AppMarket packages can be downloaded from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.85/) page in two formats:
 
 * rpm package
 * deb package
@@ -172,8 +172,8 @@ Scalability
 
 The AppMarket Worker is designed to be horizontally scalable. Add more working nodes in the same way a single worker node is installed. The new nodes will also poll and distribute the jobs.
 
-Customize AppMarket
--------------------
+Customize
+---------
 
 There are 3 customizable scripts:
 
