@@ -22,10 +22,10 @@ AppMarket packages can be download from the [OpenNebula Downloads](http://downlo
 The rpm and deb packages can be installed with ''dpkg'' and ''rpm'' respectively:
 
     # Debian/Ubuntu
-    sudo dpkg -i appmarket_1.9.80.deb
+    sudo dpkg -i appmarket_1.9.85.deb
 
     # CentOS/openSUSE
-    sudo rpm -i appmarket_1.9.80.rom
+    sudo rpm -i appmarket_1.9.85.rpm
 
 
 If installing from source code you can run the following command:
