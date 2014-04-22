@@ -149,20 +149,62 @@ Also edit */etc/one/sunstone-views/admin.yaml* and */etc/one/sunstone-views/user
 
 And the corresponding sections for the tabs at the end of the file. These tabs are configurable and can be adapted depending on the kind of user that is interacting with the AppMarket. These are the two options that we propose as an example, one for the admin of the marketplace and another one for regular users.
 
-### Admin View
+### Admin View /etc/one/sunstone-views/admin.yaml
 
-    The admin will be able to:
+The admin will be able to:
 
-    * List all the appliances even those that are not in ready state
-    * Create appliances
-    * Convert appliances
-    * Delete appliances
-    * Import appliances into OpenNebula from Sunstone
+* List all the appliances even those that are not in ready state
+* Create appliances
+* Convert appliances
+* Delete appliances
+* Import appliances into OpenNebula from Sunstone
 
 ![appmarket_admin_view](images/appmarket_admin_view.png)
 
-    Yaml /etc/one/sunstone-views/admin.yaml:
+Yaml /etc/one/sunstone-views/admin.yaml:
 
+    ...
+    apptools-appmarket-dashboard:
+        panel_tabs:
+        table_columns:
+        actions:
+    apptools-appmarket-appliances:
+        panel_tabs:
+            appmarketplace_info_tab: true
+            appmarketplace_jobs_tab: true
+            appmarketplace_template_tab: true
+        panel_tabs_actions:
+            appmarketplace_jobs_tab:
+                Job.del: true
+        table_columns:
+            - 0         # Checkbox
+            #- 1         # ID
+            - 2         # Name
+            - 3         # Status
+            - 4         # Publisher
+            - 5         # Hypervisor
+            - 6         # Arch
+            - 7         # Format
+            #- 8         # Tags
+            - 9         # Created
+        actions:
+            AppMarket.refresh: true
+            AppMarket.import: true
+            AppMarket.delete: true
+            AppMarket.convert: true
+            AppMarket.create_dialog: true
+
+### User View /etc/one/sunstone-views/user.yaml
+
+The user will be able to:
+
+* List the appliances in ready state
+* Import appliances into OpenNebula from Sunstone
+
+
+Yaml /etc/one/sunstone-views/user.yaml:
+    
+        ...
         apptools-appmarket-dashboard:
             panel_tabs:
             table_columns:
@@ -170,16 +212,16 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
         apptools-appmarket-appliances:
             panel_tabs:
                 appmarketplace_info_tab: true
-                appmarketplace_jobs_tab: true
+                appmarketplace_jobs_tab: false
                 appmarketplace_template_tab: true
             panel_tabs_actions:
                 appmarketplace_jobs_tab:
-                    Job.del: true
+                    Job.del: false
             table_columns:
                 - 0         # Checkbox
                 #- 1         # ID
                 - 2         # Name
-                - 3         # Status
+                #- 3         # Status
                 - 4         # Publisher
                 - 5         # Hypervisor
                 - 6         # Arch
@@ -189,48 +231,11 @@ And the corresponding sections for the tabs at the end of the file. These tabs a
             actions:
                 AppMarket.refresh: true
                 AppMarket.import: true
-                AppMarket.delete: true
-                AppMarket.convert: true
-                AppMarket.create_dialog: true
-
-### User View
-
-    The user will be able to:
-
-    * List the appliances in ready state
-    * Import appliances into OpenNebula from Sunstone
-
-    Yaml /etc/one/sunstone-views/user.yaml:
-
-            apptools-appmarket-dashboard:
-                panel_tabs:
-                table_columns:
-                actions:
-            apptools-appmarket-appliances:
-                panel_tabs:
-                    appmarketplace_info_tab: true
-                    appmarketplace_jobs_tab: false
-                    appmarketplace_template_tab: true
-                panel_tabs_actions:
-                    appmarketplace_jobs_tab:
-                        Job.del: false
-                table_columns:
-                    - 0         # Checkbox
-                    #- 1         # ID
-                    - 2         # Name
-                    #- 3         # Status
-                    - 4         # Publisher
-                    - 5         # Hypervisor
-                    - 6         # Arch
-                    - 7         # Format
-                    #- 8         # Tags
-                    - 9         # Created
-                actions:
-                    AppMarket.refresh: true
-                    AppMarket.import: true
-                    AppMarket.delete: false
-                    AppMarket.convert: false
-                    AppMarket.create_dialog: false
+                AppMarket.delete: false
+                AppMarket.convert: false
+                AppMarket.create_dialog: false
+                    
+For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://opennebula.org/documentation:rel4.2:suns_views)
 
 ### Credentials
 
@@ -258,4 +263,3 @@ In the **/etc/one/sunstone-appmarket.conf** you can define the url of AppMarket
 
 Note that the url is defined in sunstone-appmarket.conf and not in sunstone-server.conf. Be sure to restart Sunstone for the changes to take effect.
 
-For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://opennebula.org/documentation:rel4.2:suns_views)
