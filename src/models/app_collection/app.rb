@@ -215,7 +215,7 @@ module AppMarket
                 },
                 'status' => {
                     :type => :null,
-                    :default => 'init',
+                    :default => 'ready',
                     :enum => AppMarket::Appliance::STATUS,
                 },
                 'files' => {
