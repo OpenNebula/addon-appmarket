@@ -43,7 +43,7 @@ require 'init'
 ##############################################################################
 ##############################################################################
 
-UPGRADE_SCRIPTS = [10980, 10985]
+UPGRADE_SCRIPTS = [10980, 10985, 10990]
 
 module Version10985
     VERSION = "1.9.85"
@@ -89,6 +89,13 @@ module Version10980
 
             AppMarket::DB['appliances'].update({'_id' => app['_id']}, app)
         }
+    end
+end
+
+module Version10990
+    VERSION = "1.9.90"
+    VERSION_CODE = 10990
+    def self.upgrade
     end
 end
 

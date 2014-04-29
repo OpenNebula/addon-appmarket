@@ -14,7 +14,7 @@ If you want to create appliances from an OVA file or convert the format of the a
 Install AppMarket
 -----------------
 
-AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.85/) page in two formats:
+AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.90/) page in two formats:
 
 * rpm package
 * deb package
@@ -22,10 +22,10 @@ AppMarket packages can be download from the [OpenNebula Downloads](http://downlo
 The rpm and deb packages can be installed with ''dpkg'' and ''rpm'' respectively:
 
     # Debian/Ubuntu
-    sudo dpkg -i appmarket_1.9.85.deb
+    sudo dpkg -i appmarket_1.9.90.deb
 
     # CentOS/openSUSE
-    sudo rpm -i appmarket_1.9.85.rpm
+    sudo rpm -i appmarket_1.9.90.rpm
 
 
 If installing from source code you can run the following command:
@@ -203,7 +203,7 @@ The user will be able to:
 
 
 Yaml /etc/one/sunstone-views/user.yaml:
-    
+
         ...
         apptools-appmarket-dashboard:
             panel_tabs:
@@ -234,7 +234,7 @@ Yaml /etc/one/sunstone-views/user.yaml:
                 AppMarket.delete: false
                 AppMarket.convert: false
                 AppMarket.create_dialog: false
-                    
+
 For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://opennebula.org/documentation:rel4.2:suns_views)
 
 ### Credentials
