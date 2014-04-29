@@ -414,10 +414,14 @@ get '/appliance/:id' do
 
     @app = app.to_hash
 
+    request_path   = request.env['REQUEST_PATH']
+    request_path ||= request.env['REQUEST_URI']
+    request_path ||= ''
+
     appliance_url = (request.env['rack.url_scheme']||'') +
                     '://' +
                     (request.env['HTTP_HOST']||'') +
-                    (request.env['REQUEST_PATH']||'')
+                    request_path
 
     @app['links'] = {
         'download' => {
