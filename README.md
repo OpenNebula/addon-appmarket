@@ -31,14 +31,24 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 * Provide appliances from a catalog and portal
 * Tight integration with OpenNebula
 
-AppMarket 2.0
-
 * Appliances can define multiple files and an OpenNebula template
 * Appliances can be created from an OVA file
 * Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
 * Appliances can be grouped in catalogs
 
-Check the release notes in the following [link](doc/release_notes/appmarket-1.9.80.md)
+## Releases
+
+### AppMarket 1.9.80 Beta
+
+[Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md)
+
+### AppMarket 1.9.85 RC
+
+[Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md)
+
+### AppMarket 1.9.90 RC 2
+
+[Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md)
 
 ## Compatibility
 
