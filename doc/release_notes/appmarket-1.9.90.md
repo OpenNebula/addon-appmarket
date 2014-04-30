@@ -16,6 +16,7 @@ In the following list you can check the highlights of AppMarket 2.0 RC 2:
 * Appliances registered from the AppMarket interface are now by default in ready state, making them usable immediately.
 
 These new features will be only available interacting with AppMarket from an OpenNebula 4.6 deployment.
+
 Acknowledgements
 ----------------
 
