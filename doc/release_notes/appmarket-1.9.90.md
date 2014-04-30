@@ -5,8 +5,8 @@ April 29th, 2014. The OpenNebula team is pleased to announce release candidate o
 
 In addition to the features included in the [previous beta release](appmarket-1.9.85.md), this version fixes minor bugs reported by the community.
 
-What's New in AppMarket 2.0 RC
-------------------------------
+What's New in AppMarket 2.0 RC 2
+--------------------------------
 
 In the following list you can check the highlights of AppMarket 2.0 RC 2:
 
