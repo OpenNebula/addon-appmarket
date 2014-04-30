@@ -19,17 +19,6 @@ In the following list you can check the highlights of AppMarket 2.0 RC:
 
 * Improve the OVF parser to support VirtualBox OVAs
 
-### Issues
-
-* [#16](/../../../../issues/16) Delete checkbox does not work when converting appliances
-* [#17](/../../../../issues/17) Upgrade Sunstone tab to the new CSS style and zurb version
-* [#19](/../../../../issues/19) appmarket 1.9.80 package not working on debian 7
-* [#20](/../../../../issues/20) appmarket update: wrong number of arguments
-* [#21](/../../../../issues/21) updating user through web interface fails: can't convert String into Integer
-* [#22](/../../../../issues/22) Improve OVF Parser to support VirtualBox OVAs
-* [#23](/../../../../issues/23) Debugging information from the drivers is very hard to find
-* [#24](/../../../../issues/24) Spaces in the OVA name breaks the Appconverter Worker
-
 Acknowledgements
 ----------------
 
