@@ -30,7 +30,6 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 * Distribute internally developed virtual appliances
 * Provide appliances from a catalog and portal
 * Tight integration with OpenNebula
-
 * Appliances can define multiple files and an OpenNebula template
 * Appliances can be created from an OVA file
 * Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
@@ -40,13 +39,19 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 
 ### AppMarket 1.9.80 Beta
 
+This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API and a new AppMarket interface via Sunstone.
+
 [Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md)
 
 ### AppMarket 1.9.85 RC
 
+In addition to the features included in the previous beta release, this version features a new [simplified import dialog](doc/usage.md) and fixes minor bugs reported by the community. Also, [AppMarket Worker](doc/usage.md) has been extended to support other OVF versions.
+
 [Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md)
 
 ### AppMarket 1.9.90 RC 2
+
+In addition to the features included in the previous beta release, this version fixes minor bugs reported by the community.
 
 [Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md)
 
