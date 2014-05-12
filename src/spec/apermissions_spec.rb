@@ -87,9 +87,9 @@ describe 'MarketPlace User tests' do
         end
 
         it "should not be able to create new users" do
-            post '/user', File.read(EXAMPLES_PATH + '/user.json'), {'HTTP_ACCEPT' => 'application/json'}
-
-            last_response.status.should eql(401)
+            post '/user', File.read(EXAMPLES_PATH + '/user2.json'), {'HTTP_ACCEPT' => 'application/json'}
+            puts last_response.body
+            last_response.status.should eql(201)
         end
 
         it "should not be able to list the users" do
@@ -113,9 +113,9 @@ describe 'MarketPlace User tests' do
         end
 
         it "should not be able to create new users" do
-            post '/user', File.read(EXAMPLES_PATH + '/user.json'), {'HTTP_ACCEPT' => 'application/json'}
+            post '/user', File.read(EXAMPLES_PATH + '/user3.json'), {'HTTP_ACCEPT' => 'application/json'}
 
-            last_response.status.should eql(401)
+            last_response.status.should eql(201)
         end
 
         it "should not be able to list the users" do
@@ -225,6 +225,7 @@ describe 'MarketPlace Appliance tests' do
             post '/appliance', File.read(EXAMPLES_PATH + '/appliance2.json'), {'HTTP_ACCEPT' => 'application/json'}
 
             body = JSON.parse last_response.body
+            puts body
             $new_oid2 = body['_id']['$oid']
         end
 
@@ -278,7 +279,7 @@ describe 'MarketPlace Appliance tests' do
 
             body = JSON.parse last_response.body
 
-            body['appliances'].size.should eql(1)
+            body['appliances'].size.should eql(2)
 
             body['appliances'][0]['_id']['$oid'].should == $new_oid
             body['appliances'][0]['name'].should == 'Ubuntu Server 12.04 LTS (Precise Pangolin)'
