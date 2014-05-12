@@ -29,7 +29,7 @@ If there is more than one worker the filesystem where the images are stored must
 Install AppMarket Worker
 ------------------------
 
-AppMarket packages can be downloaded from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.90/) page in two formats:
+AppMarket packages can be downloaded from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.0/) page in two formats:
 
 * rpm package
 * deb package
@@ -37,10 +37,10 @@ AppMarket packages can be downloaded from the [OpenNebula Downloads](http://down
 The rpm and deb packages can be installed with ''dpkg'' and ''rpm'' respectively:
 
     # Debian/Ubuntu
-    sudo dpkg -i appmarket-worker_1.9.90.deb
+    sudo dpkg -i appmarket-worker_*.deb
 
     # CentOS/openSUSE
-    sudo rpm -i appmarket-worker_1.9.90.rpm
+    sudo rpm -i appmarket-worker_*.rpm
 
 To install from source code you can run the following command:
 

@@ -35,7 +35,13 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 * Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
 * Appliances can be grouped in catalogs
 
-## Releases
+## Last Stable Release
+
+### AppMarket 2.0.0
+
+This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new [simplified import dialog](doc/usage.md), a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
+
+## List of Releases
 
 ### AppMarket 1.9.80 Beta
 
@@ -54,6 +60,12 @@ In addition to the features included in the previous beta release, this version 
 In addition to the features included in the previous beta release, this version fixes minor bugs reported by the community.
 
 [Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md)
+
+### AppMarket 2.0.0
+
+In addition to the features included in the previous releases, this version fixes minor bugs reported by the community.
+
+[Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)
 
 ## Compatibility
 

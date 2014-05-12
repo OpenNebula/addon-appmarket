@@ -14,7 +14,7 @@ If you want to create appliances from an OVA file or convert the format of the a
 Install AppMarket
 -----------------
 
-AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-1.9.90/) page in two formats:
+AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.0/) page in two formats:
 
 * rpm package
 * deb package
@@ -22,10 +22,10 @@ AppMarket packages can be download from the [OpenNebula Downloads](http://downlo
 The rpm and deb packages can be installed with ''dpkg'' and ''rpm'' respectively:
 
     # Debian/Ubuntu
-    sudo dpkg -i appmarket_1.9.90.deb
+    sudo dpkg -i appmarket_*.deb
 
     # CentOS/openSUSE
-    sudo rpm -i appmarket_1.9.90.rpm
+    sudo rpm -i appmarket_*.rpm
 
 
 If installing from source code you can run the following command:
