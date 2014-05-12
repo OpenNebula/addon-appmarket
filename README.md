@@ -50,12 +50,12 @@ This release extends the AppMarket functionality by adding a new set of features
 
 ### All Releases
 
-|      Version      |        Date        |                         Release Notes                         |
-| ----------------- | ------------------ | ------------------------------------------------------------- |
-| 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)   |
-| 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
-| 1.9.85 (2.0 RC)   | April 22nd, 2014   | [Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md) |
-| 1.9.80 (2.0 Beta) | February 3rd, 2014 | [Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md) |
+|      Version      |        Date        |                               Release Notes                               |
+| ----------------- | ------------------ | ------------------------------------------------------------------------- |
+| 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)               |
+| 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Incremental Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
+| 1.9.85 (2.0 RC)   | April 22nd, 2014   | [Incremental Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md) |
+| 1.9.80 (2.0 Beta) | February 3rd, 2014 | [Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md)             |
 
 ## Compatibility
 
