@@ -34,7 +34,6 @@ describe 'empty sets and non existing resources' do
         get "/appliance", {}, {'HTTP_ACCEPT' => 'application/json'}
 
         body = JSON.parse last_response.body
-        puts body
         body['appliances'].size.should eql(0)
     end
 
@@ -281,7 +280,6 @@ describe 'getting the associated jobs to be cancelled of a worker and callback c
         basic_authorize('worker','worker')
         post "/worker/firstworker/job/#{$upload_job_id}/cancel"
         body =  last_response.status
-        puts body
 
         get '/worker/firstworker/job?status=cancelling'
 

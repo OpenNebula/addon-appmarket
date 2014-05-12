@@ -88,7 +88,6 @@ describe 'MarketPlace User tests' do
 
         it "should not be able to create new users" do
             post '/user', File.read(EXAMPLES_PATH + '/user2.json'), {'HTTP_ACCEPT' => 'application/json'}
-            puts last_response.body
             last_response.status.should eql(201)
         end
 
@@ -225,7 +224,6 @@ describe 'MarketPlace Appliance tests' do
             post '/appliance', File.read(EXAMPLES_PATH + '/appliance2.json'), {'HTTP_ACCEPT' => 'application/json'}
 
             body = JSON.parse last_response.body
-            puts body
             $new_oid2 = body['_id']['$oid']
         end
 
