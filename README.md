@@ -35,50 +35,31 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 * Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
 * Appliances can be grouped in catalogs
 
-## Last Stable Release
+## Releases
 
 ### AppMarket 2.0.0
 
-This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new [simplified import dialog](doc/usage.md), a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
+AppMarket 2.0.0 is the latest stable release.
 
-## List of Releases
+This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new simplified import dialog, a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
 
-### AppMarket 1.9.80 Beta
+* [Installation & Configuration](doc/installation_and_configuration.md)
+* [Usage](doc/usage.md)
+* [AppMarket Worker Installation and Configuration](doc/appmarket_worker_installation_and_configuration.md)
+* [Release Notes](doc/release_notes/appmarket-2.0.0.md)
 
-This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API and a new AppMarket interface via Sunstone.
+### All Releases
 
-[Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md)
-
-### AppMarket 1.9.85 RC
-
-In addition to the features included in the previous beta release, this version features a new [simplified import dialog](doc/usage.md) and fixes minor bugs reported by the community. Also, [AppMarket Worker](doc/usage.md) has been extended to support other OVF versions.
-
-[Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md)
-
-### AppMarket 1.9.90 RC 2
-
-In addition to the features included in the previous beta release, this version fixes minor bugs reported by the community.
-
-[Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md)
-
-### AppMarket 2.0.0
-
-In addition to the features included in the previous releases, this version fixes minor bugs reported by the community.
-
-[Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)
+|      Version      |        Date        |                         Release Notes                         |
+| ----------------- | ------------------ | ------------------------------------------------------------- |
+| 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)   |
+| 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
+| 1.9.85 (2.0 RC)   | April 22nd, 2014   | [Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md) |
+| 1.9.80 (2.0 Beta) | February 3rd, 2014 | [Release Notes 1.9.80](doc/release_notes/appmarket-1.9.80.md) |
 
 ## Compatibility
 
 This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
-
-## Installation & Configuration
-[More info](doc/installation_and_configuration.md)
-
-## Usage
-[More info](doc/usage.md)
-
-## AppMarket Worker Installation and Configuration
-[More info](doc/appmarket_worker_installation_and_configuration.md)
 
 ## Development
 
