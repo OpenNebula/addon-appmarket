@@ -1,7 +1,7 @@
 module AppMarket
-    VERSION = "1.9.90"
+    VERSION = "2.0.0"
 
-    VERSION_CODE = 10990
+    VERSION_CODE = 200000
 
     VERSION_TEXT = <<EOT
 AppMarket #{AppMarket::VERSION}
