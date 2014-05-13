@@ -55,6 +55,58 @@ The following commands are necessary in any of the previous cases to install the
         gem 'bcrypt-ruby'
         gem 'opennebula-cli'
 
+Upgrade AppMarket
+-----------------
+
+This section is a quick go-to reference for upgrading the AppMarket version. Note that it includes commands relative to AppMarket Worker upgrade. Do **not** run the AppMarket Worker commands if you aren't upgrading the Worker node.
+
+Download the packages (details in previous section)
+
+Stop the Services
+
+    $ appmarket-server stop
+    $ appconverter-worker stop
+
+Verify that the services stopped coorectly:
+
+    $ ps -ef | grep appmarket-server
+    $ ps -ef | grep appconverter-worker
+
+Backup /etc directory
+
+    $ tar cvzf etc-one.tar.gz /etc/one
+    $ cp /etc/one/sunstone-appmarket.conf  sunstone-appmarket.conf.pre-upgrade
+    $ cp /etc/one/appconverter-worker.conf appconverter-worker.conf.pre-upgrade
+
+Backup Mongo Database
+
+    $ mongodump market
+
+Install Packages
+
+    $ sudo dpkg -i appmarket_*.rpm
+
+Install Gems
+
+    $ cd /usr/lib/one/ruby/oneapps/market; bundle install
+    $ cd /usr/lib/one/ruby/appconverter/; bundle install
+
+Review and upgrade configuration files
+
+    $ diff -u sunstone-appmarket.conf.pre-upgrade /etc/one/sunstone-appmarket.conf
+    $ sudo vi /etc/one/sunstone-appmarket.conf
+    $ diff -u appconverter-worker.conf.pre-upgrade /etc/one/appconverter-worker.conf
+    $ sudo vi /etc/one/appconverter-worker.conf
+
+Database Upgrade
+
+    $ appmarket-db
+
+Start the Services
+
+    $ appmarket-server start
+    $ appconverter-worker start
+
 Configure AppMarket
 -------------------
 
