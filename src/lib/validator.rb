@@ -395,7 +395,15 @@ class Validator
         when :uri
             begin
                 require 'uri'
-                uri = URI.parse(body_value)
+
+                # URI.parse fails with chars like '[' due to a Ruby error.
+                # This snippet manually translates all these unsafe chars to
+                # the URI hex representation.
+                safe_body_value = body_value.gsub(/[\[\]@~]/){|c|
+                    "%" + c.unpack("H*").first.upcase
+                }
+
+                URI.parse(safe_body_value)
             rescue
                 raise ParseException, "KEY: '#{schema_key}' must be a valid URL;"\
                     " SCHEMA: #{schema_string} #{$!.message}"
