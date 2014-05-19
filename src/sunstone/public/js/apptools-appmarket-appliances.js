@@ -1281,7 +1281,7 @@ function updateAppMarketInfo(request,app){
           $('.check_item',this).trigger('click');
       } else {
           var context = $(this).parents(".tab");
-          popDialogLoading();
+          popDialogLoading($("#apptools-appmarket-appliances"));
           Sunstone.runAction("AppMarket.show",id);
           $(".resource-id", context).html(id);
           $('.top_button, .list_button', context).attr('disabled', false);
