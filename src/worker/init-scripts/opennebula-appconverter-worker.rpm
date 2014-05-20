@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+#    /etc/rc.d/init.d/opennebula-appconverter-worker
+#
+# Starts the AppMarket Worker
+#
+# chkconfig: 345 66 34
+# description: Starts the AppMarket Worker
+# processname: opennebula-appconverter-worker
+
+### BEGIN INIT INFO
+# Provides: opennebula-appconverter-worker
+# Required-Start: $local_fs $remote_fs oned
+# Required-Stop: $local_fs $remote_fs oned
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop opennebula-appconverter-worker
+# Description: start and stop opennebula-appconverter-worker
+### END INIT INFO
+
+prog="opennebula-appconverter-worker"
+
+APPMARKET_WORKER_BIN=/usr/bin/appconverter-worker
+LOCKFILE=/var/lock/subsys/${prog}
+PID_FILE=/var/run/${prog}.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+
+RETVAL=0
+
+check() {
+    # Check that we're a privileged user
+    [ `id -u` = 0 ] || exit 4
+
+    # Check if appconverter-worker is executable
+    test -x $APPMARKET_WORKER_BIN || exit 5
+}
+
+start() {
+    check
+
+    echo -n $"Starting AppMarket Worker daemon: "
+    daemon --user oneadmin $APPMARKET_WORKER_BIN start
+    RETVAL=$?
+
+	echo
+    [ $RETVAL -eq 0 ] && {
+		touch $LOCKFILE
+		echo $(ps -ef|grep a[p]pconverter-worker.rb | awk '{print $2}') > $PID_FILE
+	}
+
+    return $RETVAL
+}
+
+stop() {
+    check
+
+    echo -n $"Stopping AppMarket Worker daemon: "
+    daemon --user oneadmin $APPMARKET_WORKER_BIN stop
+    RETVAL=$?
+
+	[ $RETVAL -eq 0 ] && success || failure
+	echo
+    [ $RETVAL -eq 0 ] && rm -f $LOCKFILE $PID_FILE
+
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    restart
+    ;;
+status)
+    status $prog
+    RETVAL=$?
+    ;;
+*)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    RETVAL=2
+esac
+
+exit $RETVAL

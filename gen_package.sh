@@ -29,9 +29,11 @@ URL=${URL:-https://github.com/OpenNebula/addon-appmarket}
 
 if [ "$1" = "worker" ]; then
     PACKAGE_NAME=${PACKAGE_NAME:-appmarket-worker}
+    INIT_SCRIPT=opennebula-appconverter-worker
     cd src/worker
 else
     PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
+    INIT_SCRIPT=opennebula-${PACKAGE_NAME}
 fi
 
 SCRIPTS_DIR=${SCRIPTS_DIR:-PWD}
@@ -49,6 +51,9 @@ rm -rf $DESTDIR
 mkdir $DESTDIR
 
 ./install.sh $FLAGS
+
+mkdir -p $DESTDIR/etc/init.d
+cp init-scripts/${INIT_SCRIPT}.${PACKAGE_TYPE} $DESTDIR/etc/init.d/${INIT_SCRIPT}
 
 cd tmp
 
