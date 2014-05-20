@@ -16,7 +16,7 @@
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
 
-VERSION=${VERSION:-2.0.0}
+VERSION=${VERSION:-2.0.1}
 MAINTAINER=${MAINTAINER:-C12G Labs <support@c12g.com>}
 LICENSE=${LICENSE:-Apache}
 VENDOR=${VENDOR:-C12G Labs}
