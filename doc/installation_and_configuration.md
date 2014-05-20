@@ -14,6 +14,8 @@ If you want to create appliances from an OVA file or convert the format of the a
 Install AppMarket
 -----------------
 
+The AppMarket Worker requires the OpenNebula ''opennebula-common'' package. This packages installs the ''oneadmin'' user. Please [install the opennebula-common package](http://docs.opennebula.org/4.6/design_and_installation/building_your_cloud/ignc.html) before moving on.
+
 AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.1/) page in two formats:
 
 * rpm package
