@@ -14,7 +14,7 @@ If you want to create appliances from an OVA file or convert the format of the a
 Install AppMarket
 -----------------
 
-AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.0/) page in two formats:
+AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.1/) page in two formats:
 
 * rpm package
 * deb package

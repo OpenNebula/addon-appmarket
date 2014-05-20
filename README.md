@@ -37,21 +37,22 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 
 ## Releases
 
-### AppMarket 2.0.0
+### AppMarket 2.0.1
 
-AppMarket 2.0.0 is the latest stable release.
+AppMarket 2.0.1 is the latest stable release. This is a maintenance release that solves issues reported by the community.
 
-This release extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new simplified import dialog, a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
+The AppMarket 2.0.x series extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new simplified import dialog, a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
 
 * [Installation & Configuration](doc/installation_and_configuration.md)
 * [Usage](doc/usage.md)
 * [AppMarket Worker Installation and Configuration](doc/appmarket_worker_installation_and_configuration.md)
-* [Release Notes](doc/release_notes/appmarket-2.0.0.md)
+* [Release Notes](doc/release_notes/appmarket-2.0.1.md)
 
 ### All Releases
 
 |      Version      |        Date        |                               Release Notes                               |
 | ----------------- | ------------------ | ------------------------------------------------------------------------- |
+| 2.0.1             | May 21st, 2014     | [Release Notes 2.0.1](doc/release_notes/appmarket-2.0.1.md)               |
 | 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)               |
 | 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Incremental Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
 | 1.9.85 (2.0 RC)   | April 22nd, 2014   | [Incremental Release Notes 1.9.85](doc/release_notes/appmarket-1.9.85.md) |
