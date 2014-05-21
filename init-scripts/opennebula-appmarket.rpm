@@ -4,7 +4,7 @@
 #
 # Starts the AppMarket Server
 #
-# chkconfig: 345 66 34
+# chkconfig: 345 99 34
 # description: Starts the OpenNebula daemon
 # processname: opennebula-appmarket
 
@@ -26,7 +26,6 @@ PID_FILE=/var/run/${prog}.pid
 
 # Source function library.
 . /etc/rc.d/init.d/functions
-
 
 RETVAL=0
 

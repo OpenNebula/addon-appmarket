@@ -4,7 +4,7 @@
 #
 # Starts the AppMarket Worker
 #
-# chkconfig: 345 66 34
+# chkconfig: 345 99 34
 # description: Starts the AppMarket Worker
 # processname: opennebula-appconverter-worker
 
