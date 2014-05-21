@@ -26,8 +26,9 @@ OpenNebula Apps is a group of tools for users and administrators of OpenNebula t
 DESCRIPTION=${DESCRIPTION:-$DESC}
 PACKAGE_TYPE=${PACKAGE_TYPE:-deb}
 URL=${URL:-https://github.com/OpenNebula/addon-appmarket}
+COMPONENT="${1-appmarket}"
 
-if [ "$1" = "worker" ]; then
+if [ "$COMPONENT" = "worker" ]; then
     PACKAGE_NAME=${PACKAGE_NAME:-appmarket-worker}
     INIT_SCRIPT=opennebula-appconverter-worker
     cd src/worker
@@ -35,6 +36,25 @@ else
     PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
     INIT_SCRIPT=opennebula-${PACKAGE_NAME}
 fi
+
+DEPS="opennebula-common"
+RPM_DEPS="$DEPS ruby rubygems ruby-devel gcc libxml2-devel libxslt-devel"
+DEB_DEPS="$DEPS ruby ruby-dev make"
+
+case "${COMPONENT}-${PACKAGE_TYPE}" in
+"appmarket-rpm")
+    DEPS="$RPM_DEPS"
+    ;;
+"worker-rpm")
+    DEPS="$RPM_DEPS qemu-img"
+    ;;
+"appmarket-deb")
+    DEPS="$DEB_DEPS"
+    ;;
+"worker-deb")
+    DEPS="$DEB_DEPS qemu-utils"
+    ;;
+esac
 
 SCRIPTS_DIR=${SCRIPTS_DIR:-PWD}
 
@@ -60,7 +80,7 @@ cd tmp
 fpm -n "$PACKAGE_NAME" -t "$PACKAGE_TYPE" -s dir --vendor "$VENDOR" \
     --license "$LICENSE" --description "$DESCRIPTION" --url "$URL" \
     -m "$MAINTAINER" -v "$VERSION" \
-    -d opennebula-common \
+    -d "$DEPS" \
     -a all -p $SCRIPTS_DIR/$NAME *
 
 echo $NAME

@@ -18,6 +18,7 @@ Requirements
 
 The AppMarket worker requires:
 
+* The ''opennebula-common'' package.
 * A reachable AppMarket
 * Ruby and RubyGems installed.
 * A web server to expose the uploaded/converted files via http

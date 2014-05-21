@@ -8,6 +8,7 @@ AppMarket requires:
 
 * [MongoDB](http://www.mongodb.org/display/DOCS/Quickstart)
 * ruby and rubygems installed.
+* ''opennebula-common'' package.
 
 If you want to create appliances from an OVA file or convert the format of the appliance you will need to configure at least one AppMarket Worker.
 
