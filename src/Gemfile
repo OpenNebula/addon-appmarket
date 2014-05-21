@@ -16,6 +16,12 @@
 
 source "http://rubygems.org"
 
+if RUBY_VERSION < "1.9"
+    gem 'nokogiri', '<1.6.0'
+else
+    gem 'nokogiri'
+end
+
 gem 'json'
 gem 'haml'
 gem 'sinatra'
