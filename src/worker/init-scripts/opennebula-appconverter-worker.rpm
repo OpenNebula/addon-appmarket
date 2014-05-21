@@ -41,6 +41,9 @@ check() {
 start() {
     check
 
+    mkdir -p /var/{lock,run,log}/one
+    chown oneadmin /var/{lock,run,log}/one
+
     echo -n $"Starting AppMarket Worker daemon: "
     daemon --user oneadmin $APPMARKET_WORKER_BIN start
     RETVAL=$?
