@@ -107,8 +107,8 @@ Database Upgrade
 
 Start the Services
 
-    $ appmarket-server start
-    $ appconverter-worker start
+    # /etc/init.d/opennebula-appmarket start
+    # /etc/init.d/opennebula-appconverter-worker start
 
 Configure AppMarket
 -------------------
@@ -153,10 +153,9 @@ The first time the AppMarket server is started, the DB will be initialized and a
 Start AppMarket
 ---------------
 
-To start and stop the server, use the ''appmarket-server start/stop'' command:
+To start and stop the server, use the ''opennebula-appmarket-server'' command:
 
-    appmarket-server start
-    # appmarket-server started
+    # /etc/init.d/opennebula-appmarket start
 
 > By default, the server will only listen to requests coming from localhost. Change the *host* attribute in */etc/one/appmarket-server.conf* to your server public IP, or 0.0.0.0 so appmarket will listen on any interface.
 

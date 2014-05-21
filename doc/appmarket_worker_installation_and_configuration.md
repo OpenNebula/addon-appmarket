@@ -160,10 +160,9 @@ However it is recommended to use one of the classical web servers mentioned abov
 Start the Worker
 ----------------
 
-To start and stop the server, use the ''appconverter-worker start/stop'' command:
+To start and stop the server, use the ''opennebula-appconverter-worker'' init script command:
 
-    appconverter-worker start
-    # appconverter-worker started
+    # /etc/init.d/opennebula-appconverter-worker start
 
 Inside */var/log/one/* you will find new log files for the server.
 
