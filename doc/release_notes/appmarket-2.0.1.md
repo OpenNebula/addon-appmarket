@@ -1,7 +1,7 @@
 AppMarket 2.0.1
 ===============
 
-May 21st, 2014. The OpenNebula team is pleased to announce the release maintenance of AppMarket 2.0.1. This is a maintenance release that solves issues reported by the community.
+May 22nd, 2014. The OpenNebula team is pleased to announce the release maintenance of AppMarket 2.0.1. This is a maintenance release that solves issues reported by the community.
 
 This release is part of the AppMarket 2.0.x series, which extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new [simplified import dialog](../usage.md), a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
 
