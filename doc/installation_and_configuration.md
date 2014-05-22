@@ -217,36 +217,36 @@ The admin will be able to:
 
 Yaml /etc/one/sunstone-views/admin.yaml:
 
-    ...
-    apptools-appmarket-dashboard:
-        panel_tabs:
-        table_columns:
-        actions:
-    apptools-appmarket-appliances:
-        panel_tabs:
-            appmarketplace_info_tab: true
-            appmarketplace_jobs_tab: true
-            appmarketplace_template_tab: true
-        panel_tabs_actions:
-            appmarketplace_jobs_tab:
-                Job.del: true
-        table_columns:
-            - 0         # Checkbox
-            #- 1         # ID
-            - 2         # Name
-            - 3         # Status
-            - 4         # Publisher
-            - 5         # Hypervisor
-            - 6         # Arch
-            - 7         # Format
-            #- 8         # Tags
-            - 9         # Created
-        actions:
-            AppMarket.refresh: true
-            AppMarket.import: true
-            AppMarket.delete: true
-            AppMarket.convert: true
-            AppMarket.create_dialog: true
+        # BOTTOM OF FILE
+        apptools-appmarket-dashboard:
+            panel_tabs:
+            table_columns:
+            actions:
+        apptools-appmarket-appliances:
+            panel_tabs:
+                appmarketplace_info_tab: true
+                appmarketplace_jobs_tab: true
+                appmarketplace_template_tab: true
+            panel_tabs_actions:
+                appmarketplace_jobs_tab:
+                    Job.del: true
+            table_columns:
+                - 0         # Checkbox
+                #- 1         # ID
+                - 2         # Name
+                - 3         # Status
+                - 4         # Publisher
+                - 5         # Hypervisor
+                - 6         # Arch
+                - 7         # Format
+                #- 8         # Tags
+                - 9         # Created
+            actions:
+                AppMarket.refresh: true
+                AppMarket.import: true
+                AppMarket.delete: true
+                AppMarket.convert: true
+                AppMarket.create_dialog: true
 
 ### User View /etc/one/sunstone-views/user.yaml
 
@@ -258,7 +258,7 @@ The user will be able to:
 
 Yaml /etc/one/sunstone-views/user.yaml:
 
-        ...
+        # BOTTOM OF FILE
         apptools-appmarket-dashboard:
             panel_tabs:
             table_columns:
