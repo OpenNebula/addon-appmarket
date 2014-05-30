@@ -19,6 +19,10 @@ The appliances can be created in two different ways:
 
 * Providing the URLs of the files and the OpenNebula template in the Appliance creation form. Note that the AppMarket contains metadata that defines the Virtual Appliance but not the appliance files themselves. The metadata includes the links to download the appliance files from third-party servers. The files will be only downloaded by OpenNebula and the AppMarket will not store any file.
 
+DRIVER and DEV_PREFIX attributes can be defined in the file metadata and will be included in the imported image.
+
+If an OpenNebula template is provided it should be defined using JSON syntax. This template should not include the DISK definition, since it will be included by OpenNebula when the appliance is imported using the name of the image.
+
 ![create_files_appliance_from_sunstone](images/create_files_appliance_from_sunstone.png)
 
 * Providing an URL of an OVA file. In this case you will need the AppMarket Worker component that will download, unpack and generate the files URLs and OpenNebula template, instead of specifying them manually as in the previous case. If there is no AppWarket Worker, appliances created providing an OVA url will stay in the init status, and will not be available to be donwloaded.
