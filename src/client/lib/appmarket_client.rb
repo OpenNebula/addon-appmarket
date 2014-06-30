@@ -172,6 +172,15 @@ module AppMarket
                 req.basic_auth @username, @password
             end
 
+            if req.body
+                begin
+                    body = JSON.parse(req.body)
+                    body.delete("csrftoken")
+                    req.body = body.to_json
+                rescue
+                end
+            end
+
             req['User-Agent'] = @user_agent
 
             res = AppMarket::Client::http_start(@uri, @timeout) do |http|
