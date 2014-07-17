@@ -100,6 +100,8 @@ Review and upgrade configuration files
     $ sudo vi /etc/one/sunstone-appmarket.conf
     $ diff -u appconverter-worker.conf.pre-upgrade /etc/one/appconverter-worker.conf
     $ sudo vi /etc/one/appconverter-worker.conf
+    $ diff -u appmarket-server.conf.pre-upgrade /etc/one/appmarket-server.conf
+    $ sudo vi /etc/one/appmarket-server.conf
 
 Database Upgrade
 
