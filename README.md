@@ -60,7 +60,7 @@ The AppMarket 2.0.x series extends the AppMarket functionality by adding a new s
 
 ## Compatibility
 
-This add-on is compatible with OpenNebula 4.x, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6 deployment
+This add-on is compatible with OpenNebula 4.6.1 or previous version, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6.1 deployment.
 
 ## Development
 
