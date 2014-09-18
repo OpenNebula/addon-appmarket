@@ -56,6 +56,12 @@ case "${COMPONENT}-${PACKAGE_TYPE}" in
     ;;
 esac
 
+DEP_STRING=""
+
+for d in $DEPS; do
+    DEP_STRING="$DEP_STRING -d $d"
+done
+
 SCRIPTS_DIR=${SCRIPTS_DIR:-PWD}
 
 NAME="${PACKAGE_NAME}_${VERSION}.${PACKAGE_TYPE}"
@@ -80,7 +86,7 @@ cd tmp
 fpm -n "$PACKAGE_NAME" -t "$PACKAGE_TYPE" -s dir --vendor "$VENDOR" \
     --license "$LICENSE" --description "$DESCRIPTION" --url "$URL" \
     -m "$MAINTAINER" -v "$VERSION" \
-    -d "$DEPS" \
+    $DEP_STRING \
     -a all -p $SCRIPTS_DIR/$NAME *
 
 echo $NAME
