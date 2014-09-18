@@ -37,9 +37,9 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 
 ## Releases
 
-### AppMarket 2.0.1
+### AppMarket 2.0.2
 
-AppMarket 2.0.1 is the latest stable release. This is a maintenance release that solves issues reported by the community.
+AppMarket 2.0.2 is the latest stable release. This is a maintenance release that solves issues reported by the community.
 
 The AppMarket 2.0.x series extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new simplified import dialog, a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
 
@@ -52,6 +52,7 @@ The AppMarket 2.0.x series extends the AppMarket functionality by adding a new s
 
 |      Version      |        Date        |                               Release Notes                               |
 | ----------------- | ------------------ | ------------------------------------------------------------------------- |
+| 2.0.2             | September 18th, 2014     | [Release Notes 2.0.2](doc/release_notes/appmarket-2.0.1.md)               |
 | 2.0.1             | May 22nd, 2014     | [Release Notes 2.0.1](doc/release_notes/appmarket-2.0.1.md)               |
 | 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)               |
 | 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Incremental Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
@@ -60,7 +61,7 @@ The AppMarket 2.0.x series extends the AppMarket functionality by adding a new s
 
 ## Compatibility
 
-This add-on is compatible with OpenNebula 4.6.1 or previous version, but the new features included in AppMarket 2.0 are only available interacting with AppMarket from an OpenNebula 4.6.1 deployment.
+This add-on is compatible with OpenNebula 4.8.
 
 ## Development
 

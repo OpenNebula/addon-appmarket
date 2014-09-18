@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export VERSION=${VERSION:-2.0.1}
+export VERSION=${VERSION:-2.0.2}
 export SCRIPTS_DIR=$(cd `dirname $0`; pwd)/packages
 
 rm -rf  $SCRIPTS_DIR; mkdir -p $SCRIPTS_DIR
