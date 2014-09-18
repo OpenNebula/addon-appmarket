@@ -28,7 +28,7 @@ The rpm and deb packages can be installed with ''dpkg'' and ''rpm'' respectively
     sudo dpkg -i appmarket_*.deb
 
     # CentOS/openSUSE
-    sudo rpm -i appmarket_*.rpm
+    sudo yum localinstall appmarket_*.rpm
 
 
 If installing from source code you can run the following command:
