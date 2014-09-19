@@ -52,7 +52,7 @@ The AppMarket 2.0.x series extends the AppMarket functionality by adding a new s
 
 |      Version      |        Date        |                               Release Notes                               |
 | ----------------- | ------------------ | ------------------------------------------------------------------------- |
-| 2.0.2             | September 18th, 2014     | [Release Notes 2.0.2](doc/release_notes/appmarket-2.0.1.md)               |
+| 2.0.2             | September 18th, 2014     | [Release Notes 2.0.2](doc/release_notes/appmarket-2.0.2.md)               |
 | 2.0.1             | May 22nd, 2014     | [Release Notes 2.0.1](doc/release_notes/appmarket-2.0.1.md)               |
 | 2.0.0             | May 13th, 2014     | [Release Notes 2.0.0](doc/release_notes/appmarket-2.0.0.md)               |
 | 1.9.90 (2.0 RC2)  | April 29th, 2014   | [Incremental Release Notes 1.9.90](doc/release_notes/appmarket-1.9.90.md) |
