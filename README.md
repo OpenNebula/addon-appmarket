@@ -12,6 +12,8 @@ The [OpenNebula Marketplace](http://marketplace.c12g.com/appliance) is an exampl
 
 In AppMarket 2.0 a new component is included, [AppMarket Worker](doc/appmarket_worker_installation_and_configuration.md). This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
 
+Please consider that, although AppMArket is widely used by the OpenNebula users, this software has not gone through the same rigorous testing process as the main OpenNebula distribution. 
+
 ![market1306](doc/images/list_appliance_from_sunstone.png)
 
 ## Authors
