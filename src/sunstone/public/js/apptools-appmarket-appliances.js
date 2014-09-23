@@ -321,7 +321,7 @@ var appmarket_actions = {
                         '<div class="large-2 columns appmarket_image_result">'+
                         '</div>'+
                     '</div>'+
-                    '<div class="large-10 large-centered columns appmarket_image_response">'+
+                    '<div class="large-10 columns appmarket_image_response">'+
                     '</div>'+
                 '</div>').appendTo($("#appmarket_import_dialog_content"));
             })
@@ -349,7 +349,7 @@ var appmarket_actions = {
                         '<div class="large-2 columns appmarket_template_result">'+
                         '</div>'+
                     '</div>'+
-                    '<div class="large-10 large-centered columns appmarket_template_response">'+
+                    '<div class="large-10 columns appmarket_template_response">'+
                     '</div>'+
                 '</div>').appendTo($("#appmarket_import_dialog_content"));
             }
