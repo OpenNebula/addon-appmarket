@@ -149,21 +149,21 @@ cmd=CommandParser::CmdParser.new(ARGV) do
               "short_description": "t_short_des",
               "description": "This image is 8 Gb.\\r\\n  * **Disk device**:  `xvda`\\r\\n",
               "version": "1.0",
+              "hypervisor": "KVM",
+              "format": "raw",
+              "os-arch": "t64",
+                "opennebula_template": "{\r\n    \"CONTEXT\": {\r\n        \"NETWORK\": \"YES\",\r\n        \"SSH_PUBLIC_KEY\": \"$USER[SSH_PUBLIC_KEY]\"\r\n    },\r\n    \"CPU\": \"1\",\r\n    \"GRAPHICS\": {\r\n        \"LISTEN\": \"0.0.0.0\",\r\n        \"TYPE\": \"vnc\"\r\n    },\r\n    \"MEMORY\": \"768\",\r\n    \"OS\": {\r\n        \"ARCH\": \"x86_64\"\r\n    }\r\n}",
               "tags": [
                 "t_tag",
                 " t_tag2"
               ],
               "files": [
                 {
-                  "url": "http://testtesttest.com/test.img",
+                  "url": "http://testtesttest.com/test.bz",
                   "md5": "ttttttttttttt",
                   "sha1": "tttttttttttttt",
-                  "compression": "bz2",
-                  "hypervisor": "VMWARE",
-                  "format": "raw",
-                  "os-id": "tt",
-                  "os-release": "t1",
-                  "os-arch": "t64"
+                  "size": "10737418240",
+                  "compression": "bz2"
                 }
               ]
             }
