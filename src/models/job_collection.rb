@@ -50,7 +50,7 @@ module AppMarket
         def self.create(session, hash)
             validator = Validator::Validator.new(
                 :default_values => true,
-                :delete_extra_properties => false
+                :delete_extra_properties => true
             )
 
             begin
