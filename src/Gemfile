@@ -23,7 +23,6 @@ else
     gem 'nokogiri'
 end
 
-gem 'mime-type', '<2.0'
 gem 'json'
 gem 'haml'
 gem 'sinatra'
