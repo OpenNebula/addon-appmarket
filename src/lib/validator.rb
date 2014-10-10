@@ -409,7 +409,7 @@ class Validator
                     " SCHEMA: #{schema_string} #{$!.message}"
             end
 
-            body_value
+            return safe_body_value
         end
 
         body_value
