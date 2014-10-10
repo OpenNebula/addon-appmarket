@@ -35,7 +35,7 @@ require 'yaml'
 ################################################################################
 
 begin
-    CONF = YAML.load_file(CONFIGURATION_FILE)
+    AppMarket::CONF = YAML.load_file(CONFIGURATION_FILE)
 rescue Exception => e
     STDERR.puts "Error parsing config file #{CONFIGURATION_FILE}: #{e.message}"
     exit 1
@@ -54,13 +54,13 @@ end
 ################################################################################
 
 # Callback URL
-callback_url = ARGV[0]
+@callback_url = ARGV[0]
 
-username = CONF[:username]
-password = CONF[:password]
-url      = CONF[:appmarket_url]
+username = AppMarket::CONF[:username]
+password = AppMarket::CONF[:password]
+url      = AppMarket::CONF[:appmarket_url]
 
-client = AppMarket::Client.new(username, password, url)
+@client = AppMarket::Client.new(username, password, url)
 
 # Job meta-data
 begin
