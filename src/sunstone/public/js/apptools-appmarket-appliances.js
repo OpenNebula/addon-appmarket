@@ -1508,9 +1508,9 @@ $(document).ready(function(){
               { "mData": "name" },
               { "mData": "status" },
               { "mData": "publisher" },
-              { "mData": "files.0.hypervisor", "sWidth" : "100px", "sDefaultContent" : "-" },
-              { "mData": "files.0.os-arch", "sWidth" : "100px", "sDefaultContent" : "-" },
-              { "mData": "files.0.format", "sWidth" : "100px", "sDefaultContent" : "-" },
+              { "mData": "hypervisor", "sWidth" : "100px", "sDefaultContent" : "-" },
+              { "mData": "os-arch", "sWidth" : "100px", "sDefaultContent" : "-" },
+              { "mData": "format", "sWidth" : "100px", "sDefaultContent" : "-" },
               { "mData": "tags"},
               { "mData": function (source) {
                 return (source.creation_time ? pretty_time(source.creation_time) : '-')
