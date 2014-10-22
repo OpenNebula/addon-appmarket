@@ -90,5 +90,12 @@ appliance_payload ={"appliance" => appliance.to_hash}
 @client.callback(@callback_url, "done", appliance_payload.to_json)
 
 if job_json["params"]["delete_source"]
-    @client.delete_appliance(job_json["appliance_id"])
+    begin
+        @client.delete_appliance(from_appliance.body["_id"]["$oid"])
+    rescue Exception => e
+        error_payload = {"job"=>{"error_message" => "[#{e.class.to_s}] #{e.message}"}}
+        STDERR.puts("[#{e.class.to_s}] #{e.message}\n#{e.backtrace}")
+        fail(error_payload.to_json)
+        exit 0
+    end
 end
