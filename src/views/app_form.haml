@@ -74,6 +74,14 @@
           %option{"value" => ""}
           - AppMarket::Appliance::FILE_SCHEMA[:properties]["compression"][:enum].each do |elem|
             %option= elem
+    .control-group
+      %label.control-label{"for" => "files.0.driver"} OpenNebula Driver
+      .controls
+        %input.input-xlarge{"name" => "files.0.driver", "id" => "files.0.driver_form", "type" => "text"}
+    .control-group
+      %label.control-label{"for" => "files.0.dev_prefix"} OpenNebula Dev Prefix
+      .controls
+        %input.input-xlarge{"name" => "files.0.dev_prefix", "id" => "files.0.dev_prefix_form", "type" => "text"}
   #more_files
   .control-group
     .controls
