@@ -16,7 +16,7 @@
 # limitations under the License.                                               #
 #------------------------------------------------------------------------------#
 
-VERSION=${VERSION:-2.0.2}
+VERSION=${VERSION:-2.0.3}
 MAINTAINER=${MAINTAINER:-OpenNebula Systems <contact@opennebula.systems>}
 LICENSE=${LICENSE:-Apache}
 VENDOR=${VENDOR:-OpenNebula Systems}
