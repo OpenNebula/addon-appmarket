@@ -8,11 +8,11 @@ An OpenNebula Virtual Appliance is a pre-built software solution, consisting of 
 
 After deploying the AppMarket server, users will be able to access the AppMarket functionality through its GUI, pointing the web browser to the url where the server is running; or through the CLI, using the appmarket* commands.
 
-The [OpenNebula Marketplace](http://marketplace.c12g.com/appliance) is an example of an AppMarket deployment currently running and publicly accessible for the OpenNebula community, every OpenNebula installation is ready to interact with this marketplace, through the Marketplace tab in Sunstone.
+The [OpenNebula Marketplace](http://marketplace.opennebula.systems/appliance) is an example of an AppMarket deployment currently running and publicly accessible for the OpenNebula community, every OpenNebula installation is ready to interact with this marketplace, through the Marketplace tab in Sunstone.
 
 In AppMarket 2.0 a new component is included, [AppMarket Worker](doc/appmarket_worker_installation_and_configuration.md). This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
 
-Please consider that, although AppMArket is widely used by the OpenNebula users, this software has not gone through the same rigorous testing process as the main OpenNebula distribution. 
+Please consider that, although AppMArket is widely used by the OpenNebula users, this software has not gone through the same rigorous testing process as the main OpenNebula distribution.
 
 ![market1306](doc/images/list_appliance_from_sunstone.png)
 

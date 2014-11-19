@@ -16,7 +16,7 @@
             "os-id": "CentOS",
             "os-release": "6.2",
             "os-arch": "x86_64",
-            "url": "http://appliances.c12g.com/CentOS-6.2/CentOS-6.2.img.bz2",
+            "url": "http://appliances.opennebula.systems/CentOS-6.2/CentOS-6.2.img.bz2",
             "md5": "8b76e185fe6510d2bc8a335690e273ef"
         }
     ]

@@ -166,7 +166,7 @@ describe 'MarketPlace Appliance tests' do
             body['_id']['$oid'].should == $new_oid
             body['name'].should == 'Ubuntu Server 12.04 LTS (Precise Pangolin)'
 
-            body['files'][0]['url'].should == 'http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2'
+            body['files'][0]['url'].should == 'http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2'
 
             body['downloads'].should == 0
         end
@@ -175,7 +175,7 @@ describe 'MarketPlace Appliance tests' do
             get "/appliance/#{$new_oid}/download", {}, {'HTTP_ACCEPT' => 'application/json'}
 
             last_response.status == 302
-            last_response.headers['Location'] == "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
+            last_response.headers['Location'] == "http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
         end
 
         it "should be able to retrieve updated restricted fields url, vistis and downloads" do
@@ -187,7 +187,7 @@ describe 'MarketPlace Appliance tests' do
             body['_id']['$oid'].should == $new_oid
             body['name'].should == 'Ubuntu Server 12.04 LTS (Precise Pangolin)'
 
-            body['files'][0]['url'].should == 'http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2'
+            body['files'][0]['url'].should == 'http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2'
 
             body['downloads'].should == 1
         end
@@ -254,7 +254,7 @@ describe 'MarketPlace Appliance tests' do
             get "/appliance/#{$new_oid}/download", {}, {'HTTP_ACCEPT' => 'application/json'}
 
             last_response.status == 302
-            last_response.headers['Location'] == "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
+            last_response.headers['Location'] == "http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
         end
 
         it "should be able to retrieve the list of appliances including the new one" do
@@ -309,7 +309,7 @@ describe 'MarketPlace Appliance tests' do
             get "/appliance/#{$new_oid}/download", {}, {'HTTP_ACCEPT' => 'application/json'}
 
             last_response.status == 302
-            last_response.headers['Location'] == "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
+            last_response.headers['Location'] == "http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2"
         end
 
         it "should not be able to create new appliances" do

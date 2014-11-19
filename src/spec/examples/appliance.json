@@ -16,7 +16,7 @@
             "os-id": "Ubuntu",
             "os-release": "12.04",
             "os-arch": "x86_64",
-            "url": "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2",
+            "url": "http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2",
             "md5": "d0f3c0bebdab6451b58ca54f119d8082"
         }
     ]

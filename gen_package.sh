@@ -17,9 +17,9 @@
 #------------------------------------------------------------------------------#
 
 VERSION=${VERSION:-2.0.2}
-MAINTAINER=${MAINTAINER:-C12G Labs <support@c12g.com>}
+MAINTAINER=${MAINTAINER:-OpenNebula Systems <contact@opennebula.systems>}
 LICENSE=${LICENSE:-Apache}
-VENDOR=${VENDOR:-C12G Labs}
+VENDOR=${VENDOR:-OpenNebula Systems}
 DESC="
 OpenNebula Apps is a group of tools for users and administrators of OpenNebula that simplifies and optimizes cloud application management.
 "

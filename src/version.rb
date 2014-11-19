@@ -17,11 +17,11 @@
 module OneApps
 
     # OpenNebula version
-    VERSION = '4.2.0'
+    VERSION = '4.10.0'
 
     VERSION_TEXT = <<EOT
 AppMarket #{OneApps::VERSION}
-Copyright 2002-2013, OpenNebula Project (OpenNebula.org), C12G Labs
+Copyright 2002-2014, OpenNebula Project (OpenNebula.org), OpenNebula Systems
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain

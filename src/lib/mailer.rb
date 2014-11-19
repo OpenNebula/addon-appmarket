@@ -37,7 +37,7 @@ Kind regards
 
 [1] http://lists.opennebula.org/listinfo.cgi/marketplace-opennebula.org
 [2] http://opennebula.org/documentation:rel3.6:vm4market
-[3] https://marketplace.c12g.com/
+[3] https://marketplace.opennebula.systems/
 }
 
   if AppMarket::CONF['mail']

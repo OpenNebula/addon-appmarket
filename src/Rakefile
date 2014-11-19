@@ -69,7 +69,7 @@ It has been prepared to work with OpenNebula, i.e. it's contextualized.",
                 "os-id" => "Ubuntu",
                 "os-release" => "12.04",
                 "os-arch" => "x86_64",
-                "url" => "http://appliances.c12g.com/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2",
+                "url" => "http://appliances.opennebula.systems/Ubuntu-Server-12.04/ubuntu-server-12.04.img.bz2",
                 "checksum" => {
                     "md5" => "d0f3c0bebdab6451b58ca54f119d8082"
                 }
@@ -107,7 +107,7 @@ It has been prepared to work with OpenNebula, i.e. it's contextualized.",
                 "os-id" => "CentOS",
                 "os-release" => "6.2",
                 "os-arch" => "x86_64",
-                "url" => "http://appliances.c12g.com/CentOS-6.2/CentOS-6.2.img.bz2",
+                "url" => "http://appliances.opennebula.systems/CentOS-6.2/CentOS-6.2.img.bz2",
                 "checksum" => {
                     "md5" => "8b76e185fe6510d2bc8a335690e273ef"
                 }
@@ -140,7 +140,7 @@ password: password",
                 "os-id" => "ttylinux",
                 "os-release" => "",
                 "os-arch" => "x86_64",
-                "url" => "http://appliances.c12g.com/ttylinux/ttylinux.img",
+                "url" => "http://appliances.opennebula.systems/ttylinux/ttylinux.img",
                 "checksum" => {
                     "md5" => "04c7d00e88fa66d9aaa34d9cf8ad6aaa"
                 }
@@ -151,7 +151,7 @@ password: password",
     AppMarket::DB['appliances'].insert({
         "name" => "OpenNebula 3.4.1 Front-End Centos 6.2",
         "catalog" => "public",
-        "publisher" => "C12G Labs",
+        "publisher" => "OpenNebula Systems",
         "logo" => "/img/logos/view_dashboard.png",
         "tags" => ["linux", "vmware", "sandbox", "esx", "frontend"],
         "description" => "This image is meant to be run on a ESX hypervisor, and comes with a preconfigured OpenNebula 3.4.1, ready to manage a ESX farm. Several resources are created within OpenNebula (images, virtual networks, VM templates) to build a pilot cloud under 30 minutes.
@@ -174,7 +174,7 @@ password: opennebula",
                 "os-id" => "CentOS",
                 "os-release" => "6.2",
                 "os-arch" => "x86_64",
-                "url" => "http://appliances.c12g.com/OpenNebula%203.4.1%20Front-End%20Centos%206.2/OpenNebula%203.4.1%20Front-End%20Centos%206.2.vmwarevm.tar.gz",
+                "url" => "http://appliances.opennebula.systems/OpenNebula%203.4.1%20Front-End%20Centos%206.2/OpenNebula%203.4.1%20Front-End%20Centos%206.2.vmwarevm.tar.gz",
                 "checksum" => {
                     "md5" => "2dba351902bffb4716168f3693e932e2"
                 }
@@ -185,7 +185,7 @@ password: opennebula",
     AppMarket::DB['appliances'].insert({
         "name" => "OpenNebula Sandbox KVM 3.4.1",
         "catalog" => "public",
-        "publisher" => "C12G Labs",
+        "publisher" => "OpenNebula Systems",
         "logo" => "/img/logos/view_dashboard.png",
         "tags" => ["linux", "kvm", "sandbox", "centos", "frontend"],
         "description" => "This image is meant to be run on a KVM hypervisor. It comes with a preconfigured OpenNebula 3.4.1, ready to manage a KVM farm. Several resources are created within OpenNebula (images, virtual networks, VM templates) to build a pilot cloud under 30 minutes.\n\nMore information on the SandBox guide:\n\nhttp://opennebula.org/cloud:sandbox:kvm\n\nThe login information for this VM is\n\nlogin: root\npassword: opennebula",
@@ -201,7 +201,7 @@ password: opennebula",
                 "os-id" => "Centos",
                 "os-release" => "6.2",
                 "os-arch" => "x86_64",
-                "url" => "http://appliances.c12g.com/one-sandbox-kvm-3.4.1/one-frontend.img.gz",
+                "url" => "http://appliances.opennebula.systems/one-sandbox-kvm-3.4.1/one-frontend.img.gz",
                 "checksum" => {
                     "md5" => "6a60a3ec2fa674d6606b58c7676c03e1"
                 }
