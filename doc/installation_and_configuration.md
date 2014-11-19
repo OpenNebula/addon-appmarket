@@ -83,7 +83,7 @@ Backup /etc directory
 
 Backup Mongo Database
 
-    $ mongodump market
+    $ mongodump -d market
 
 Install Packages
 
