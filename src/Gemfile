@@ -26,7 +26,7 @@ end
 gem 'json'
 gem 'haml'
 gem 'sinatra'
-gem 'mongo'
+gem 'mongo', '<2'
 gem 'bson_ext'
 gem 'redcarpet', '<3.0.0'
 gem 'mail'
