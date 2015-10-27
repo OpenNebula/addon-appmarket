@@ -184,6 +184,9 @@ module AppMarket
                     :type => :string,
                     :default => PUBLIC_CATALOG
                 },
+                'publisher' => {
+                    :type => :string
+                },
                 'logo' => {
                     :type => :string,
                     :format => :uri,
