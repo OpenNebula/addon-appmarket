@@ -138,7 +138,7 @@ copy_files "lib/* models.rb config.ru Gemfile \
             Rakefile config/init.rb config/appmarket_version.rb" "$LIB_LOCATION/market"
 
 # Sunstone
-copy_files "sunstone/public/js/*" "$SUNSTONE_LOCATION/public/js/plugins"
+copy_files "sunstone/public/app/tabs/*" "$SUNSTONE_LOCATION/public/app/tabs/"
 copy_files "sunstone/public/images/*" "$SUNSTONE_LOCATION/public/images"
 copy_files "sunstone/routes/*" "$SUNSTONE_LOCATION/routes"
 
