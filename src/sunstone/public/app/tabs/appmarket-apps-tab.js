@@ -23,9 +23,10 @@ define(function(require) {
   var TAB_ID = require('./appmarket-apps-tab/tabId');
   var DATATABLE_ID = "dataTableAppMarket";
 
-//  var _dialogs = [
-//  ];
-//
+  var _dialogs = [
+    require('./appmarket-apps-tab/dialogs/import')
+  ];
+
   var _panels = [
     require('./appmarket-apps-tab/panels/info'),
 //    require('./appmarket-apps-tab/panels/hosts'),
@@ -33,9 +34,9 @@ define(function(require) {
 //    require('./appmarket-apps-tab/panels/datastores')
   ];
 //
-//  var _formPanels = [
+  var _formPanels = [
 //    require('./appmarket-apps-tab/form-panels/create')
-//  ];
+  ];
 
   var Tab = {
     tabId: TAB_ID,
@@ -55,8 +56,8 @@ define(function(require) {
     actions: Actions,
     dataTable: new Table(DATATABLE_ID, {actions: true, info: true}),
     panels: _panels,
-    //formPanels: _formPanels,
-    //dialogs: _dialogs
+    formPanels: _formPanels,
+    dialogs: _dialogs
   };
 
   return Tab;

@@ -23,7 +23,7 @@ define(function(require) {
 
   var RESOURCE = "AppMarket";
   var TAB_ID = require('./tabId');
-  //var IMPORT_DIALOG_ID = require('./dialogs/import/dialogId');
+  var IMPORT_DIALOG_ID = require('./dialogs/import/dialogId');
 
   var _actions = {
     "AppMarket.list" : {
@@ -47,24 +47,24 @@ define(function(require) {
       },
     },
 
-//    "AppMarket.import" : {
-//      type: "multiple",
-//      call: OpenNebulaResource.show,
-//      callback: function(request, response) {
-//        if (response['status'] && response['status'] != 'ready') {
-//            Notifier.notifyError(Locale.tr("The appliance is not ready"));
-//            return;
-//        }
-//
-//        Sunstone.getDialog(IMPORT_DIALOG_ID).setParams({element: response});
-//        Sunstone.getDialog(IMPORT_DIALOG_ID).reset();
-//        Sunstone.getDialog(IMPORT_DIALOG_ID).show();
-//      },
-//      elements: function() {
-//        return Sunstone.getDataTable(TAB_ID).elements();
-//      },
-//      error: Notifier.onError
-//    },
+    "AppMarket.import" : {
+      type: "multiple",
+      call: OpenNebulaResource.show,
+      callback: function(request, response) {
+        if (response['status'] && response['status'] != 'ready') {
+            Notifier.notifyError(Locale.tr("The appliance is not ready"));
+            return;
+        }
+
+        Sunstone.getDialog(IMPORT_DIALOG_ID).setParams({element: response});
+        Sunstone.getDialog(IMPORT_DIALOG_ID).reset();
+        Sunstone.getDialog(IMPORT_DIALOG_ID).show();
+      },
+      elements: function() {
+        return Sunstone.getDataTable(TAB_ID).elements();
+      },
+      error: Notifier.onError
+    },
 
     "AppMarket.show" : {
       type: "single",
