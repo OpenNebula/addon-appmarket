@@ -26,12 +26,12 @@ define(function(require) {
 //  var _dialogs = [
 //  ];
 //
-//  var _panels = [
-//    require('./appmarket-apps-tab/panels/info'),
+  var _panels = [
+    require('./appmarket-apps-tab/panels/info'),
 //    require('./appmarket-apps-tab/panels/hosts'),
 //    require('./appmarket-apps-tab/panels/vnets'),
 //    require('./appmarket-apps-tab/panels/datastores')
-//  ];
+  ];
 //
 //  var _formPanels = [
 //    require('./appmarket-apps-tab/form-panels/create')
@@ -54,7 +54,7 @@ define(function(require) {
     buttons: Buttons,
     actions: Actions,
     dataTable: new Table(DATATABLE_ID, {actions: true, info: true}),
-    //panels: _panels,
+    panels: _panels,
     //formPanels: _formPanels,
     //dialogs: _dialogs
   };
