@@ -45,7 +45,7 @@ define(function(require) {
     listHeader: '<i class="fa fa-fw fa-truck"></i>&emsp;'+Locale.tr("Appliances"),
     infoHeader: '<i class="fa fa-fw fa-truck"></i>&emsp;'+Locale.tr("Appliance"),
     subheader: '<span/> <small></small>&emsp;',
-    resource: 'Cluster',
+    resource: 'AppMarket',
     content: '<div class="row appmarket_error_message" hidden>\
         <div class="small-6 columns small-centered text-center">\
             <div class="alert-box alert radius">'+Locale.tr("Cannot connect to AppMarket")+'</div>\
