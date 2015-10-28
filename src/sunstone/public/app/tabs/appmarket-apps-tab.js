@@ -16,9 +16,9 @@
 
 define(function(require) {
   var Locale = require('utils/locale');
-//  var Buttons = require('./clusters-tab/buttons');
-//  var Actions = require('./clusters-tab/actions');
-//  var Table = require('./clusters-tab/datatable');
+  var Buttons = require('./appmarket-apps-tab/buttons');
+  var Actions = require('./appmarket-apps-tab/actions');
+  var Table = require('./appmarket-apps-tab/datatable');
 
   var TAB_ID = require('./appmarket-apps-tab/tabId');
   var DATATABLE_ID = "dataTableAppMarket";
@@ -27,14 +27,14 @@ define(function(require) {
 //  ];
 //
 //  var _panels = [
-//    require('./clusters-tab/panels/info'),
-//    require('./clusters-tab/panels/hosts'),
-//    require('./clusters-tab/panels/vnets'),
-//    require('./clusters-tab/panels/datastores')
+//    require('./appmarket-apps-tab/panels/info'),
+//    require('./appmarket-apps-tab/panels/hosts'),
+//    require('./appmarket-apps-tab/panels/vnets'),
+//    require('./appmarket-apps-tab/panels/datastores')
 //  ];
 //
 //  var _formPanels = [
-//    require('./clusters-tab/form-panels/create')
+//    require('./appmarket-apps-tab/form-panels/create')
 //  ];
 
   var Tab = {
@@ -46,14 +46,14 @@ define(function(require) {
     infoHeader: '<i class="fa fa-fw fa-truck"></i>&emsp;'+Locale.tr("Appliance"),
     subheader: '<span/> <small></small>&emsp;',
     resource: 'Cluster',
-    content: '<div class="row marketplace_error_message" hidden>\
+    content: '<div class="row appmarket_error_message" hidden>\
         <div class="small-6 columns small-centered text-center">\
             <div class="alert-box alert radius">'+Locale.tr("Cannot connect to AppMarket")+'</div>\
         </div>\
     </div>',
-    //buttons: Buttons,
-    //actions: Actions,
-    //dataTable: new Table(DATATABLE_ID, {actions: true, info: true}),
+    buttons: Buttons,
+    actions: Actions,
+    dataTable: new Table(DATATABLE_ID, {actions: true, info: true}),
     //panels: _panels,
     //formPanels: _formPanels,
     //dialogs: _dialogs
