@@ -42,12 +42,12 @@ define(function(require) {
 //      layout: "main",
 //      text: tr("Convert")
 //    },
-//    "AppMarket.delete" : {
-//      type: "confirm",
-//      text: tr("Delete"),
-//      layout: "del",
-//      tip: tr("This will delete the selected appliances")
-//    }
+    "AppMarket.delete" : {
+      type: "confirm",
+      text: Locale.tr("Delete"),
+      layout: "del",
+      tip: Locale.tr("This will delete the selected appliances")
+    }
   };
 
   return Buttons;

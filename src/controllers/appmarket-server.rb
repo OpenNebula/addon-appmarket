@@ -483,6 +483,7 @@ delete '/appliance/:id' do
         error app
     else
         app.delete
+        status 204
     end
 end
 

@@ -34,6 +34,9 @@ define(function(require) {
       };
       OpenNebulaAction.show(params, RESOURCE, null, PATH);
     },
+    "del": function(params) {
+      OpenNebulaAction.del(params, RESOURCE, PATH);
+    },
     "update": function(params) {
       var callback = params.success;
       var callback_error = params.error;

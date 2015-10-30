@@ -40,19 +40,6 @@ define(function(require) {
       }
     },
 
-    "AppMarket.refresh" : {
-      type: "custom",
-      call: function() {
-        var tab = $('#' + TAB_ID);
-        if (Sunstone.rightInfoVisible(tab)) {
-          Sunstone.runAction(RESOURCE+".show", Sunstone.rightInfoResourceId(tab));
-        } else {
-          Sunstone.getDataTable(TAB_ID).waitingNodes();
-          Sunstone.runAction(RESOURCE+".list", {force: true});
-        }
-      },
-    },
-
     "AppMarket.import" : {
       type: "multiple",
       call: OpenNebulaResource.show,
@@ -82,11 +69,13 @@ define(function(require) {
       },
       error: Notifier.onError
     },
+    "AppMarket.refresh" : _commonActions.refresh(),
     "AppMarket.create" : _commonActions.create(CREATE_DIALOG_ID),
     "AppMarket.create_dialog" : _commonActions.showCreate(CREATE_DIALOG_ID),
     "AppMarket.update" : _commonActions.update(),
     "AppMarket.update_dialog" : _commonActions.checkAndShowUpdate(),
     "AppMarket.show_to_update" : _commonActions.showUpdate(CREATE_DIALOG_ID),
+    "AppMarket.delete" : _commonActions.del(),
   };
 
   return _actions;
