@@ -54,7 +54,7 @@ helpers do
 
         if AppMarket::is_error?(resp)
             begin
-                body Error.new(JSON.parse(resp.to_s)['message']).to_json
+                body Error.new(resp.to_s).to_json
             rescue JSON::ParserError
                 body resp.to_s
             end
