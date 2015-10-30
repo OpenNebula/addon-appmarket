@@ -35,7 +35,7 @@ define(function(require) {
   ];
 //
   var _formPanels = [
-//    require('./appmarket-apps-tab/form-panels/create')
+    require('./appmarket-apps-tab/form-panels/create')
   ];
 
   var Tab = {

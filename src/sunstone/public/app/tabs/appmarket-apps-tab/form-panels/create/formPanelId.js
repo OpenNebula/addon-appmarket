@@ -14,41 +14,6 @@
 /* limitations under the License.                                             */
 /* -------------------------------------------------------------------------- */
 
-define(function(require) {
-  var Locale = require('utils/locale');
-
-  var Buttons = {
-    "AppMarket.refresh" : {
-      type: "action",
-      layout: "refresh",
-      alwaysActive: true
-    },
-    "AppMarket.import" : {
-      type: "action",
-      layout: "main",
-      text: Locale.tr('Import')
-    },
-    "AppMarket.create_dialog" : {
-      type: "create_dialog",
-      layout: "create"
-    },
-    "AppMarket.update_dialog" : {
-      type: "action",
-      layout: "main",
-      text: Locale.tr("Update")
-    },
-//    "AppMarket.convert_dialog" : {
-//      type: "action",
-//      layout: "main",
-//      text: tr("Convert")
-//    },
-//    "AppMarket.delete" : {
-//      type: "confirm",
-//      text: tr("Delete"),
-//      layout: "del",
-//      tip: tr("This will delete the selected appliances")
-//    }
-  };
-
-  return Buttons;
-});
+define(function(require){
+  return 'createAppForm';
+})

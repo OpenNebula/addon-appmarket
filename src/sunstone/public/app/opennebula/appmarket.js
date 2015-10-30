@@ -25,11 +25,33 @@ define(function(require) {
   var PATH = "appmarket/appliance";
 
   var AppMarket = {
+    "create": function(params) {
+      OpenNebulaAction.create(params, RESOURCE, PATH);
+    },
     "show" : function(params) {
       params.error = function() {
         return Notifier.notifyError(Locale.tr("Cannot connect to AppMarket"));
       };
       OpenNebulaAction.show(params, RESOURCE, null, PATH);
+    },
+    "update": function(params) {
+      var callback = params.success;
+      var callback_error = params.error;
+      var timeout = params.timeout || false;
+      var request = OpenNebulaHelper.request(RESOURCE, 'update', [params.data.id]);
+
+      $.ajax({
+        url: PATH + '/' + params.data.id,
+        type: 'PUT',
+        data: params.data.extra_param,
+        dataType: "json",
+        success: function(response) {
+          return callback ? callback(request, response) : null;
+        },
+        error: function(res) {
+          return callback_error ? callback_error(request, OpenNebulaError(res)) : null;
+        }
+      });
     },
     "list" : function(params) {
       //Custom list request function, since the contents do not come

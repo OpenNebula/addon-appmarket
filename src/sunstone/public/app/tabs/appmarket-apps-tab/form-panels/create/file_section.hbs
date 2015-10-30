@@ -1,0 +1,80 @@
+{{! -------------------------------------------------------------------------- }}
+{{! Copyright 2002-2015, OpenNebula Project, OpenNebula Systems                }}
+{{!                                                                            }}
+{{! Licensed under the Apache License, Version 2.0 (the "License"); you may    }}
+{{! not use this file except in compliance with the License. You may obtain    }}
+{{! a copy of the License at                                                   }}
+{{!                                                                            }}
+{{! http://www.apache.org/licenses/LICENSE-2.0                                 }}
+{{!                                                                            }}
+{{! Unless required by applicable law or agreed to in writing, software        }}
+{{! distributed under the License is distributed on an "AS IS" BASIS,          }}
+{{! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   }}
+{{! See the License for the specific language governing permissions and        }}
+{{! limitations under the License.                                             }}
+{{! -------------------------------------------------------------------------- }}
+
+<div class="row">
+  <div class="large-12 columns">
+    <fieldset>
+      <legend>File {{fileIndex}}</legend>
+      <div class="row">
+        <div class="large-12 columns">
+          <label for="files.{{fileIndex}}.name">{{tr "File Name"}}
+            <span class="tip">{{tr "Name of the file. This will be used to register the Image in OpenNebula"}}</span>
+          </label>
+          <input type="text" name="files.{{fileIndex}}.name" id="files.{{fileIndex}}.name" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns">
+          <label for="files.{{fileIndex}}.url">{{tr "URL"}}
+            <span class="tip">{{tr "URL of the file"}}</span>
+          </label>
+          <input type="text" name="files.{{fileIndex}}.url" id="files.{{fileIndex}}.url" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.size">{{tr "Size"}}
+            <span class="tip">{{tr "Size of the file in bytes"}}</span>
+          </label>
+          <input type="text" name="files.{{fileIndex}}.size" id="files.{{fileIndex}}.size" />
+        </div>
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.compression">{{tr "Compression"}}:</label>
+          <select name="files.{{fileIndex}}.compression" id="files.{{fileIndex}}.compression">
+              <option value=""></option>
+              <option value="bz2">{{tr "bz2"}}</option>
+              <option value="gzip">{{tr "gzip"}}</option>
+              <option value="none">{{tr "none"}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.md5">{{tr "MD5"}}:</label>
+          <input type="text" name="files.{{fileIndex}}.md5" id="files.{{fileIndex}}.md5" />
+        </div>
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.sha1">{{tr "SHA1"}}:</label>
+          <input type="text" name="files.{{fileIndex}}.sha1" id="files.{{fileIndex}}.sha1" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.driver">{{tr "Driver"}}
+            <span class="tip">{{tr "Specific image mapping driver. KVM: raw, qcow2. XEN: tap:aio, file:"}}</span>
+          :</label>
+          <input type="text" name="files.{{fileIndex}}.driver" id="files.{{fileIndex}}.driver" />
+        </div>
+        <div class="large-6 columns">
+          <label for="files.{{fileIndex}}.dev_prefix">{{tr "Dev Prefix"}}
+            <span class="tip">{{tr "Prefix for the emulated device this image will be mounted at. For instance, “hd”, “sd”. If omitted, the default value is the one defined in oned.conf (installation default is “hd”)."}}</span>
+         :</label>
+          <input type="text" name="files.{{fileIndex}}.dev_prefix" id="files.{{fileIndex}}.dev_prefix" />
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</div>

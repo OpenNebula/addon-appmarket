@@ -20,10 +20,16 @@ define(function(require) {
   var Locale = require('utils/locale');
   var DataTable = require('./datatable');
   var OpenNebulaResource = require('opennebula/appmarket');
+  var CommonActions = require('utils/common-actions');
 
   var RESOURCE = "AppMarket";
   var TAB_ID = require('./tabId');
   var IMPORT_DIALOG_ID = require('./dialogs/import/dialogId');
+  var CREATE_DIALOG_ID = require('./form-panels/create/formPanelId');
+
+  var RESOURCE = "AppMarket"
+
+  var _commonActions = new CommonActions(OpenNebulaResource, RESOURCE, TAB_ID);
 
   var _actions = {
     "AppMarket.list" : {
@@ -75,7 +81,12 @@ define(function(require) {
         }
       },
       error: Notifier.onError
-    }
+    },
+    "AppMarket.create" : _commonActions.create(CREATE_DIALOG_ID),
+    "AppMarket.create_dialog" : _commonActions.showCreate(CREATE_DIALOG_ID),
+    "AppMarket.update" : _commonActions.update(),
+    "AppMarket.update_dialog" : _commonActions.checkAndShowUpdate(),
+    "AppMarket.show_to_update" : _commonActions.showUpdate(CREATE_DIALOG_ID),
   };
 
   return _actions;

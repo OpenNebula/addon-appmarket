@@ -1,0 +1,144 @@
+{{! -------------------------------------------------------------------------- }}
+{{! Copyright 2002-2015, OpenNebula Project, OpenNebula Systems                }}
+{{!                                                                            }}
+{{! Licensed under the Apache License, Version 2.0 (the "License"); you may    }}
+{{! not use this file except in compliance with the License. You may obtain    }}
+{{! a copy of the License at                                                   }}
+{{!                                                                            }}
+{{! http://www.apache.org/licenses/LICENSE-2.0                                 }}
+{{!                                                                            }}
+{{! Unless required by applicable law or agreed to in writing, software        }}
+{{! distributed under the License is distributed on an "AS IS" BASIS,          }}
+{{! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   }}
+{{! See the License for the specific language governing permissions and        }}
+{{! limitations under the License.                                             }}
+{{! -------------------------------------------------------------------------- }}
+<form data-abide="ajax" id="{{formPanelId}}Wizard" class="custom creation">
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="name">
+        {{tr "Name"}}
+        <span class="tip">{{tr "Name of the appliance"}}</span>
+      </label>
+      <input type="text" name="name" id="name" />
+    </div>
+    <div class="large-6 columns">
+      <label for="short_description">
+        {{tr "Short Description"}}
+        <span class="tip">{{tr "This information will be shown in the list view"}}</span>
+      </label>
+      <input type="text" name="short_description" id="short_description" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="tags">
+        {{tr "Tags"}}
+        <span class="tip">{{tr "Comma-separated tags. Example: ubuntu,hpc,mysql"}}</span>
+      </label>
+      <input type="text" name="tags" id="tags" />
+    </div>
+    <div class="large-6 columns">
+      <label for="description">
+        {{tr "Description"}}
+        <span class="tip">
+          {{tr "This information will be shown in the detailed view. Markdown syntax is supported."}}
+        </span>
+      </label>
+      <textarea rows=5 type="text" name="description" id="description" />
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="catalog">
+        {{tr "Catalog"}}
+        <span class="tip">
+          {{tr "If not provided the appliance will be included in the community catalog. By default all users have access to the community catalog, but each user can be granted with access to different catalogs. Comma-separated catalogs. Example: silver,gold."}}
+        </span>
+      </label>
+      <input type="text" name="catalog" id="catalog" />
+    </div>
+    <div class="large-6 columns">
+      <label for="version">
+        {{tr "Version"}}
+        <span class="tip">{{tr "Appliance version"}}</span>
+      </label>
+      <input type="text" name="version" id="version" />
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="os-id">
+        {{tr "OS ID"}}
+        <span class="tip">{{tr "Example: Ubuntu"}}</span>
+      </label>
+      <input type="text" name="os-id" id="os-id" />
+    </div>
+    <div class="large-6 columns">
+      <label for="hypervisor">{{tr "Hypervisor"}}:</label>
+      <select name="hypervisor" id="hypervisor">
+        <option value=""></option>
+        <option value="all">{{tr "all"}}</option>
+        <option value="KVM">{{tr "KVM"}}</option>
+        <option value="VMWARE">{{tr "VMWARE"}}</option>
+        <option value="XEN">{{tr "XEN"}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="os-release">
+        {{tr "OS Release"}}
+        <span class="tip">{{tr "Example: 12.04"}}</span>
+      </label>
+      <input type="text" name="os-release" id="os-release" />
+    </div>
+    <div class="large-6 columns">
+      <label for="img_target">
+        {{tr "Format"}}
+        <span class="tip">{{tr "Format of the appliance files"}}</span>
+      </label>
+      <select name="format" id="format">
+        <option value=""></option>
+        <option value="qcow2">{{tr "qcow2"}}</option>
+        <option value="raw">{{tr "raw"}}</option>
+        <option value="vdi">{{tr "vdi"}}</option>
+        <option value="vmdk">{{tr "vmdk"}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 columns">
+      <label for="os-arch">
+        {{tr "OS Arch"}}
+        <span class="tip">{{tr "Example: x86_64"}}</span>
+      </label>
+      <input type="text" name="os-arch" id="os-arch" />
+    </div>
+    <div class="large-6 columns"></div>
+  </div>
+  <br>
+  <div class="from_files ">
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="opennebula_template">
+          {{tr "OpenNebula Template"}}
+          <span class="tip">
+            {{tr "JSON format"}}
+          </span>
+        </label>
+        <textarea rows=5 type="text" name="opennebula_template" id="opennebula_template" />
+      </div>
+    </div>
+    {{{appFileSectionHTML}}}
+    <div id="more_files_appliance_create"></div>
+    <br>
+    <div class="row">
+      <div class="large-12 columns">
+        <button class="button radius right small" type="button" id="more_files_appliance_create_button">{{tr "Add another file"}}</button>
+      </div>
+    </div>
+  </div>
+</form>
