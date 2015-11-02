@@ -106,7 +106,7 @@
   $(document).ready(function() {
     $("#create_app_form").submit(function (){
       $.ajax({
-        url: "appliance",
+        url: "/appliance",
         type: "POST",
         data: JSON.stringify($("#create_app_form").serializeObject()),
         success: function(){
@@ -138,7 +138,7 @@
       }
 
       $.ajax({
-        url: "user",
+        url: "/user",
         type: "POST",
         data: JSON.stringify($("form").serializeObject()),
         success: function(){
@@ -161,7 +161,7 @@
       var remember = $("#user_remember_me").is(":checked");
 
       $.ajax({
-        url: "login",
+        url: "/login",
         type: "POST",
         data: {remember: remember},
         beforeSend : function(req) {
@@ -182,10 +182,10 @@
 
     $("#logout_btn").click(function (){
       $.ajax({
-        url: "logout",
+        url: "/logout",
         type: "POST",
         success: function(){
-          window.location.reload();
+          document.location.href="/";
         },
         error: function(){
           return true;
