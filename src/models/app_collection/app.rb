@@ -199,7 +199,8 @@ module AppMarket
                 },
                 'files' => {
                     :type => :array,
-                    :items => ADMIN_FILE_SCHEMA
+                    :items => ADMIN_FILE_SCHEMA,
+                    :required => true
                 }
             }
         }
@@ -223,7 +224,8 @@ module AppMarket
                 },
                 'files' => {
                     :type => :array,
-                    :items => USER_FILE_SCHEMA
+                    :items => USER_FILE_SCHEMA,
+                    :required => true
                 }
             }
         }
