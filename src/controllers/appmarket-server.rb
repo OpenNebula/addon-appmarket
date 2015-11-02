@@ -48,12 +48,8 @@ require 'pp'
 
 configure do
     set :views,  File.join(File.dirname(__FILE__), '..', 'views')
-
-    if settings.respond_to? :public_folder
-        set :public_folder, File.join(File.dirname(__FILE__), '..', 'public')
-    else
-        set :public, File.join(File.dirname(__FILE__), '..', 'public')
-    end
+    set :public_folder, File.join(File.dirname(__FILE__), '..', 'public')
+    set :public, File.join(File.dirname(__FILE__), '..', 'public')
 
     # Initialize DB with admin credentials
     if AppMarket::UserCollection.new(nil).info[1].empty?
