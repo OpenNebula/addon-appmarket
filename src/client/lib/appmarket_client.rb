@@ -142,26 +142,26 @@ module AppMarket
         private
 
         def get(path)
-            req = Net::HTTP::Proxy(@host, @port)::Get.new(path)
+            req = Net::HTTP::Proxy(@host, @port)::Get.new(@uri.path + path)
 
             do_request(req)
         end
 
         def delete(path)
-            req = Net::HTTP::Proxy(@host, @port)::Delete.new(path)
+            req = Net::HTTP::Proxy(@host, @port)::Delete.new(@uri.path + path)
 
             do_request(req)
         end
 
         def post(path, body)
-            req = Net::HTTP::Proxy(@host, @port)::Post.new(path)
+            req = Net::HTTP::Proxy(@host, @port)::Post.new(@uri.path + path)
             req.body = body
 
             do_request(req)
         end
 
         def put(path, body)
-            req = Net::HTTP::Proxy(@host, @port)::Put.new(path)
+            req = Net::HTTP::Proxy(@host, @port)::Put.new(@uri.path + path)
             req.body = body
 
             do_request(req)
