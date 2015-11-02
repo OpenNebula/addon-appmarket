@@ -23,7 +23,7 @@
           <label for="files.{{fileIndex}}.name">{{tr "File Name"}}
             <span class="tip">{{tr "Name of the file. This will be used to register the Image in OpenNebula"}}</span>
           </label>
-          <input type="text" name="files.{{fileIndex}}.name" id="files.{{fileIndex}}.name" />
+          <input type="text" name="files.{{fileIndex}}.name" id="files.{{fileIndex}}.name" required/>
         </div>
       </div>
       <div class="row">
@@ -31,7 +31,7 @@
           <label for="files.{{fileIndex}}.url">{{tr "URL"}}
             <span class="tip">{{tr "URL of the file"}}</span>
           </label>
-          <input type="text" name="files.{{fileIndex}}.url" id="files.{{fileIndex}}.url" />
+          <input type="text" name="files.{{fileIndex}}.url" id="files.{{fileIndex}}.url" required/>
         </div>
       </div>
       <div class="row">
@@ -39,7 +39,7 @@
           <label for="files.{{fileIndex}}.size">{{tr "Size"}}
             <span class="tip">{{tr "Size of the file in bytes"}}</span>
           </label>
-          <input type="text" name="files.{{fileIndex}}.size" id="files.{{fileIndex}}.size" />
+          <input type="text" name="files.{{fileIndex}}.size" id="files.{{fileIndex}}.size" required/>
         </div>
         <div class="large-6 columns">
           <label for="files.{{fileIndex}}.compression">{{tr "Compression"}}:</label>

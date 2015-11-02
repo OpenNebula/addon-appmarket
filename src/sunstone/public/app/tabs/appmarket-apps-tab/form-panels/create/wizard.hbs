@@ -20,14 +20,14 @@
         {{tr "Name"}}
         <span class="tip">{{tr "Name of the appliance"}}</span>
       </label>
-      <input type="text" name="name" id="name" />
+      <input type="text" name="name" id="name" required/>
     </div>
     <div class="large-6 columns">
       <label for="short_description">
         {{tr "Short Description"}}
         <span class="tip">{{tr "This information will be shown in the list view"}}</span>
       </label>
-      <input type="text" name="short_description" id="short_description" />
+      <input type="text" name="short_description" id="short_description" required/>
     </div>
   </div>
   <div class="row">
@@ -45,7 +45,7 @@
           {{tr "This information will be shown in the detailed view. Markdown syntax is supported."}}
         </span>
       </label>
-      <textarea rows=5 type="text" name="description" id="description" />
+      <textarea rows=5 type="text" name="description" id="description" required/>
     </div>
   </div>
   <br>
