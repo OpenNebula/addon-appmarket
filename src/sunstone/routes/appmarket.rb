@@ -71,18 +71,6 @@ helpers do
     end
 end
 
-get '/appmarket/job' do
-    appmarket_call { |client| client.get_jobs }
-end
-
-get '/appmarket/job/:id' do
-    appmarket_call { |client| client.get_job(params[:id]) }
-end
-
-post '/appmarket/job' do
-    appmarket_call { |client| client.create_job(request.body.read) }
-end
-
 get '/appmarket/appliance' do
     appmarket_call { |client| client.get_appliances }
 end
@@ -97,10 +85,6 @@ end
 
 put '/appmarket/appliance/:id' do
     appmarket_call { |client| client.update_appliance(params[:id], request.body.read) }
-end
-
-post '/appmarket/appliance/:id/convert' do
-    appmarket_call { |client| client.convert_appliance(params[:id], request.body.read) }
 end
 
 delete '/appmarket/appliance/:id' do

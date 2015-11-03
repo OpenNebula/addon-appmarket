@@ -95,13 +95,7 @@ module AppMarket
             app = AppCollection.get(session, mongo_object_id.to_s)
 
             if hash['files'].nil? || hash['files'][0]['url'].nil?
-                # Create a new Job to upload the new appliance
-                job_hash = {
-                    'name' => 'upload',
-                    'appliance_id' => app.mongo_object_id
-                }
-
-                AppMarket::JobCollection.create(session, job_hash)
+                return [400, {"message" => "No file url was provided for this app"}]
             else
                 app.update({'status' => 'ready'})
             end
@@ -140,95 +134,6 @@ module AppMarket
             self.factory(session, data)
         end
 
-        # Clone the given app and create a new convert job
-        #
-        # @param [Session] session an instance of Session containing the
-        #   user permisions
-        # @param [String] mongo_object_id id of the resource
-        # @param [Hash] hash containing the values of the resource
-        # @return [AppMarket::Appliance] depends on the factory method
-        def self.clone(session, mongo_object_id, hash)
-            begin
-                filter = generate_filter(session, mongo_object_id)
-                fields = exclude_fields(session)
-                data = collection.find_one(filter, :fields => fields)
-            rescue BSON::InvalidObjectId
-                return [404, {"message" => $!.message}]
-            end
-
-            if data.nil?
-                return [404, {"message" => "Appliance not found"}]
-            end
-
-            if data['status'] != "ready"
-                return [404, {"message" => "Wrong state [#{data['status']}]" \
-                    " to convert appliance"}]
-            end
-
-            if data['source'].nil? || data['source'].empty?
-                return [404, {"message" => "Cannot convert external appliances."}]
-            end
-
-            source_appliance = data.to_json
-
-            if data['publisher'] == session.publisher
-                # if the session user is the owner, retrieve all the metadata
-                data = collection.find_one(filter)
-            end
-
-            validator = Validator::Validator.new(
-                :default_values => true,
-                :extra_properties => false
-            )
-
-            data.delete('downloads')
-            data.delete('visits')
-            data.delete('publisher')
-            data.delete('state')
-            data.delete('_id')
-            data.delete('creation_time')
-            data.delete('files')
-
-            begin
-                validator.validate!(data, session.schema(:appliance))
-            rescue Validator::ParseException
-                return [400, {"message" => $!.message}]
-            end
-
-            data['creation_time'] = Time.now.to_i
-            data['publisher'] = session.publisher
-            data['status'] = 'init'
-
-            from_format = data['format']
-
-            if hash['params'] && hash['params']['format']
-                data['format'] = hash['params']['format']
-            end
-
-            begin
-                mongo_object_id = collection.insert(data, {:w => 1})
-            rescue Mongo::OperationFailure
-                return [400, {"message" => "already exists"}]
-            end
-
-            app = AppCollection.get(session, mongo_object_id.to_s)
-
-            # TODO check hash keys
-            job_hash = {
-                'name' => 'convert',
-                'appliance_id' => mongo_object_id.to_s,
-                'params' => {
-                    'from_appliance' => source_appliance,
-                    'from_format' => from_format
-                }
-            }.deep_merge(hash)
-
-            job = AppMarket::JobCollection.create(session, job_hash)
-            # TODO Check if the creation fails
-
-            return [201, app.to_hash]
-        end
-
         protected
 
         # Default Factory Method for the Pools
@@ -247,10 +152,6 @@ module AppMarket
         # @return [Hash] a hash containing the contraints
         def self.generate_filter(session, app_id)
             filter = Hash.new
-
-            if session.anonymous?
-                filter["status"] = 'ready'
-            end
 
             if session.allowed_catalogs
                 filter["catalog"] = {
@@ -271,7 +172,7 @@ module AppMarket
         # @params [Session] session an instance of Session containing the user permisions
         # @return [Hash] a hash of fields
         def self.exclude_fields(session)
-            if session.admin? || session.worker?
+            if session.admin?
                 nil
             else
                 {

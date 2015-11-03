@@ -20,11 +20,6 @@ require 'validator'
 
 
 require 'models/collection'
-require 'models/job_collection'
-require 'models/job_collection/job'
-require 'models/job_collection/upload_job'
-require 'models/job_collection/convert_job'
-require 'models/job_collection/delete_job'
 require 'models/app_collection'
 require 'models/app_collection/app'
 require 'models/user_collection'

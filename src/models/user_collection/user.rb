@@ -21,7 +21,6 @@ module AppMarket
         # User will be created by default in this role
         USER_ROLE   = 'user'
         ADMIN_ROLE  = 'admin'
-        WORKER_ROLE = 'worker'
 
         SCHEMA = {
             :type => :object,
@@ -77,7 +76,7 @@ module AppMarket
             :properties => {
                 'role' => {
                     :type => :string,
-                    :enum => %w{user admin worker},
+                    :enum => %w{user admin},
                 },
                 'status' => {
                     :type => :string
@@ -93,8 +92,7 @@ module AppMarket
             @data = data
         end
 
-        # Delete the appliance from the database and cancel the associated
-        #   jobs of the appliance.
+        # Delete the user from the database
         #
         # @return [Integer, Hash] status code and hash with the error message
         def delete

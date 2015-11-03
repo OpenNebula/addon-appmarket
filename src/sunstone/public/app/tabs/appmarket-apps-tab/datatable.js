@@ -58,7 +58,6 @@ define(function(require) {
     this.columns = [
       Locale.tr("ID"),
       Locale.tr("Name"),
-      Locale.tr("Status"),
       Locale.tr("Publisher"),
       Locale.tr("Hypervisor"),
       Locale.tr("Arch"),
@@ -89,15 +88,10 @@ define(function(require) {
     var arch        = '-';
     var format      = '-';
     var tags        = '-';
-    var status      = '-';
     var ctime       = '-';
 
     if(element.publisher != undefined){
       publisher = element.publisher;
-    }
-
-    if(element.status != undefined){
-      status = element.status;
     }
 
     if(element.creation_time != undefined){
@@ -129,7 +123,6 @@ define(function(require) {
                     element._id.$oid + '"/>',
         element._id.$oid,
         element.name,
-        status,
         publisher,
         hypervisor,
         arch,

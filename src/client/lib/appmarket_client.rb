@@ -40,52 +40,6 @@ module AppMarket
             end
         end
 
-        def create_job(body)
-            post('/job', body)
-        end
-
-        def get_jobs(filter={})
-            str = filter.collect {|key, value|
-                key + '=' + value
-            }.join('&')
-
-            path = '/job'
-            path += '?' + str if str
-            get(path)
-        end
-
-        def get_job(job_id)
-            get('/job/' + job_id)
-        end
-
-        def delete_job(job_id)
-            delete('/job/' + job_id)
-        end
-
-        def get_next_job(worker_id)
-            get('/worker/' + worker_id + '/nextjob')
-        end
-
-        def get_worker_jobs(worker_id, filter={})
-            str = filter.collect {|key, value|
-                key + '=' + value
-            }.join('&')
-
-            path = '/worker/'
-            path << worker_id
-            path << '/job'
-
-            if str
-                path << '?' + str
-            end
-
-            get(path)
-        end
-
-        def callback_url(worker_id, job_id)
-            return [@uri.to_s, 'worker', worker_id, 'job', job_id].join('/')
-        end
-
         def create_appliance(body)
             post('/appliance', body)
         end
@@ -104,10 +58,6 @@ module AppMarket
 
         def update_appliance(appliance_id, body)
             put('/appliance/' + appliance_id, body)
-        end
-
-        def convert_appliance(appliance_id, body)
-            post('/appliance/' + appliance_id + '/clone', body)
         end
 
         def callback(url, result, json_body="")

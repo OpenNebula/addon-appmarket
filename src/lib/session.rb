@@ -22,43 +22,36 @@ class Session
             :create => {
                 :anonymous  => true,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :show => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :delete => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :update => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :list => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :enable => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :schema => {
                 :anonymous => AppMarket::User::SCHEMA,
                 :user      => AppMarket::User::SCHEMA,
-                :worker    => AppMarket::User::SCHEMA,
                 :admin     => AppMarket::User::ADMIN_SCHEMA
             }
         },
@@ -66,102 +59,42 @@ class Session
             :create => {
                 :anonymous  => false,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :show => {
                 :anonymous  => true,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :delete => {
                 :anonymous  => false,
                 :user       => true,
-                :worker     => true,
                 :admin      => true
             },
             :update => {
                 :anonymous  => false,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :list => {
                 :anonymous  => true,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :download => {
                 :anonymous  => true,
                 :user       => true,
-                :worker     => false,
                 :admin      => true
             },
             :clone => {
                 :anonymous  => false,
                 :user       => false,
-                :worker     => false,
                 :admin      => true
             },
             :schema => {
                 :anonymous => AppMarket::Appliance::USER_SCHEMA,
                 :user      => AppMarket::Appliance::USER_SCHEMA,
-                :worker    => AppMarket::Appliance::ADMIN_SCHEMA,
                 :admin     => AppMarket::Appliance::ADMIN_SCHEMA
-            }
-        },
-        :job => {
-            :create => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => false,
-                :admin      => true
-            },
-            :show => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => false,
-                :admin      => true
-            },
-            :delete => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => false,
-                :admin      => true
-            },
-            :list => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => false,
-                :admin      => true
-            },
-            :schema => {
-                :anonymous => AppMarket::Job::SCHEMA,
-                :user      => AppMarket::Job::SCHEMA,
-                :worker    => AppMarket::Job::SCHEMA,
-                :admin     => AppMarket::Job::SCHEMA
-            }
-        },
-        :worker => {
-            :list_jobs => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => true,
-                :admin      => true
-            },
-            :next_job => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => true,
-                :admin      => true
-            },
-            :job_callback => {
-                :anonymous  => false,
-                :user       => false,
-                :worker     => true,
-                :admin      => true
             }
         }
     }
@@ -174,10 +107,6 @@ class Session
         perms = case env["REQUEST_METHOD"]
         when 'GET', 'HEAD'
             case env["PATH_INFO"]
-            when /^\/job$/
-                PERMISSIONS[:job][:list]
-            when /^\/job\/\w+$/
-                PERMISSIONS[:job][:show]
             when /^\/user$/
                 PERMISSIONS[:user][:list]
             when /^\/user\/\w+$/
@@ -188,17 +117,11 @@ class Session
                 PERMISSIONS[:appliance][:show]
             when /^\/appliance\/\w+\/download(\/\d+)?$/
                 PERMISSIONS[:appliance][:download]
-            when /^\/worker\/\w+\/nextjob$/
-                PERMISSIONS[:worker][:next_job]
-            when /^\/worker\/\w+\/job$/
-                PERMISSIONS[:worker][:list_jobs]
             when /^\/favicon.ico$/
                 true
             end
         when 'DELETE'
             case env["PATH_INFO"]
-            when /^\/job\/\w+$/
-                PERMISSIONS[:job][:delete]
             when /^\/user\/\w+$/
                 PERMISSIONS[:user][:delete]
             when /^\/appliance\/\w+$/
@@ -213,18 +136,12 @@ class Session
             end
         when 'POST'
             case env["PATH_INFO"]
-            when /^\/job$/
-                PERMISSIONS[:job][:create]
             when /^\/user$/
                 PERMISSIONS[:user][:create]
             when /^\/appliance$/
                 PERMISSIONS[:appliance][:create]
-            when /^\/appliance\/\w+\/clone$/
-                PERMISSIONS[:appliance][:clone]
             when /^\/user\/\w+\/enable$/
                 PERMISSIONS[:user][:enable]
-            when /^\/worker\/\w+\/job\/\w+\/(done|error|update|cancel)$/
-                PERMISSIONS[:worker][:job_callback]
             end
         end
 
@@ -261,10 +178,6 @@ class Session
         role == :user
     end
 
-    def worker?
-        role == :worker
-    end
-
     def anonymous?
         role == :anonymous
     end
@@ -274,8 +187,6 @@ class Session
             :anonymous
         elsif @user['role'] == AppMarket::User::ADMIN_ROLE
             :admin
-        elsif @user['role'] == AppMarket::User::WORKER_ROLE
-            :worker
         else
             :user
         end

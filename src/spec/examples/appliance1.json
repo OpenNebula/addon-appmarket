@@ -16,7 +16,8 @@
             "os-id": "Ubuntu",
             "os-release": "12.04",
             "os-arch": "x86_64",
-            "md5": "d0f3c0bebdab6451b58ca54f119d8082"
+            "md5": "d0f3c0bebdab6451b58ca54f119d8082",
+            "url": "http://marketplace.opennebula.systems/appliance/4fc76a938fb81d3517000003/download/0"
         }
     ]
 }

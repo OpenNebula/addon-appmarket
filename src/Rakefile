@@ -36,7 +36,6 @@ end
 task :clean do
     AppMarket::DB.drop_collection(AppMarket::UserCollection::COLLECTION_NAME)
     AppMarket::DB.drop_collection(AppMarket::AppCollection::COLLECTION_NAME)
-    AppMarket::DB.drop_collection(AppMarket::JobCollection::COLLECTION_NAME)
     AppMarket::DB.drop_collection(AppMarket::DBVersioning::DB_VERSIONING_COLLECTION)
 end
 

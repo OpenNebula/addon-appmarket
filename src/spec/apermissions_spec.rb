@@ -3,7 +3,6 @@ require 'pp'
 describe 'MarketPlace User tests' do
     before(:all) do
         AppMarket::DB.drop_collection(AppMarket::AppCollection::COLLECTION_NAME)
-        AppMarket::DB.drop_collection(AppMarket::JobCollection::COLLECTION_NAME)
     end
 
     describe "admin" do

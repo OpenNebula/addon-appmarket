@@ -20,8 +20,6 @@ module AppMarket
         #   This catalog is accesible for all the users even anonymous ones.
         PUBLIC_CATALOG = 'community'
 
-        STATUS = %w{init ready converting downloading publishing error}
-
         FILE_SCHEMA = {
             :type => :object,
             :properties => {
@@ -110,14 +108,6 @@ module AppMarket
                     :type => :string,
                     :required => true
                 },
-                'source' => {
-                    :type => :string,
-                    :format => :uri
-                },
-                'source_type' => {
-                    :type => :string,
-                    :enum => %w{ova}
-                },
                 'tags' => {
                     :type => :array,
                     :items => {
@@ -192,11 +182,6 @@ module AppMarket
                     :format => :uri,
                     :default => "/img/logos/default.png"
                 },
-                'status' => {
-                    :type => :string,
-                    :default => 'init',
-                    :enum => AppMarket::Appliance::STATUS,
-                },
                 'files' => {
                     :type => :array,
                     :items => ADMIN_FILE_SCHEMA,
@@ -217,11 +202,6 @@ module AppMarket
                     :format => :uri,
                     :default => "/img/logos/default.png"
                 },
-                'status' => {
-                    :type => :null,
-                    :default => 'ready',
-                    :enum => AppMarket::Appliance::STATUS,
-                },
                 'files' => {
                     :type => :array,
                     :items => USER_FILE_SCHEMA,
@@ -238,34 +218,11 @@ module AppMarket
             @session = session
         end
 
-        # Delete the appliance from the database and cancel the associated
-        #   jobs of the appliance.
+        # Delete the appliance from the database
         #
         # @return [Integer, Hash] status code and hash with the error message
         def delete
             begin
-                # Remove associated jobs
-                job_selector = {
-                    'appliance_id' => self.mongo_object_id
-                }
-
-                job_collection = AppMarket::JobCollection.new(@session, job_selector)
-                job_collection.info
-                job_collection.each { |job|
-                    job.cancel
-                }
-
-                job_hash = {
-                    'name'         => 'delete',
-                    'appliance_id' => self.mongo_object_id
-                }
-
-                if !@data['source'].nil? && !@data['source'].empty?
-                    JobCollection.create(@session, job_hash)
-                end
-
-                # The app is removed insted of keeping it until all the jobs
-                #   are cancelled?
                 AppCollection.collection.remove(
                     :_id => Collection.str_to_mongo_object_id(self.mongo_object_id))
             rescue BSON::InvalidObjectId
