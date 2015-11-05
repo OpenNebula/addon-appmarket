@@ -10,8 +10,6 @@ After deploying the AppMarket server, users will be able to access the AppMarket
 
 The [OpenNebula Marketplace](http://marketplace.opennebula.systems/appliance) is an example of an AppMarket deployment currently running and publicly accessible for the OpenNebula community, every OpenNebula installation is ready to interact with this marketplace, through the Marketplace tab in Sunstone.
 
-In AppMarket 2.0 a new component is included, [AppMarket Worker](doc/appmarket_worker_installation_and_configuration.md). This new component allows you to create an appliance from an OVA file. The worker will download and unpackage the OVA file, and will generate the URLs for the files. With this information a new appliance will be created containing the files and the OpenNebula template representing the service.
-
 Please consider that, although AppMArket is widely used by the OpenNebula users, this software has not gone through the same rigorous testing process as the main OpenNebula distribution.
 
 ![market1306](doc/images/list_appliance_from_sunstone.png)
@@ -21,10 +19,6 @@ Please consider that, although AppMArket is widely used by the OpenNebula users,
 * Leader: Daniel Molina Aranda dmolina@opennebula.org
 * Jaime Melis jmelis@opennebula.org
 
-## Acknowledgements
-
-The new features introduced in the AppMarket 2.0 were funded by [Produban](http://www.produban.com/) in the context of the Fund a Feature Program.
-
 ## Features
 
 * Build your own marketplace
@@ -33,21 +27,14 @@ The new features introduced in the AppMarket 2.0 were funded by [Produban](http:
 * Provide appliances from a catalog and portal
 * Tight integration with OpenNebula
 * Appliances can define multiple files and an OpenNebula template
-* Appliances can be created from an OVA file
-* Appliances can be converted to different formats (raw, qcow2, vmdk, vdi)
 * Appliances can be grouped in catalogs
 
 ## Releases
 
-### AppMarket 2.0.3
-
-AppMarket 2.0.3 is the latest stable release. This is a maintenance release that solves issues reported by the community.
-
-The AppMarket 2.0.x series extends the AppMarket functionality by adding a new set of features that enables the management and processing of OVA files. A new component *AppMarket Worker* is introduced, which handles the OVA package treatment (download, unpack, OVF parsing) and image format conversion. This release also features a new API, a new simplified import dialog, a new AppMarket interface via Sunstone, and handles VMware and VirtualBox OVAs.
+### AppMarket
 
 * [Installation & Configuration](doc/installation_and_configuration.md)
 * [Usage](doc/usage.md)
-* [AppMarket Worker Installation and Configuration](doc/appmarket_worker_installation_and_configuration.md)
 * [Release Notes](doc/release_notes/appmarket-2.0.3.md)
 
 ### All Releases
@@ -64,7 +51,7 @@ The AppMarket 2.0.x series extends the AppMarket functionality by adding a new s
 
 ## Compatibility
 
-This add-on is compatible with OpenNebula 4.10.
+This add-on is compatible with OpenNebula >= 4.14.2.
 
 ## Development
 

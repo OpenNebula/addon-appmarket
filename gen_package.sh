@@ -28,14 +28,9 @@ PACKAGE_TYPE=${PACKAGE_TYPE:-deb}
 URL=${URL:-https://github.com/OpenNebula/addon-appmarket}
 COMPONENT="${1-appmarket}"
 
-if [ "$COMPONENT" = "worker" ]; then
-    PACKAGE_NAME=${PACKAGE_NAME:-appmarket-worker}
-    INIT_SCRIPT=opennebula-appconverter-worker
-    cd src/worker
-else
-    PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
-    INIT_SCRIPT=opennebula-${PACKAGE_NAME}
-fi
+PACKAGE_NAME=${PACKAGE_NAME:-appmarket}
+INIT_SCRIPT=opennebula-${PACKAGE_NAME}
+
 
 DEPS="opennebula-common"
 RPM_DEPS="$DEPS ruby rubygems ruby-devel gcc libxml2-devel libxslt-devel"
@@ -45,14 +40,8 @@ case "${COMPONENT}-${PACKAGE_TYPE}" in
 "appmarket-rpm")
     DEPS="$RPM_DEPS"
     ;;
-"worker-rpm")
-    DEPS="$RPM_DEPS qemu-img"
-    ;;
 "appmarket-deb")
     DEPS="$DEB_DEPS"
-    ;;
-"worker-deb")
-    DEPS="$DEB_DEPS qemu-utils"
     ;;
 esac
 
