@@ -81,6 +81,10 @@
 %hr
 
 :javascript
+  function escapeHtml(value) {
+    return $('<div/>').text(value).html();
+  }
+
   $(document).ready(function() {
     $(".collapse").collapse();
 
@@ -127,22 +131,22 @@
               '<div class="span2">'+
                 '<dl>'+
                   '<dt><h6><i class="icon-user"></i> Publisher</h6></dt>'+
-                  '<dd><h6><small>'+oData.publisher+'</small></h6></dd>'+
+                  '<dd><h6><small>'+escapeHtml(oData.publisher)+'</small></h6></dd>'+
                   '<dt><h6><i class="icon-book"></i> Catalog</h6></dt>'+
-                  '<dd><h6><small>'+oData.catalog+'</small></h6></dd>'+
+                  '<dd><h6><small>'+escapeHtml(oData.catalog)+'</small></h6></dd>'+
                   '<dt><h6><i class="icon-download-alt"></i> Downloads</h6></dt>'+
-                  '<dd><h6><small>'+oData.downloads+'</small></h6></dd>'+
+                  '<dd><h6><small>'+escapeHtml(oData.downloads)+'</small></h6></dd>'+
                 '</dl>'+
               '</div>'+
 
               '<div class="span6">'+
                 '<blockquote>'+
                   '<small>'+
-                    (oData.short_description ? oData.short_description.substring(0,700) : "") +
+                    (oData.short_description ? escapeHtml(oData.short_description.substring(0,700)) : "") +
                   '</small>'+
                 '</blockquote>'+
                   '<div class="row-fluid">'+
-                    '<h6><i class="icon-tags"></i><small> '+oData.tags.join(", ")+'</small></h6>'+
+                    '<h6><i class="icon-tags"></i><small> '+escapeHtml(oData.tags.join(", "))+'</small></h6>'+
                   '</div>'+
                   '<hr>'+
               '</div>';
@@ -150,11 +154,11 @@
             sOut += '<div class="span2">'+
               '<dl>'+
                 '<dt><h6>Hypervisor</h6></dd>'+
-                '<dd><h6><small>'+(oData.hypervisor||'')+'</small></h6></dd>'+
+                '<dd><h6><small>'+(oData.hypervisor ? escapeHtml(oData.hypervisor) : '')+'</small></h6></dd>'+
                 '<dt><h6>Arch</h6></dd>'+
-                '<dd><h6><small>'+(oData['os-arch']||'')+'</small></h6></dd>'+
+                '<dd><h6><small>'+(oData['os-arch'] ? escapeHtml(oData['os-arch']) : '')+'</small></h6></dd>'+
                 '<dt><h6>Format</h6></dd>'+
-                '<dd><h6><small>'+(oData.format||'')+'</small></h6></dd>'+
+                '<dd><h6><small>'+(oData.format ? escapeHtml(oData.format) : '')+'</small></h6></dd>'+
               '</dl>'+
             '</div>';
 

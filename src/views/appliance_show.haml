@@ -23,7 +23,7 @@
 .container-fluid
   .row-fluid
     .span8
-      .brand= @app['name']
+      .brand&= @app['name']
     .span4
       %a.pull-right{'href' => "#{settings.root_path}appliance"}
         %i.icon-search.icon-arrow-left
@@ -40,21 +40,21 @@
             Publisher
         %dd
           %h6
-            %small= @app['publisher']
+            %small&= @app['publisher']
         %dt
           %h6
             %i.icon-book
             Catalog
         %dd
           %h6
-            %small= @app['catalog']
+            %small&= @app['catalog']
         %dt
           %h6
             %i.icon-download-alt
             Downloads
         %dd
           %h6
-            %small= @app['downloads']
+            %small&= @app['downloads']
       %hr.span12
       - if @session.admin? || @session.publisher == @app['publisher']
         %a.btn.btn-danger#delete_app_btn.span10
@@ -73,7 +73,7 @@
         %hr
         %h6
           %i.icon-tags
-          %small= @app['tags'].join(', ')
+          %small&= @app['tags'].join(', ')
       -if @app['files']
         %br
         .row-fluid
@@ -98,24 +98,24 @@
                         %h6 Name
                       %dd
                         %h6
-                          %small= file['name']
+                          %small&= file['name']
                     - if file['md5']
                       %dt
                         %h6 Checksum MD5
                       %dd
                         %h6
-                          %small= file['md5']
+                          %small&= file['md5']
                     - if file['sha1']
                       %dt
                         %h6 Checksum SHA1
                       %dd
                         %h6
-                          %small= file['sha1']
+                          %small&= file['sha1']
                     %dt
                       %h6 Compression
                     %dd
                       %h6
-                        %small= file['compression']
+                        %small&= file['compression']
                     %dt
                       %h6 Size
                     %dd
@@ -125,52 +125,52 @@
               .tab-pane{'id' => "tabTemplate"}
                 .row-fluid
                   .span12
-                    =@app['opennebula_template']
+                    &= @app['opennebula_template']
     .span3
       %dl
         %dt
           %h6 Id
         %dd
           %h6
-            %small= @app['_id'].to_s
+            %small&= @app['_id'].to_s
         %dt
           %h6 Created
         %dd
           %h6
-            %small= @app['_id'].generation_time.strftime("%d-%m-%Y")
+            %small&= @app['_id'].generation_time.strftime("%d-%m-%Y")
         %dt
           %h6 Version
         %dd
           %h6
-            %small= @app['version']
+            %small&= @app['version']
         %dt
           %h6 OpenNebula version
         %dd
           %h6
-            %small= @app['opennebula_version']
+            %small&= @app['opennebula_version']
         -if @app['files']
           %hr
           %dt
             %h6 Format
           %dd
             %h6
-              %small= @app['format']
+              %small&= @app['format']
           - if @app['os-id'] && @app['os-release']
             %dt
               %h6 OS
             %dd
               %h6
-                %small= @app['os-id'] + ' ' + @app['os-release']
+                %small&= @app['os-id'] + ' ' + @app['os-release']
           %dt
             %h6 Hypervisor
           %dd
             %h6
-              %small= @app['hypervisor']
+              %small&= @app['hypervisor']
           %dt
             %h6 Arch
           %dd
             %h6
-              %small= @app['os-arch']
+              %small&= @app['os-arch']
 
 %hr
 
