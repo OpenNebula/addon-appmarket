@@ -25,7 +25,7 @@ Your account for the OpenNebula Marketplace has been enabled
 
 Username: <%= username %>
 
-Please, do not forget to subscribe to the OpenNebula Marketplace mailing list [1]
+Please, do not forget to subscribe to the OpenNebula forum [1]
 
 * How to Develop your Appliance?
 This guide [2] will show you how to create OpenNebula compatible images for the Marketplace
@@ -35,8 +35,8 @@ Log in with you Developer account int The OpenNebula Marketplace [3]. After that
 
 Kind regards
 
-[1] http://lists.opennebula.org/listinfo.cgi/marketplace-opennebula.org
-[2] http://opennebula.org/documentation:rel3.6:vm4market
+[1] https://forum.opennebula.org/
+[2] http://docs.opennebula.org/stable/user/opennebula_marketplace/vm4market.html
 [3] https://marketplace.opennebula.systems/
 }
 

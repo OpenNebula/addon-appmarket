@@ -59,6 +59,6 @@ To contribute bug patches or new features, you can use the github Pull Request m
 
 More info:
 * [How to Contribute](http://opennebula.org/software:add-ons#how_to_contribute_to_an_existing_add-on)
-* Support: [OpenNebula user mailing list](http://opennebula.org/community:mailinglists)
-* Development: [OpenNebula developers mailing list](http://opennebula.org/community:mailinglists)
+* Support: [OpenNebula forum](https://forum.opennebula.org/c/support)
+* Development: [OpenNebula forum](https://forum.opennebula.org/c/development)
 * Issues Tracking: Github issues

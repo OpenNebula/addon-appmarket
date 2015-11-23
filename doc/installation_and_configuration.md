@@ -269,7 +269,7 @@ Yaml /etc/one/sunstone-views/user.yaml:
                 AppMarket.delete: false
                 AppMarket.create_dialog: false
 
-For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://opennebula.org/documentation:rel4.2:suns_views)
+For more information on how to customize the views based on the user/group interacting with Sunstone check the [sunstone views guide](http://docs.opennebula.org/stable/administration/sunstone_gui/suns_views.html)
 
 ### Credentials
 
