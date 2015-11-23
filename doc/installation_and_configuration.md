@@ -195,12 +195,12 @@ Also edit */etc/one/sunstone-views/admin.yaml* and */etc/one/sunstone-views/user
 * */etc/one/sunstone-views/admin.yaml* and */etc/one/sunstone-views/user.yaml*
 
         enabled_tabs:
-            dashboard-tab: true
+            - dashboard-tab
 
             ...
 
-            appmarket-dashboard-tab: true
-            appmarket-apps-tab: true
+            - appmarket-dashboard-tab
+            - appmarket-apps-tab
 
 And the corresponding sections for the tabs at the end of the file. These tabs are configurable and can be adapted depending on the kind of user that is interacting with the AppMarket. These are the two options that we propose as an example, one for the admin of the marketplace and another one for regular users.
 
