@@ -12,7 +12,7 @@ AppMarket requires:
 Install AppMarket
 -----------------
 
-AppMarket packages can be download from the [OpenNebula Downloads](http://downloads.opennebula.org/packages/appmarket-2.0.3/) page in two formats:
+AppMarket packages can be download from the [OpenNebula Downloads](https://github.com/OpenNebula/addon-appmarket/releases/tag/release-2.1.0/) page in two formats:
 
 * rpm package
 * deb package
@@ -217,25 +217,25 @@ The admin will be able to:
 Yaml /etc/one/sunstone-views/admin.yaml:
 
         # BOTTOM OF FILE
-        appmarket-apps-tab:
-            panel_tabs:
-                appmarket_info_tab: true
-            table_columns:
-                - 0         # Checkbox
-                #- 1         # ID
-                - 2         # Name
-                - 3         # Publisher
-                - 4         # Hypervisor
-                - 5         # Arch
-                - 6         # Format
-                #- 7         # Tags
-                - 8         # Created
-            actions:
-                AppMarket.create: true
-                AppMarket.refresh: true
-                AppMarket.import: true
-                AppMarket.delete: true
-                AppMarket.create_dialog: true
+    appmarket-apps-tab:
+        panel_tabs:
+            appmarket_info_tab: true
+        table_columns:
+            - 0         # Checkbox
+            #- 1         # ID
+            - 2         # Name
+            - 3         # Publisher
+            - 4         # Hypervisor
+            - 5         # Arch
+            - 6         # Format
+            #- 7         # Tags
+            - 8         # Created
+        actions:
+            AppMarket.create: true
+            AppMarket.refresh: true
+            AppMarket.import: true
+            AppMarket.delete: true
+            AppMarket.create_dialog: true
 
 ### User View /etc/one/sunstone-views/user.yaml
 
