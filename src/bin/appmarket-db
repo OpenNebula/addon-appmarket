@@ -44,7 +44,7 @@ require 'init'
 ##############################################################################
 ##############################################################################
 
-UPGRADE_SCRIPTS = [10980, 10985, 10990, 20000, 20001, 20002, 20003]
+UPGRADE_SCRIPTS = [10980, 10985, 10990, 20000, 20001, 20002, 20003, 200100]
 
 module Version10985
     VERSION = "1.9.85"
@@ -124,6 +124,13 @@ end
 module Version20003
     VERSION = "2.0.3"
     VERSION_CODE = 20003
+    def self.upgrade
+    end
+end
+
+module Version200100
+    VERSION = "2.1.0"
+    VERSION_CODE = 200100
     def self.upgrade
     end
 end

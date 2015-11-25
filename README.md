@@ -35,12 +35,13 @@ Please consider that, although AppMArket is widely used by the OpenNebula users,
 
 * [Installation & Configuration](doc/installation_and_configuration.md)
 * [Usage](doc/usage.md)
-* [Release Notes](doc/release_notes/appmarket-2.0.3.md)
+* [Release Notes](doc/release_notes/appmarket-2.1.0.md)
 
 ### All Releases
 
 |      Version      |        Date          |                               Release Notes                               |
 | ----------------- | -------------------- | ------------------------------------------------------------------------- |
+| 2.1.0             | November, 2015       | [Release Notes 2.1.0](doc/release_notes/appmarket-2.1.0.md)               |
 | 2.0.3             | November 19th, 2014  | [Release Notes 2.0.3](doc/release_notes/appmarket-2.0.3.md)               |
 | 2.0.2             | September 18th, 2014 | [Release Notes 2.0.2](doc/release_notes/appmarket-2.0.2.md)               |
 | 2.0.1             | May 22nd, 2014       | [Release Notes 2.0.1](doc/release_notes/appmarket-2.0.1.md)               |
@@ -51,7 +52,12 @@ Please consider that, although AppMArket is widely used by the OpenNebula users,
 
 ## Compatibility
 
-This add-on is compatible with OpenNebula >= 4.14.2.
+This add-on is compatible with:
+
+| AppMarket Version | OpenNebula Version |
+| ----------------- | ------------------ |
+| 2.1.0             | 4.14.2             |
+| <= 2.0.3          | 4.10, 4.12         |
 
 ## Development
 

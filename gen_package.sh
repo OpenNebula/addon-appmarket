@@ -16,7 +16,7 @@
 # limitations under the License.                                               #
 #------------------------------------------------------------------------------#
 
-VERSION=${VERSION:-2.0.3}
+VERSION=${VERSION:-2.1.0}
 MAINTAINER=${MAINTAINER:-OpenNebula Systems <contact@opennebula.systems>}
 LICENSE=${LICENSE:-Apache}
 VENDOR=${VENDOR:-OpenNebula Systems}
@@ -53,6 +53,7 @@ done
 
 SCRIPTS_DIR=${SCRIPTS_DIR:-PWD}
 
+[ $PACKAGE_TYPE = rpm ] && PKGARGS="--rpm-os linux"
 NAME="${PACKAGE_NAME}_${VERSION}.${PACKAGE_TYPE}"
 rm $NAME
 
@@ -72,7 +73,7 @@ cp init-scripts/${INIT_SCRIPT}.${PACKAGE_TYPE} $DESTDIR/etc/init.d/${INIT_SCRIPT
 
 cd tmp
 
-fpm -n "$PACKAGE_NAME" -t "$PACKAGE_TYPE" -s dir --vendor "$VENDOR" \
+fpm -n "$PACKAGE_NAME" -t "$PACKAGE_TYPE" $PKGARGS -s dir --vendor "$VENDOR" \
     --license "$LICENSE" --description "$DESCRIPTION" --url "$URL" \
     -m "$MAINTAINER" -v "$VERSION" \
     $DEP_STRING \

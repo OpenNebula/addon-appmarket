@@ -8,9 +8,6 @@ AppMarket requires:
 
 * [MongoDB](http://www.mongodb.org/display/DOCS/Quickstart)
 * ruby and rubygems installed.
-* ''opennebula-common'' package.
-
-If you want to create appliances from an OVA file or convert the format of the appliance you will need to configure at least one AppMarket Worker.
 
 Install AppMarket
 -----------------
@@ -55,6 +52,8 @@ The following commands are necessary in any of the previous cases to install the
         gem 'mail'
         gem 'bcrypt-ruby'
         gem 'opennebula-cli'
+
+If you find problems installing nokogiri in your distribution, check the following [guide](http://www.nokogiri.org/tutorials/installing_nokogiri.html)
 
 Upgrade AppMarket
 -----------------
