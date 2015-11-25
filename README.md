@@ -41,7 +41,7 @@ Please consider that, although AppMArket is widely used by the OpenNebula users,
 
 |      Version      |        Date          |                               Release Notes                               |
 | ----------------- | -------------------- | ------------------------------------------------------------------------- |
-| 2.1.0             | November, 2015       | [Release Notes 2.1.0](doc/release_notes/appmarket-2.1.0.md)               |
+| 2.1.0             | November, 2015       | [Release Notes 2.1.0](https://github.com/OpenNebula/addon-appmarket/releases/tag/release-2.1.0)               |
 | 2.0.3             | November 19th, 2014  | [Release Notes 2.0.3](doc/release_notes/appmarket-2.0.3.md)               |
 | 2.0.2             | September 18th, 2014 | [Release Notes 2.0.2](doc/release_notes/appmarket-2.0.2.md)               |
 | 2.0.1             | May 22nd, 2014       | [Release Notes 2.0.1](doc/release_notes/appmarket-2.0.1.md)               |
