@@ -36,7 +36,7 @@ Log in with you Developer account int The OpenNebula Marketplace [3]. After that
 Kind regards
 
 [1] https://forum.opennebula.org/
-[2] http://docs.opennebula.org/stable/user/opennebula_marketplace/vm4market.html
+[2] http://docs.opennebula.org/5.0/operation/vm_setup/context_overview.html
 [3] https://marketplace.opennebula.systems/
 }
 
