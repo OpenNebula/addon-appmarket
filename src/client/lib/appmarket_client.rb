@@ -16,6 +16,7 @@
 
 require 'uri'
 require 'net/https'
+require 'one_helper'
 
 require 'appmarket_version'
 
